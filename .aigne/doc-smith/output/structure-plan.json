@@ -1,0 +1,211 @@
+[
+  {
+    "description": "Provides a concise introduction to the Requests library, highlighting its purpose, core design principles, and key features. This section offers a high-level overview and guides users to relevant starting points for deeper exploration.",
+    "parentId": null,
+    "path": "/overview",
+    "sourceIds": [
+      "README.md",
+      "setup.py",
+      "src/requests/__init__.py",
+      "src/requests/__version__.py"
+    ],
+    "title": "Overview"
+  },
+  {
+    "description": "Guides users through the initial setup process, including installation steps and a minimal code example to demonstrate basic functionality and allow users to quickly execute their first request.",
+    "parentId": null,
+    "path": "/getting-started",
+    "sourceIds": [
+      "README.md",
+      "setup.py",
+      "Makefile",
+      "src/requests/api.py",
+      "src/requests/__init__.py"
+    ],
+    "title": "Getting Started"
+  },
+  {
+    "description": "Explains the fundamental concepts and architectural components that underpin the Requests library, providing a solid theoretical foundation for understanding its operations.",
+    "parentId": null,
+    "path": "/core-concepts",
+    "sourceIds": [],
+    "title": "Core Concepts"
+  },
+  {
+    "description": "Details the various HTTP methods supported by Requests, explaining their semantics and providing examples for making different types of requests.",
+    "parentId": "/core-concepts",
+    "path": "/core-concepts/http-methods",
+    "sourceIds": [
+      "src/requests/api.py",
+      "src/requests/models.py",
+      "src/requests/sessions.py"
+    ],
+    "title": "HTTP Methods"
+  },
+  {
+    "description": "Introduces the core Request, PreparedRequest, and Response objects, describing their lifecycle, attributes, and how they interact within the library.",
+    "parentId": "/core-concepts",
+    "path": "/core-concepts/requests-responses",
+    "sourceIds": [
+      "src/requests/models.py",
+      "src/requests/sessions.py"
+    ],
+    "title": "Requests & Responses"
+  },
+  {
+    "description": "Explains the Session object, its role in maintaining persistence across multiple requests (e.g., cookies, authentication, proxies), and how to leverage it for efficient HTTP communication.",
+    "parentId": "/core-concepts",
+    "path": "/core-concepts/sessions",
+    "sourceIds": [
+      "src/requests/sessions.py",
+      "src/requests/cookies.py"
+    ],
+    "title": "Sessions"
+  },
+  {
+    "description": "Covers the handling of HTTP headers, including the case-insensitive dictionary structure, and provides a reference for common HTTP status codes and their interpretations.",
+    "parentId": "/core-concepts",
+    "path": "/core-concepts/headers-status-codes",
+    "sourceIds": [
+      "src/requests/structures.py",
+      "src/requests/status_codes.py",
+      "src/requests/utils.py"
+    ],
+    "title": "Headers & Status Codes"
+  },
+  {
+    "description": "Explores advanced features and configurations of Requests, enabling users to customize and optimize their HTTP interactions for specific use cases.",
+    "parentId": null,
+    "path": "/advanced-usage",
+    "sourceIds": [],
+    "title": "Advanced Usage"
+  },
+  {
+    "description": "Provides guidance on implementing various authentication methods, including Basic, Digest, and Proxy authentication, to secure HTTP requests.",
+    "parentId": "/advanced-usage",
+    "path": "/advanced-usage/authentication",
+    "sourceIds": [
+      "src/requests/auth.py",
+      "src/requests/sessions.py",
+      "src/requests/utils.py"
+    ],
+    "title": "Authentication"
+  },
+  {
+    "description": "Details how to configure and manage proxies for HTTP requests, including setting up environment variables and defining rules for bypassing proxies.",
+    "parentId": "/advanced-usage",
+    "path": "/advanced-usage/proxies",
+    "sourceIds": [
+      "src/requests/adapters.py",
+      "src/requests/sessions.py",
+      "src/requests/utils.py"
+    ],
+    "title": "Proxies"
+  },
+  {
+    "description": "Explains how to handle SSL/TLS certificate verification, including options for disabling verification (for testing environments) and using client-side certificates for mutual TLS.",
+    "parentId": "/advanced-usage",
+    "path": "/advanced-usage/ssl-verification-client-certificates",
+    "sourceIds": [
+      "src/requests/adapters.py",
+      "src/requests/sessions.py",
+      "src/requests/certs.py",
+      "src/requests/__init__.py"
+    ],
+    "title": "SSL Verification & Client Certificates"
+  },
+  {
+    "description": "Outlines the common exceptions that can occur during HTTP requests, such as connection errors, timeouts, and HTTP status code errors, and provides strategies for robust error handling.",
+    "parentId": "/advanced-usage",
+    "path": "/advanced-usage/error-handling",
+    "sourceIds": [
+      "src/requests/exceptions.py",
+      "src/requests/models.py"
+    ],
+    "title": "Error Handling"
+  },
+  {
+    "description": "Guides users on how to efficiently handle large HTTP responses by streaming content, preventing excessive memory consumption and improving performance for downloads.",
+    "parentId": "/advanced-usage",
+    "path": "/advanced-usage/streaming-requests",
+    "sourceIds": [
+      "src/requests/models.py",
+      "src/requests/sessions.py"
+    ],
+    "title": "Streaming Requests"
+  },
+  {
+    "description": "Describes the Requests hook system, allowing users to inject custom logic at various stages of the request-response lifecycle for extended functionality.",
+    "parentId": "/advanced-usage",
+    "path": "/advanced-usage/hooks",
+    "sourceIds": [
+      "src/requests/hooks.py",
+      "src/requests/models.py"
+    ],
+    "title": "Hooks"
+  },
+  {
+    "description": "A comprehensive reference for all public APIs, classes, and methods available in the Requests library, detailing their parameters, return values, and usage examples.",
+    "parentId": null,
+    "path": "/api-reference",
+    "sourceIds": [],
+    "title": "API Reference"
+  },
+  {
+    "description": "Documents the top-level functions (e.g., get, post, put) that provide a simplified interface for common HTTP operations.",
+    "parentId": "/api-reference",
+    "path": "/api-reference/top-level-functions",
+    "sourceIds": [
+      "src/requests/api.py"
+    ],
+    "title": "Top-Level Functions"
+  },
+  {
+    "description": "Provides an in-depth look at the Session object's public methods and attributes for managing persistent connections and settings.",
+    "parentId": "/api-reference",
+    "path": "/api-reference/session-object",
+    "sourceIds": [
+      "src/requests/sessions.py"
+    ],
+    "title": "Session Object"
+  },
+  {
+    "description": "Details the properties and methods of the Request, PreparedRequest, and Response objects, which are central to building and handling HTTP communications.",
+    "parentId": "/api-reference",
+    "path": "/api-reference/request-response-objects",
+    "sourceIds": [
+      "src/requests/models.py"
+    ],
+    "title": "Request & Response Objects"
+  },
+  {
+    "description": "Lists and describes all custom exception types raised by Requests, enabling developers to implement precise error handling.",
+    "parentId": "/api-reference",
+    "path": "/api-reference/exceptions",
+    "sourceIds": [
+      "src/requests/exceptions.py"
+    ],
+    "title": "Exceptions"
+  },
+  {
+    "description": "Information on how to contribute to the Requests project, including guidelines for code contributions, reporting issues, and engaging with the community.",
+    "parentId": null,
+    "path": "/community-contribution",
+    "sourceIds": [
+      "AUTHORS.rst",
+      "Makefile",
+      "README.md"
+    ],
+    "title": "Community & Contribution"
+  },
+  {
+    "description": "Provides a chronological record of changes, new features, bug fixes, and deprecations across different versions of the Requests library.",
+    "parentId": null,
+    "path": "/release-notes",
+    "sourceIds": [
+      "HISTORY.md",
+      "setup.py"
+    ],
+    "title": "Release Notes"
+  }
+]
