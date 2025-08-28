@@ -96,23 +96,31 @@ except requests.exceptions.RequestException as e:
 
 Here is a visual representation of the retry flow with a backoff factor:
 
-```mermaid
-sequenceDiagram
-    participant Client
-    participant Session with Adapter
-    participant Server
-    Client->>Session with Adapter: s.get('http://service.com/api')
-    Session with Adapter->>Server: GET /api
-    Server-->>Session with Adapter: 503 Service Unavailable
-    note over Session with Adapter: Status in forcelist. Initiate retry with backoff.
-    Session with Adapter->>Session with Adapter: Wait (e.g., 0.1s)
-    Session with Adapter->>Server: GET /api (Retry 1)
-    Server-->>Session with Adapter: 503 Service Unavailable
-    note over Session with Adapter: Status in forcelist. Initiate retry with increased backoff.
-    Session with Adapter->>Session with Adapter: Wait (e.g., 0.2s)
-    Session with Adapter->>Server: GET /api (Retry 2)
-    Server-->>Session with Adapter: 200 OK
-    Session with Adapter-->>Client: Response (200 OK)
+```d2
+shape: sequence_diagram
+
+Client
+"Session with Adapter"
+Server
+
+Client -> "Session with Adapter": s.get('http://service.com/api')
+"Session with Adapter" -> Server: GET /api
+Server -> "Session with Adapter": 503 Service Unavailable
+
+"Session with Adapter": {
+  note: "Status in forcelist. Initiate retry with backoff (e.g., wait 0.1s)."
+}
+
+"Session with Adapter" -> Server: GET /api (Retry 1)
+Server -> "Session with Adapter": 503 Service Unavailable
+
+"Session with Adapter": {
+  note: "Status in forcelist. Initiate retry with increased backoff (e.g., wait 0.2s)."
+}
+
+"Session with Adapter" -> Server: GET /api (Retry 2)
+Server -> "Session with Adapter": 200 OK
+"Session with Adapter" -> Client: Response (200 OK)
 ```
 
 ## Proxies

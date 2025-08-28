@@ -81,17 +81,18 @@ s.get('https://api.example.com/data') # Uses the RetryAdapter
 
 The following diagram illustrates how a `Session` selects and uses an adapter to send a request.
 
-```mermaid
-sequenceDiagram
-    participant User
-    participant Session
-    participant CustomAdapter as Adapter
+```d2
+shape: sequence_diagram
 
-    User->>Session: session.get(url, ...)
-    Session->>Session: get_adapter(url) to find matching adapter
-    Session->>CustomAdapter: send(prepared_request, **kwargs)
-    CustomAdapter-->>Session: Returns Response object
-    Session-->>User: Returns final Response object
+User
+Session
+Adapter: CustomAdapter
+
+User -> Session: "session.get(url, ...)"
+Session -> Session: "get_adapter(url) to find matching adapter"
+Session -> Adapter: "send(prepared_request, **kwargs)"
+Adapter -> Session: "Returns Response object"
+Session -> User: "Returns final Response object"
 ```
 
 ## Event Hooks
@@ -161,17 +162,32 @@ print(f"Request without hook completed with status: {response.status_code}")
 
 The hook system processes the response before returning it to the user, allowing for inspection or modification at a critical point.
 
-```mermaid
-flowchart TD
-    A["Request sent via Adapter"] --> B["Response Received"]
-    B --> C{"Hooks for 'response' event?"}
-    C -- "Yes" --> D["Iterate through hook functions"]
-    D -- "call hook(response, **kwargs)" --> E{"Hook returned a value?"}
-    E -- "Yes" --> F["Replace response with new value"]
-    F --> D
-    E -- "No" --> D
-    D -- "Finished all hooks" --> G["Return final response to user"]
-    C -- "No" --> G
+```d2
+direction: down
+
+A: "Request sent via Adapter"
+B: "Response Received"
+C: "Hooks for 'response' event?" {
+  shape: diamond
+}
+D: "Iterate through hook functions"
+E: "Hook returned a value?" {
+    shape: diamond
+}
+F: "Replace response with new value"
+G: "Return final response to user"
+
+A -> B -> C
+
+C -> D: Yes
+C -> G: No
+
+D -> E: "call hook(response, **kwargs)"
+E -> F: Yes
+F -> D
+E -> D: No
+
+D -> G: "Finished all hooks"
 ```
 
 By leveraging custom adapters and hooks, you can tailor Requests' behavior to fit nearly any networking requirement. For more detailed information on the classes and methods discussed, please consult the [API Reference](./api-reference.md).

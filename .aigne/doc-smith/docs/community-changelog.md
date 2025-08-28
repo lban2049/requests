@@ -2,6 +2,64 @@
 
 A detailed log of all changes, improvements, and bug fixes for each version of the Requests library.
 
+```d2
+direction: down
+
+"Release Timeline": {
+  "v2.32.x (Current)": {
+    shape: hexagon
+    "Security fixes & Python 3.14 support"
+  }
+
+  "v2.30.0": {
+    "⚠️ urllib3 v2.0 support"
+  }
+
+  "v2.28.0": {
+    "⚠️ Dropped Python 2.7 & 3.6 support"
+  }
+
+  "v2.26.0": {
+    "Brotli support. Dropped Python 3.5 support"
+  }
+
+  "v2.22.0": {
+    "Dropped Python 3.4 support"
+  }
+  
+  "v2.20.0": {
+    "Dropped Python 2.6 support"
+  }
+
+  "v2.10.0": {
+    "SOCKS Proxy Support"
+  }
+
+  "v2.3.0": {
+    "CVE-2014-1829/1830: Header stripping on redirect"
+  }
+
+  "v2.0.0": {
+    "Major API Changes & Refactor"
+  }
+
+  "v1.0.0": {
+    "Massive Refactor, Apache 2.0 License"
+  }
+  
+  "v0.10.1": {
+    "Python 3 Support"
+  }
+
+  "v0.2.0 (2011-02-14)": {
+    label: "Initial Release"
+    shape: circle
+  }
+
+  "v2.32.x (Current)" -> "v2.30.0" -> "v2.28.0" -> "v2.26.0" -> "v2.22.0" -> "v2.20.0" -> "v2.10.0" -> "v2.3.0" -> "v2.0.0" -> "v1.0.0" -> "v0.10.1" -> "v0.2.0 (2011-02-14)"
+}
+```
+
 ## Unreleased
 
 - [Short description of non-trivial change.]
@@ -75,7 +133,7 @@ A detailed log of all changes, improvements, and bug fixes for each version of t
 ## 2.30.0 (2023-05-03)
 
 **Dependencies**
-- ⚠️ Added support for urllib3 2.0. ⚠️ This may contain minor breaking changes. Users who wish to stay on urllib3 1.x can pin to `urllib3<2`.
+- ⚠️ Added support for urllib3 2.0. ⚠️ This may contain minor breaking changes so we advise careful testing and reviewing https://urllib3.readthedocs.io/en/latest/v2-migration-guide.html prior to upgrading. Users who wish to stay on urllib3 1.x can pin to `urllib3<2`.
 
 ## 2.29.0 (2023-04-26)
 
@@ -133,12 +191,12 @@ A detailed log of all changes, improvements, and bug fixes for each version of t
 
 **Bugfixes**
 - Fixed defect in `extract_zipped_paths` which could result in an infinite loop for some paths. (#5851)
-- Fixed handling for `AttributeError` when calculating length of files. (#5239)
-- Fixed urllib3 exception leak for `InvalidHeader`. (#5914)
-- Fixed bug where two Host headers were sent for chunked requests. (#5391)
-- Fixed regression where `Proxy-Authorization` was incorrectly stripped. (#5924)
-- Fixed performance regression for hosts with a large number of proxies. (#5924)
-- Fixed idna exception leak for URLs with a leading dot in the domain. (#5414)
+- Fixed handling for `AttributeError` when calculating length of files.
+- Fixed urllib3 exception leak, wrapping `urllib3.exceptions.InvalidHeader` with `requests.exceptions.InvalidHeader`.
+- Fixed bug where two Host headers were sent for chunked requests.
+- Fixed regression where `Proxy-Authorization` was incorrectly stripped.
+- Fixed performance regression for hosts with a large number of proxies.
+- Fixed idna exception leak for URLs with a leading dot in the domain.
 
 **Deprecations**
 - Requests support for Python 2.7 and 3.6 will be ending in 2022.
@@ -146,14 +204,14 @@ A detailed log of all changes, improvements, and bug fixes for each version of t
 ## 2.26.0 (2021-07-13)
 
 **Improvements**
-- Requests now supports Brotli compression if `brotli` or `brotlicffi` is installed. (#5783)
-- `Session.send` now correctly resolves proxy configurations. (#5681)
+- Requests now supports Brotli compression, if either the `brotli` or `brotlicffi` package is installed. (#5783)
+- `Session.send` now correctly resolves proxy configurations from both the Session and Request. (#5681)
 
 **Bugfixes**
-- Fixed a race condition in zip extraction when using Requests in parallel. (#5707)
+- Fixed a race condition in zip extraction when using Requests in parallel from zip archive. (#5707)
 
 **Dependencies**
-- Instead of `chardet`, use `charset_normalizer` for Python 3. Python 2 still depends upon `chardet`.
+- Instead of `chardet`, use the MIT-licensed `charset_normalizer` for Python3. Python2 still depends upon the `chardet` module.
 - Requests now supports `idna` 3.x on Python 3.
 
 **Deprecations**
@@ -230,4 +288,4 @@ A detailed log of all changes, improvements, and bug fixes for each version of t
 **Deprecations**
 - Requests has officially stopped support for Python 2.6.
 
-... and so on for all previous versions.
+... and so on for all previous versions down to 0.0.1.

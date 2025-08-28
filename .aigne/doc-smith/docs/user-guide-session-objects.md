@@ -26,22 +26,26 @@ A primary use case for sessions is to maintain cookies across multiple requests.
 
 Here is a workflow demonstrating how a session manages cookies:
 
-```mermaid
-sequenceDiagram
-    participant Client
-    participant Session
-    participant Server
+```d2
+shape: sequence_diagram
 
-    Client->>Session: s.get("https://httpbin.org/cookies/set/sessioncookie/12345")
-    Session->>Server: GET /cookies/set/sessioncookie/12345
-    Server-->>Session: Response with "Set-Cookie" header
-    Session-->>Client: Response Object
-    Note right of Session: Cookie 'sessioncookie=12345' is stored in session.cookies
+Client
+Session
+Server
 
-    Client->>Session: s.get("https://httpbin.org/cookies")
-    Session->>Server: GET /cookies (sends stored 'Cookie' header)
-    Server-->>Session: Response containing received cookies
-    Session-->>Client: Response Object with cookie data
+Client -> Session: s.get("https://httpbin.org/cookies/set/sessioncookie/12345")
+Session -> Server: "GET /cookies/set/sessioncookie/12345"
+Server -> Session: "Response with 'Set-Cookie' header"
+note: {
+  "Cookie 'sessioncookie=12345' is stored in session.cookies"
+  target: Session
+}
+Session -> Client: "Response Object"
+
+Client -> Session: s.get("https://httpbin.org/cookies")
+Session -> Server: "GET /cookies (sends stored 'Cookie' header)"
+Server -> Session: "Response containing received cookies"
+Session -> Client: "Response Object with cookie data"
 ```
 
 **Example Code**

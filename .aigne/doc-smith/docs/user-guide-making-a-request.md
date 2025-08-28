@@ -1,16 +1,40 @@
 # Making a Request
 
-Making an HTTP request with Requests is straightforward. All examples begin with importing the library:
+Making an HTTP request with Requests is straightforward. To start, ensure you have the library imported:
 
 ```python
 import requests
 ```
 
-At its core, all HTTP request functionality is built around the `requests.request()` function. The simpler methods like `get()` and `post()` are convenient wrappers around this central function. For a quick overview, here are the most commonly used parameters:
+At its core, all HTTP request functionality is built around simple, verb-based functions like `requests.get()` and `requests.post()`. These methods are intuitive wrappers for the underlying `requests.request()` function. The entire process follows a simple request-response pattern.
+
+```d2
+direction: right
+shape: sequence_diagram
+
+Client: {
+  shape: person
+  label: "Your Application"
+}
+
+Server: {
+  shape: cloud
+  label: "Web Server"
+}
+
+Client -> Server: "HTTP Request (GET, POST, etc.)\n- URL: /get\n- Headers: {'user-agent': 'my-app'}\n- Body: (optional)" {
+    style.animated: true
+}
+
+Server -> Client: "HTTP Response\n- Status Code: 200 OK\n- Headers: {'content-type': 'application/json'}\n- Body: {'key': 'value'}" {
+    style.animated: true
+}
+```
+
+For a quick overview, here are the most commonly used parameters in a request:
 
 | Parameter | Description |
 |---|---|
-| `method` | The HTTP method for the request: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `OPTIONS`, `HEAD`. |
 | `url` | The URL for the new `Request` object. |
 | `params` | A dictionary, list of tuples, or bytes to be sent in the query string of the request. |
 | `data` | A dictionary, list of tuples, bytes, or a file-like object to send in the body of the request (typically for form data). |
@@ -104,8 +128,11 @@ Requests makes it easy to upload files using multipart-encoded data. Provide a d
 
 ```python
 url = 'https://httpbin.org/post'
-files = {'file': open('report.txt', 'rb')}
+# Ensure the file 'report.txt' exists in your directory
+with open('report.txt', 'w') as f:
+    f.write('This is a test report.')
 
+files = {'file': open('report.txt', 'rb')}
 r = requests.post(url, files=files)
 ```
 
@@ -113,6 +140,9 @@ For more control, you can provide a tuple for the file value to specify a custom
 
 ```python
 # The tuple format is ('filename', file_object, 'content_type', custom_headers)
+with open('report.csv', 'w') as f:
+    f.write('col1,col2\nval1,val2')
+
 files = {'file': ('report.csv', open('report.csv', 'rb'), 'text/csv', {'Expires': '0'})}
 
 r = requests.post(url, files=files)

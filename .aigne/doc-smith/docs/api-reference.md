@@ -131,17 +131,23 @@ print(response.json())
 
 Requests raises exceptions for various errors. All exceptions are available in the `requests.exceptions` module and inherit from `requests.exceptions.RequestException`.
 
-```mermaid
-graph TD
-    A["RequestException"] --> B["HTTPError"];
-    A --> C["ConnectionError"];
-    A --> D["Timeout"];
-    A --> E["TooManyRedirects"];
-    A --> F["URLRequired"];
-    C --> G["ProxyError"];
-    C --> H["SSLError"];
-    D --> I["ConnectTimeout"];
-    D --> J["ReadTimeout"];
+```d2
+direction: down
+
+"RequestException": {
+  "HTTPError"
+  "ConnectionError": {
+    "ProxyError"
+    "SSLError"
+    "ConnectTimeout"
+  }
+  "Timeout": {
+    "ConnectTimeout"
+    "ReadTimeout"
+  }
+  "TooManyRedirects"
+  "URLRequired"
+}
 ```
 
 | Exception | Description |
@@ -259,4 +265,4 @@ print(ci_headers['content-type']) # 'application/json'
 print(ci_headers['CONTENT-TYPE']) # 'application/json'
 ```
 
-This reference covers the main components of the Requests API. For more advanced scenarios, refer to the User Guide and Advanced Usage sections.
+This reference covers the main components of the Requests API. For more advanced scenarios, refer to the [User Guide](./user-guide.md) and [Advanced Usage](./advanced-usage.md) sections.

@@ -1,25 +1,49 @@
 # 发起请求
 
-使用 Requests 发起 HTTP 请求非常简单。所有示例都从导入该库开始：
+使用 Requests 发起 HTTP 请求非常简单。首先，请确保已导入该库：
 
 ```python
 import requests
 ```
 
-其核心的所有 HTTP 请求功能都围绕 `requests.request()` 函数构建。像 `get()` 和 `post()` 这样更简单的方法是围绕这个核心函数的便捷封装。为了快速了解，以下是最常用的参数：
+其核心的所有 HTTP 请求功能都围绕着简单的、基于动词的函数构建，例如 `requests.get()` 和 `requests.post()`。这些方法是对底层 `requests.request()` 函数的直观封装。整个过程遵循简单的请求-响应模式。
+
+```d2
+direction: right
+shape: sequence_diagram
+
+Client: {
+  shape: person
+  label: "你的应用程序"
+}
+
+Server: {
+  shape: cloud
+  label: "Web 服务器"
+}
+
+Client -> Server: "HTTP 请求 (GET, POST 等)\n- URL: /get\n- 标头: {'user-agent': 'my-app'}\n- 正文: (可选)" {
+    style.animated: true
+}
+
+Server -> Client: "HTTP 响应\n- 状态码: 200 OK\n- 标头: {'content-type': 'application/json'}\n- 正文: {'key': 'value'}" {
+    style.animated: true
+}
+```
+
+为了快速概览，以下是请求中最常用的参数：
 
 | 参数 | 描述 |
 |---|---|
-| `method` | 请求的 HTTP 方法：`GET`、`POST`、`PUT`、`PATCH`、`DELETE`、`OPTIONS`、`HEAD`。 |
-| `url` | 新 `Request` 对象的 URL。 |
-| `params` | 在请求的查询字符串中发送的字典、元组列表或字节。 |
+| `url` | 用于新 `Request` 对象的 URL。 |
+| `params` | 以请求查询字符串形式发送的字典、元组列表或字节。 |
 | `data` | 在请求正文中发送的字典、元组列表、字节或类文件对象（通常用于表单数据）。 |
-| `json` | 在请求正文中发送的可 JSON 序列化的 Python 对象。会自动将 `Content-Type` 标头设置为 `application/json`。 |
+| `json` | 在请求正文中发送的可 JSON 序列化的 Python 对象。它会自动将 `Content-Type` 标头设置为 `application/json`。 |
 | `headers` | 随请求发送的 HTTP 标头字典。 |
 | `files` | 用于多部分编码文件上传的字典。 |
-| `timeout` | 放弃前等待服务器发送数据的秒数。可以是一个浮点数，也可以是一个 `(connect, read)` 元组。 |
+| `timeout` | 在放弃前等待服务器发送数据的秒数。可以是一个浮点数，也可以是一个 `(connect, read)` 元组。 |
 
-## GET 请求与 URL 参数
+## GET 请求和 URL 参数
 
 要发起 `GET` 请求以从 URL 检索数据，请使用 `requests.get()` 方法。
 
@@ -35,12 +59,12 @@ r = requests.get('https://api.github.com/events')
 payload = {'key1': 'value1', 'key2': ['value2', 'value3']}
 r = requests.get('https://httpbin.org/get', params=payload)
 
-# 你可以检查构建的 URL
+# 你可以检查构建好的 URL
 print(r.url)
 # 输出: https://httpbin.org/get?key1=value1&key2=value2&key2=value3
 ```
 
-## POST、PUT、PATCH 与请求正文
+## POST、PUT、PATCH 和请求正文
 
 像 `POST`、`PUT` 和 `PATCH` 这样的方法用于向服务器发送数据。这些数据在请求正文中传递。
 
@@ -58,7 +82,7 @@ print(r.json()['form'])
 
 ### JSON 数据
 
-对于现代 API，发送 JSON 编码的数据很常见。你可以使用 `json` 参数，它接受一个 Python 字典。Requests 会为你处理序列化并设置相应的 `Content-Type` 标头。
+对于现代 API，发送 JSON 编码的数据是很常见的。你可以使用 `json` 参数，它接受一个 Python 字典。Requests 会为你处理序列化并设置相应的 `Content-Type` 标头。
 
 ```python
 payload = {'some': 'data'}
@@ -70,7 +94,7 @@ print(r.json()['json'])
 
 ### 其他方法
 
-在发送正文数据方面，`PUT` 和 `PATCH` 方法的功能与 `POST` 类似。
+`PUT` 和 `PATCH` 方法在发送正文数据方面的功能与 `POST` 类似。
 
 ```python
 r = requests.put('https://httpbin.org/put', data={'key': 'value'})
@@ -79,7 +103,7 @@ r = requests.patch('https://httpbin.org/patch', data={'key': 'value'})
 
 ## DELETE、HEAD 和 OPTIONS
 
-其他 HTTP 方法也通过一个简单、一致的 API 提供：
+其他 HTTP 方法也通过简单、一致的 API 提供：
 
 ```python
 r = requests.delete('https://httpbin.org/delete')
@@ -104,15 +128,21 @@ Requests 可以轻松地使用多部分编码数据上传文件。向 `files` �
 
 ```python
 url = 'https://httpbin.org/post'
-files = {'file': open('report.txt', 'rb')}
+# 确保文件 'report.txt' 存在于你的目录中
+with open('report.txt', 'w') as f:
+    f.write('This is a test report.')
 
+files = {'file': open('report.txt', 'rb')}
 r = requests.post(url, files=files)
 ```
 
-为了获得更多控制权，你可以为文件值提供一个元组，以指定自定义文件名、内容类型和附加标头。
+为了实现更多控制，你可以为文件值提供一个元组，以指定自定义文件名、内容类型和附加标头。
 
 ```python
 # 元组格式为 ('filename', file_object, 'content_type', custom_headers)
+with open('report.csv', 'w') as f:
+    f.write('col1,col2\nval1,val2')
+
 files = {'file': ('report.csv', open('report.csv', 'rb'), 'text/csv', {'Expires': '0'})}
 
 r = requests.post(url, files=files)
@@ -120,7 +150,7 @@ r = requests.post(url, files=files)
 
 ## 超时
 
-为了防止你的程序在缓慢或无响应的网络上无限期挂起，你应该始终指定一个超时时间。`timeout` 参数接受一个浮点数值，表示等待的秒数。
+为防止程序因网络缓慢或无响应而无限期挂起，你应该始终指定超时时间。`timeout` 参数接受一个浮点数值，表示等待的秒数。
 
 ```python
 # 最多等待 5 秒响应
@@ -139,4 +169,4 @@ r = requests.get('https://httpbin.org/get', timeout=(3.05, 10))
 
 ---
 
-现在你已经知道如何构建和发送请求，下一步是处理服务器返回的数据。要了解更多信息，请继续阅读下一节 [处理响应](./user-guide-handling-responses.md)。
+现在你已经了解如何构建和发送请求，下一步是处理服务器返回的数据。要了解更多信息，请继续阅读下一节 [处理响应](./user-guide-handling-responses.md)。

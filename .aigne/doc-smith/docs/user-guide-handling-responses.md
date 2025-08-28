@@ -91,7 +91,7 @@ True
 
 ### Checking for Errors
 
-While you can check `r.status_code` manually, Requests offers a simpler way to check for success. The `ok` attribute of a `Response` object is `True` if the status code is less than 400, and `False` otherwise.
+While you can check `r.status_code` manually, Requests offers a simpler way to check for success. The `ok` property of a `Response` object is `True` if the status code is less than 400, and `False` otherwise.
 
 ```python
 if r.ok:
@@ -159,8 +159,26 @@ To see the history of requests that led to the final response, you can use the `
 (<Response [301]>,)
 ```
 
-In this case, the original request to `http://github.com` resulted in a 301 Moved Permanently redirect, which is stored in the `.history` tuple.
+In this case, the original request to `http://github.com` resulted in a 301 Moved Permanently redirect. The diagram below illustrates this flow.
+
+```d2
+shape: sequence_diagram
+
+Client: "Your Application"
+Server: "GitHub Server"
+
+Client -> Server: "GET http://github.com"
+Server -> Client: "301 Moved Permanently\nLocation: https://github.com"
+Client -> Server: "GET https://github.com"
+Server -> Client: "200 OK"
+
+note over Client, Server: "The '301' response is stored in the `r.history` attribute."
+```
 
 ---
 
-Now that you know how to inspect and handle responses, you can improve efficiency by persisting parameters across multiple requests using [Session Objects](./user-guide-session-objects.md).
+Now that you know how to inspect and handle responses, you can improve efficiency by persisting parameters across multiple requests.
+
+<x-card data-title="Next: Session Objects" data-icon="lucide:book-copy" data-href="/user-guide/session-objects" data-cta="Read More">
+  Learn how to use Session objects to persist parameters and cookies across multiple requests for improved performance.
+</x-card>

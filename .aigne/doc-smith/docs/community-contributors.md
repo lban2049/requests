@@ -2,6 +2,38 @@
 
 Requests is a community-driven project, made possible by the dedication of its creator and the invaluable contributions of many individuals. This page acknowledges those who have helped shape the library into what it is today.
 
+The following diagram illustrates the core roles within the community:
+
+```d2
+direction: down
+
+Creator: "Kenneth Reitz" {
+  shape: person
+}
+
+Maintainers: {
+  "Current Maintainers": {
+    "Nate Prewitt"
+    "Seth M. Larson"
+  }
+  "Previous Maintainers": {
+    "Kenneth Reitz"
+    "Cory Benfield"
+    "Ian Cordasco"
+  }
+}
+
+Community: "Contributors providing patches and suggestions" {
+  shape: cloud
+}
+
+Creator -> Maintainers: "Project Leadership"
+Maintainers -> Community: "Guidance & Merging"
+Community -> Creator: "Contributions" {
+    style.stroke-dash: 2
+}
+```
+
 ## Creator
 
 Requests was lovingly created by Kenneth Reitz.

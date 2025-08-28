@@ -95,25 +95,30 @@ except requests.exceptions.MissingSchema as err:
 
 Understanding the hierarchy of exceptions can help you catch them more effectively. For instance, catching `ConnectionError` will also catch `ProxyError` and `SSLError`.
 
-Here is a simplified diagram of the main exception types:
+Here is a diagram of the main exception types:
 
-```mermaid
-graph TD
-    A["IOError"] --> B["RequestException"];
+```d2
+direction: down
 
-    B --> C["HTTPError"];
-    B --> D["ConnectionError"];
-    B --> E["Timeout"];
-    B --> F["URLRequired"];
-    B --> G["TooManyRedirects"];
-    B --> H["InvalidURL (and subclasses like MissingSchema)"];
+"IOError" -> "RequestException"
 
-    D --> D1["ProxyError"];
-    D --> D2["SSLError"];
+"RequestException" -> "HTTPError"
+"RequestException" -> "ConnectionError"
+"RequestException" -> "Timeout"
+"RequestException" -> "URLRequired"
+"RequestException" -> "TooManyRedirects"
+"RequestException" -> "InvalidURL"
 
-    E --> E1["ReadTimeout"];
-    D --> E2["ConnectTimeout"];
-    E --> E2;
+"ConnectionError" -> "ProxyError"
+"ConnectionError" -> "SSLError"
+
+"Timeout" -> "ReadTimeout"
+
+"ConnectTimeout"
+"ConnectionError" -> "ConnectTimeout"
+"Timeout" -> "ConnectTimeout"
+
+"InvalidURL" -> "MissingSchema"
 ```
 
 ## Next Steps

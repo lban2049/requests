@@ -26,13 +26,19 @@ This example sends a `GET` request. The library manages the connection and retur
 
 The library simplifies the interaction between your application and a web server. The flow involves creating a request, receiving a response, and processing the returned data.
 
-```mermaid
-flowchart TD
-    A["Your Application"] -- "calls requests.get(...)" --> B["Requests Library"];
-    B -- "Sends HTTP Request" --> C["Web Server"];
-    C -- "Returns HTTP Response" --> B;
-    B -- "Creates Response Object" --> A;
-    A -- "Accesses r.status_code, r.text" --> D["Process Data"];
+```d2
+direction: down
+
+App: "Your Application"
+Lib: "Requests Library"
+Server: "Web Server"
+Process: "Process Data"
+
+App -> Lib: "calls requests.get(...)"
+Lib -> Server: "Sends HTTP Request"
+Server -> Lib: "Returns HTTP Response"
+Lib -> App: "Creates Response Object"
+App -> Process: "Accesses r.status_code, r.text"
 ```
 
 ### Core Features

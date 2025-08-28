@@ -92,20 +92,43 @@ response = requests.get('https://self-signed.badssl.com/', verify=False)
 
 The following diagram illustrates how Requests decides which verification method to use.
 
-```mermaid
-graph TD
-    A["Start Request"] --> B{"URL scheme is HTTPS?"};
-    B -- "No" --> G["Proceed without TLS"];
-    B -- "Yes" --> C{"verify=False?"};
-    C -- "Yes" --> D["Disable verification (insecure)"];
-    C -- "No" --> E{"verify is a path?"};
-    E -- "Yes" --> F["Use custom CA bundle at path"];
-    E -- "No" --> H["Use default CA bundle (certifi)"];
-    D --> I["Make Request"];
-    F --> I;
-    H --> I;
-    I --> J["End"];
-    G --> J;
+```d2
+direction: down
+
+start: "Start Request"
+is_https: "URL scheme is HTTPS?" {
+  shape: diamond
+}
+no_tls: "Proceed without TLS"
+verify_false: "verify=False?" {
+    shape: diamond
+}
+disable_verify: "Disable verification (insecure)" {
+    style.fill: "#fce7c6"
+}
+is_path: "verify is a path?" {
+    shape: diamond
+}
+custom_ca: "Use custom CA bundle at path"
+default_ca: "Use default CA bundle (certifi)"
+make_request: "Make Request"
+end: "End"
+
+start -> is_https
+is_https -- "No" -> no_tls
+is_https -- "Yes" -> verify_false
+
+verify_false -- "Yes" -> disable_verify
+verify_false -- "No" -> is_path
+
+is_path -- "Yes" -> custom_ca
+is_path -- "No" -> default_ca
+
+disable_verify -> make_request
+custom_ca -> make_request
+default_ca -> make_request
+no_tls -> end
+make_request -> end
 ```
 
 You can now manage SSL/TLS certificate verification for various scenarios, from using custom CAs to providing client-side certificates. For deeper customization of how Requests handles network connections, see the next section on [Custom Adapters and Hooks](./advanced-usage-adapters-and-hooks.md).

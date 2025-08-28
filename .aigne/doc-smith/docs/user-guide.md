@@ -8,18 +8,16 @@ If you haven't installed Requests yet or made your first request, please start w
 
 A typical interaction with the Requests library follows a simple pattern: you craft a request, send it, and then process the response. This workflow allows you to interact with web services and APIs efficiently.
 
-```mermaid
-graph TD
-    A["Start"] --> B["Craft a Request (e.g., requests.get)"];
-    B --> C{"Send the Request to a URL"};
-    C --> D["Receive a Response Object"];
-    D --> E{"Inspect the Response"};
-    E -- "Check status code" --> F["r.raise_for_status()"];
-    E -- "Access content" --> G["r.text, r.json(), r.content"];
-    F --> H["Handle Potential HTTPError"];
-    G --> I["Use the data from the response"];
-    H --> J["End"];
-    I --> J["End"];
+```d2
+direction: down
+
+"Start" -> "Craft a Request\n(e.g., requests.get)"
+"Craft a Request\n(e.g., requests.get)" -> "Send the Request to a URL"
+"Send the Request to a URL" -> "Receive a Response Object"
+"Receive a Response Object" -> inspect_response: "Inspect the Response"
+
+inpect_response -> "Check status code\n(r.raise_for_status())" -> "Handle Potential HTTPError" -> "End"
+inpect_response -> "Access content\n(r.text, r.json(), r.content)" -> "Use the data from the response" -> "End"
 ```
 
 This guide is broken down into the following sections, each focusing on a key aspect of the library.

@@ -15,7 +15,34 @@ The project was created by Kenneth Reitz and is now maintained under the umbrell
 
 ## How to Contribute
 
-We welcome contributions from everyone. Whether it's reporting a bug, suggesting an improvement, or submitting a pull request, your help is valuable.
+We welcome contributions from everyone. Whether it's reporting a bug, suggesting an improvement, or submitting a pull request, your help is valuable. The typical contribution workflow is as follows:
+
+```d2
+direction: down
+
+find_issue: "Find a Bug or Have an Idea"
+open_issue: "Open an Issue on GitHub"
+discuss: "Discuss with Maintainers"
+fork: "Fork the Repository"
+branch: "Create a New Branch"
+code: "Write Code & Add Tests"
+run_tests: "Run Tests Locally" 
+pr: "Submit a Pull Request"
+review: "Code Review"
+merge: "Merge to Main" { 
+  shape: circle 
+}
+
+find_issue -> open_issue
+open_issue -> discuss
+discuss -> fork
+fork -> branch
+branch -> code
+code -> run_tests: "python -m pytest tests"
+run_tests -> pr
+pr -> review
+review -> merge
+```
 
 ### Reporting Bugs
 
