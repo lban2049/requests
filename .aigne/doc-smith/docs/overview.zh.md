@@ -1,53 +1,67 @@
 # 概述
 
-Requests 是一个为 Python 设计的优雅直观的 HTTP 库，旨在简化人类的 Web 交互。它简化了发送 HTTP/1.1 请求的过程，无需手动添加 URL 查询字符串或复杂地对数据进行表单编码。如今，您可以简单地使用 `json` 方法来处理数据。
+![Requests Logo](../../../ext/requests-logo.svg)
 
-## 核心原则
+Requests 是一个为人类设计的、优雅而简单的 Python HTTP 库。它让你可以轻松发送 HTTP/1.1 请求，并处理查询字符串、表单编码和连接管理等复杂工作。作为下载次数最多的 Python 包之一（每周下载量约 3000 万次），同时也是 GitHub 上超过 1,000,000 个代码仓库的依赖项，Requests 提供了值得你信赖的可靠代码。
 
-Requests 背后的基本原则是使 HTTP 通信直观。它抽象了常见的复杂性，允许开发者专注于应用程序逻辑而非低级 HTTP 细节。这种方法体现在它能够接受 Python 字典作为请求数据，然后自动处理这些数据。
+### 快速示例
 
-## 可靠性和采用
+发起网页请求非常简单。以下是获取网页并检查响应的方法：
 
-Requests 是 Python 生态系统中一个被广泛采用和信任的库。它每周下载量约 3000 万次，是 GitHub 上超过 1,000,000 个仓库的依赖项。这种广泛的使用证明了其稳定性与可靠性。
+```python
+import requests
 
-[![Downloads](https://static.pepy.tech/badge/requests/month)](https://pepy.tech/project/requests)
-[![Supported Versions](https://img.shields.io/pypi/pyversions/requests.svg)](https://pypi.org/project/requests)
-[![Contributors](https://img.shields.io/github/contributors/psf/requests.svg)](https://github.com/psf/requests/graphs/contributors)
+r = requests.get('https://www.python.org')
 
-## Requests 的工作原理
+>>> r.status_code
+200
 
-以下是 Requests 库如何促进 Web 通信的简化视图：
-
-```mermaid
-graph TD
-    A["Your Python Application"] --> B["Requests Library"];
-    B -- "Prepares HTTP Request" --> C["HTTP Request (e.g., GET, POST)"];
-    C --> D["Network (Internet)"];
-    D --> E["Remote Web Server"];
-    E -- "Sends HTTP Response" --> D;
-    D --> C;
-    C -- "Processes HTTP Response" --> B;
-    B --> A;
-    A -- "Provides Parsed Data" --> F["Application Logic / User"];
+>>> 'Python is a programming language' in r.text
+True
 ```
 
-此图解说明了从您的应用程序，通过 Requests 库进行请求准备和响应处理，到通过网络与远程 Web 服务器交互的流程。Requests 管理底层通信，为您提供清晰、解析后的数据。
+此示例发送一个 `GET` 请求。该库会管理连接，并返回一个包含服务器数据和元数据的 `Response` 对象。
 
-## 主要功能
+### 请求-响应周期
 
-Requests 已为构建健壮可靠的 HTTP 应用程序做好准备。它的一些主要功能包括：
+该库简化了你的应用程序与 Web 服务器之间的交互。其流程包括创建请求、接收响应和处理返回的数据。
 
-*   Keep-Alive 和连接池
-*   带 Cookie 持久化的会话
-*   浏览器风格的 TLS/SSL 验证
-*   基本和摘要认证
-*   自动内容解压和解码
-*   多部分文件上传
-*   连接超时
-*   流式下载
+```mermaid
+flowchart TD
+    A["你的应用程序"] -- "调用 requests.get(...)" --> B["Requests 库"];
+    B -- "发送 HTTP 请求" --> C["Web 服务器"];
+    C -- "返回 HTTP 响应" --> B;
+    B -- "创建响应对象" --> A;
+    A -- "访问 r.status_code, r.text" --> D["处理数据"];
+```
 
-这些功能为处理各种 HTTP 通信需求提供了坚实的基础。
+### 核心功能
+
+Requests 旨在支持可靠 HTTP 应用程序的开发，并包含众多功能。
+
+<x-cards data-columns="3">
+  <x-card data-title="连接池" data-icon="lucide:network">
+    通过 Keep-Alive 复用底层 TCP 连接，以提高性能。
+  </x-card>
+  <x-card data-title="会话对象" data-icon="lucide:cookie">
+    在多个请求之间保持参数、Cookie 和标头，以实现有状态的交互。
+  </x-card>
+  <x-card data-title="SSL 验证" data-icon="lucide:shield-check">
+    自动验证 HTTPS 请求的服务器证书，类似于网页浏览器。
+  </x-card>
+  <x-card data-title="自动解压" data-icon="lucide:file-archive">
+    原生解码 `gzip` 和 `deflate` 压缩内容。
+  </x-card>
+  <x-card data-title="文件上传" data-icon="lucide:upload">
+    通过直观的界面简化多部分文件上传的发送过程。
+  </x-card>
+  <x-card data-title="内置身份验证" data-icon="lucide:key-round">
+    包含用于基本和摘要式身份验证方案的简单辅助工具。
+  </x-card>
+</x-cards>
 
 ---
 
-要开始使用 Requests 库，请前往[入门](./getting-started.md)部分，其中提供了安装说明和您的第一个代码示例。有关所有公共 API、类和方法的全面参考，请查阅[API 参考](./api-reference.md)或 [Read the Docs](https://requests.readthedocs.io) 上的完整文档。
+本概述介绍了 Requests 库的用途和主要功能。要安装该库并发起你的第一个请求，请继续阅读下一部分。
+
+➡️ **下一步：[快速入门](./getting-started.md)**

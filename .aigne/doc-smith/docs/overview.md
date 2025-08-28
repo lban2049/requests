@@ -1,53 +1,67 @@
 # Overview
 
-Requests is an elegant and straightforward HTTP library for Python, designed to simplify web interactions for human beings. It streamlines the process of sending HTTP/1.1 requests, removing the need for manual URL query string additions or complex form-encoding of data. Today, you can simply use the `json` method for data.
+![Requests Logo](../../../ext/requests-logo.svg)
 
-## Core Principles
+Requests is an elegant and simple HTTP library for Python, designed for human beings. It allows you to send HTTP/1.1 requests with ease, handling the complexities of query strings, form encoding, and connection management. As one of the most downloaded Python packages—with approximately 30 million downloads per week—and a dependency for over 1,000,000 repositories on GitHub, Requests provides reliable code you can trust.
 
-The fundamental principle behind Requests is to make HTTP communication intuitive. It abstracts away common complexities, allowing developers to focus on the application logic rather than low-level HTTP details. This approach is exemplified by its ability to accept Python dictionaries for request data, which it then handles automatically.
+### Quick Example
 
-## Reliability and Adoption
+Making a web request is straightforward. Here’s how to fetch a web page and check the response:
 
-Requests is a widely adopted and trusted library within the Python ecosystem. It sees approximately 30 million weekly downloads and is a dependency for over 1,000,000 repositories on GitHub. This extensive usage speaks to its stability and reliability.
+```python
+import requests
 
-[![Downloads](https://static.pepy.tech/badge/requests/month)](https://pepy.tech/project/requests)
-[![Supported Versions](https://img.shields.io/pypi/pyversions/requests.svg)](https://pypi.org/project/requests)
-[![Contributors](https://img.shields.io/github/contributors/psf/requests.svg)](https://github.com/psf/requests/graphs/contributors)
+r = requests.get('https://www.python.org')
 
-## How Requests Works
+>>> r.status_code
+200
 
-Here’s a simplified view of how the Requests library facilitates web communication:
-
-```mermaid
-graph TD
-    A["Your Python Application"] --> B["Requests Library"];
-    B -- "Prepares HTTP Request" --> C["HTTP Request (e.g., GET, POST)"];
-    C --> D["Network (Internet)"];
-    D --> E["Remote Web Server"];
-    E -- "Sends HTTP Response" --> D;
-    D --> C;
-    C -- "Processes HTTP Response" --> B;
-    B --> A;
-    A -- "Provides Parsed Data" --> F["Application Logic / User"];
+>>> 'Python is a programming language' in r.text
+True
 ```
 
-This diagram illustrates the flow from your application, through the Requests library for request preparation and response handling, to the interaction with a remote web server over the network. Requests manages the underlying communication, presenting you with clean, parsed data.
+This example sends a `GET` request. The library manages the connection and returns a `Response` object containing the server's data and metadata.
 
-## Key Capabilities
+### The Request-Response Cycle
 
-Requests is ready for building robust and reliable HTTP–speaking applications. Some of its key capabilities include:
+The library simplifies the interaction between your application and a web server. The flow involves creating a request, receiving a response, and processing the returned data.
 
-*   Keep-Alive & Connection Pooling
-*   Sessions with Cookie Persistence
-*   Browser-style TLS/SSL Verification
-*   Basic & Digest Authentication
-*   Automatic Content Decompression and Decoding
-*   Multi-part File Uploads
-*   Connection Timeouts
-*   Streaming Downloads
+```mermaid
+flowchart TD
+    A["Your Application"] -- "calls requests.get(...)" --> B["Requests Library"];
+    B -- "Sends HTTP Request" --> C["Web Server"];
+    C -- "Returns HTTP Response" --> B;
+    B -- "Creates Response Object" --> A;
+    A -- "Accesses r.status_code, r.text" --> D["Process Data"];
+```
 
-These features provide a solid foundation for handling diverse HTTP communication needs.
+### Core Features
+
+Requests is built to support the development of reliable HTTP applications and includes a wide range of features.
+
+<x-cards data-columns="3">
+  <x-card data-title="Connection Pooling" data-icon="lucide:network">
+    Reuses underlying TCP connections with Keep-Alive for improved performance.
+  </x-card>
+  <x-card data-title="Session Objects" data-icon="lucide:cookie">
+    Persist parameters, cookies, and headers across multiple requests for stateful interactions.
+  </x-card>
+  <x-card data-title="SSL Verification" data-icon="lucide:shield-check">
+    Automatically verifies server certificates for HTTPS requests, similar to a web browser.
+  </x-card>
+  <x-card data-title="Automatic Decompression" data-icon="lucide:file-archive">
+    Natively decodes `gzip` and `deflate` compressed content.
+  </x-card>
+  <x-card data-title="File Uploads" data-icon="lucide:upload">
+    Simplifies sending multi-part file uploads with an intuitive interface.
+  </x-card>
+  <x-card data-title="Built-in Authentication" data-icon="lucide:key-round">
+    Includes simple helpers for Basic and Digest authentication schemes.
+  </x-card>
+</x-cards>
 
 ---
 
-To begin using the Requests library, navigate to the [Getting Started](./getting-started.md) section, which provides instructions for installation and your first code example. For a comprehensive reference of all public APIs, classes, and methods, explore the [API Reference](./api-reference.md) or the complete documentation on [Read the Docs](https://requests.readthedocs.io).
+This overview covers the purpose and main features of the Requests library. To install it and make your first request, continue to the next section.
+
+➡️ **Next: [Getting Started](./getting-started.md)**

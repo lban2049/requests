@@ -1,81 +1,41 @@
 # 高级用法
 
-本节探讨 Requests 库的高级特性和配置，使您能够为特定用例定制和优化 HTTP 交互。您将学习如何处理各种认证方案，通过代理路由请求，管理 SSL/TLS 验证，以及实现强大的错误处理。此外，我们还将介绍高效地流式传输大型响应以及利用钩子将自定义逻辑注入请求生命周期的方法。
+掌握 [用户指南](./user-guide.md) 中涵盖的基础知识后，您可能会发现需要对 HTTP 请求进行更多控制。本节将深入探讨 Requests 的高级功能，帮助您处理涉及网络行为、安全性和自定义功能的复杂场景。
 
-为了帮助您直观地了解这些高级特性如何融入整体请求流程，请看以下流程图：
+在这里，我们将介绍一些概念，以实现对请求生命周期的精细控制。您将学习如何管理连接超时、自动重试失败的请求、通过代理路由流量、精确处理 SSL 证书验证，甚至使用传输适配器和事件钩子来扩展 Requests 的核心功能。
 
 ```mermaid
-flowchart TD
-    A["Initiate Request"] --> B{"Authentication Required?"};
-    B -- "Yes" --> C["Apply Authentication"];
-    B -- "No" --> D["No Authentication"];
-
-    C --> E{"Proxy Configured?"};
-    D --> E;
-
-    E -- "Yes" --> F["Route via Proxy"];
-    E -- "No" --> G["Direct Connection"];
-
-    F --> H["Establish Connection (SSL/TLS)"];
-    G --> H;
-
-    H --> I{"SSL Verification Required?"};
-    I -- "Yes" --> J["Perform SSL/TLS Verification"];
-    I -- "No" --> K["Skip SSL/TLS Verification"];
-
-    J --> L["Send Request"];
-    K --> L;
-
-    L --> M["Receive Response"];
-    M --> N{"Hooks Configured?"};
-    N -- "Yes" --> O["Execute Response Hooks"];
-    N -- "No" --> P["Process Response"];
-
-    O --> P;
-    P --> Q{"Error Occurred?"};
-    Q -- "Yes" --> R["Handle Error"];
-    Q -- "No" --> S["Return Data (or Stream)"];
-
-    R --> T["Request Lifecycle Ends"];
-    S --> T;
+graph TD
+    A["请求已发起"] --> B{"会话对象"};
+    B --> C["选择 HTTPAdapter"];
+    C -- "默认" --> D["默认 HTTPAdapter"];
+    C -- "自定义" --> E["自定义 HTTPAdapter"];
+    D --> F{"代理配置？"};
+    E --> F;
+    F -- "是" --> G["通过代理路由"];
+    F -- "否" --> H["直接连接"];
+    G --> I["建立连接"];
+    H --> I;
+    I -- "HTTPS" --> J{"SSL 证书验证"};
+    I -- "HTTP" --> K["发送请求（含超时与重试）"];
+    J --> K;
+    K --> L["接收响应"];
+    L --> M{"响应钩子"};
+    M --> N["最终响应对象"];
 ```
 
-## 认证
-
-当与需要凭据的 API 交互时，Requests 提供了多种处理认证的方法。这包括基本的 HTTP 认证、摘要认证以及定义自定义认证处理程序以满足特定需求的能力。
-
-了解更多关于保护您的请求的信息：[认证](./advanced-usage-authentication.md)。
-
-## 代理
-
-代理对于通过中间服务器路由 HTTP 请求至关重要，这对于网络安全、访问地理受限内容或调试非常有用。Requests 允许您配置 HTTP 和 HTTPS 代理，并管理代理绕过规则。
-
-了解如何为您的请求设置和管理代理：[代理](./advanced-usage-proxies.md)。
-
-## SSL 验证与客户端证书
-
-在处理敏感数据时，确保安全通信至关重要。Requests 默认执行 SSL 证书验证，以确保您连接到预期的服务器。您还可以配置客户端证书以进行双向 TLS 认证，或在特定场景（例如本地开发或测试）下禁用验证。
-
-了解如何处理 SSL/TLS 验证和客户端证书：[SSL 验证与客户端证书](./advanced-usage-ssl-verification-client-certificates.md)。
-
-## 错误处理
-
-HTTP 请求可能会遇到各种问题，从网络连接问题到 HTTP 状态码指示的服务器端错误。强大的错误处理对于构建可靠的应用程序至关重要。Requests 为不同类型的错误提供了特定的异常，让您能够有效地捕获和管理它们。
-
-探索常见的异常和强大的错误处理策略：[错误处理](./advanced-usage-error-handling.md)。
-
-## 流式请求
-
-当处理非常大的响应体（例如文件下载）时，一次性将整个内容加载到内存中通常效率低下。Requests 支持流式响应，允许您在数据到达时分块处理数据，从而节省内存并提高性能。
-
-了解如何高效处理大型 HTTP 响应：[流式请求](./advanced-usage-streaming-requests.md)。
-
-## 钩子
-
-钩子提供了一种强大的方式，可以将自定义逻辑注入请求-响应生命周期。您可以注册回调函数，这些函数在特定点执行，例如在发送请求之前或接收响应之后。这使得灵活的定制、日志记录以及请求或响应对象的修改成为可能。
-
-了解如何利用 Requests 钩子系统以扩展功能：[钩子](./advanced-usage-hooks.md)。
+<x-cards data-columns="3">
+  <x-card data-title="超时、重试和代理" data-href="/advanced-usage/timeouts-retries-proxies" data-icon="lucide:timer">
+    网络状况可能无法预测。Requests 允许您通过配置超时来防止请求挂起、为暂时性故障设置自动重试，以及通过代理路由请求以确保安全或绕过网络限制，从而构建具有弹性的应用程序。
+  </x-card>
+  <x-card data-title="SSL 证书验证" data-href="/advanced-usage/ssl-cert-verification" data-icon="lucide:shield-check">
+    通过 HTTPS 进行安全通信是标准做法。虽然 Requests 默认处理证书验证，但您可能需要指定自己的 CA 捆绑包、提供用于双向 TLS 的客户端证书，或在特定情况下禁用验证。本节将介绍如何安全地管理这些 SSL/TLS 设置。
+  </x-card>
+  <x-card data-title="自定义适配器和钩子" data-href="/advanced-usage/adapters-and-hooks" data-icon="lucide:puzzle">
+    针对特殊需求，Requests 提供了强大的扩展机制。您可以创建自定义传输适配器以实现独特的传输协议或连接逻辑。此外，钩子系统允许您注册回调来检查或修改响应，从而实现日志记录或自定义解析等任务。
+  </x-card>
+</x-cards>
 
 ---
 
-本节概述了 Requests 的高级功能，每个功能都旨在让您对 HTTP 通信拥有更大的控制和灵活性。通过深入链接的子章节，您可以掌握这些功能，从而构建更复杂、更具弹性的应用程序。您的下一步是查阅详细的 API 参考，以了解每个函数和方法的具体参数和行为。继续前往 [API 参考](./api-reference.md) 深入了解该库的全面文档。
+通过利用这些高级功能，您可以定制 Requests 以满足您应用程序的特定需求。有关所有可用类和方法的完整详细说明，请参阅 [API 参考](./api-reference.md)。
