@@ -16,8 +16,8 @@ direction: down
 "Send the Request to a URL" -> "Receive a Response Object"
 "Receive a Response Object" -> inspect_response: "Inspect the Response"
 
-inpect_response -> "Check status code\n(r.raise_for_status())" -> "Handle Potential HTTPError" -> "End"
-inpect_response -> "Access content\n(r.text, r.json(), r.content)" -> "Use the data from the response" -> "End"
+inspect_response -> "Check status code\n(r.raise_for_status())" -> "Handle Potential HTTPError" -> "End"
+inspect_response -> "Access content\n(r.text, r.json(), r.content)" -> "Use the data from the response" -> "End"
 ```
 
 This guide is broken down into the following sections, each focusing on a key aspect of the library.

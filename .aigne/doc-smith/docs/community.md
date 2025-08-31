@@ -1,8 +1,8 @@
 # Community
 
-Requests is one of the most downloaded Python packages today, depended upon by over 1,000,000 repositories. This success is built on a strong community of developers and users. This section provides insight into the project's history, acknowledges the many contributors who have shaped it, and explains how you can get involved.
+Requests is one of the most downloaded Python packages today, depended upon by over 1,000,000 repositories. This success is built on a strong community of developers and users. The project was created by Kenneth Reitz and is now maintained under the umbrella of the Python Software Foundation.
 
-The project was created by Kenneth Reitz and is now maintained under the umbrella of the Python Software Foundation.
+This section provides insight into the project's history, acknowledges the many contributors who have shaped it, and explains how you can get involved.
 
 <x-cards>
   <x-card data-title="Changelog" data-icon="lucide:history" data-href="/community/changelog">
@@ -26,11 +26,11 @@ discuss: "Discuss with Maintainers"
 fork: "Fork the Repository"
 branch: "Create a New Branch"
 code: "Write Code & Add Tests"
-run_tests: "Run Tests Locally" 
+run_tests: "Run Tests Locally"
 pr: "Submit a Pull Request"
 review: "Code Review"
-merge: "Merge to Main" { 
-  shape: circle 
+merge: "Merge to Main" {
+  shape: circle
 }
 
 find_issue -> open_issue

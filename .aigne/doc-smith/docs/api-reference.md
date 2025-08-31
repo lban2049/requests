@@ -2,6 +2,8 @@
 
 This section provides a detailed reference for the public classes, methods, and functions in the Requests library. It is designed for developers who need to understand the specific parameters, return values, and attributes of different components.
 
+For practical examples and common use cases, please see the [User Guide](./user-guide.md).
+
 ## Top-Level Functions
 
 These functions provide a simple interface for making HTTP requests and are the most common entry point for using the library.
@@ -134,19 +136,21 @@ Requests raises exceptions for various errors. All exceptions are available in t
 ```d2
 direction: down
 
-"RequestException": {
-  "HTTPError"
-  "ConnectionError": {
-    "ProxyError"
-    "SSLError"
-    "ConnectTimeout"
+RequestException: {
+  HTTPError
+  ConnectionError: {
+    ProxyError
+    SSLError
+    ConnectTimeout
   }
-  "Timeout": {
-    "ConnectTimeout"
-    "ReadTimeout"
+  Timeout: {
+    ConnectTimeout
+    ReadTimeout
   }
-  "TooManyRedirects"
-  "URLRequired"
+  TooManyRedirects
+  URLRequired
+  MissingSchema
+  InvalidURL
 }
 ```
 

@@ -73,7 +73,7 @@ import requests
 
 try:
     # httpbin.org/redirect/N follows N redirects. The default limit is 30.
-    response = requests.get('https://httpbin.org/redirect/35')
+    response = requests.get('https://httpbin.org/redirect/31')
 except requests.exceptions.TooManyRedirects as err:
     print(f'Too many redirects: {err}')
 ```
@@ -108,6 +108,7 @@ direction: down
 "RequestException" -> "URLRequired"
 "RequestException" -> "TooManyRedirects"
 "RequestException" -> "InvalidURL"
+"RequestException" -> "MissingSchema"
 
 "ConnectionError" -> "ProxyError"
 "ConnectionError" -> "SSLError"
@@ -118,8 +119,9 @@ direction: down
 "ConnectionError" -> "ConnectTimeout"
 "Timeout" -> "ConnectTimeout"
 
-"InvalidURL" -> "MissingSchema"
+"InvalidURL" -> "InvalidProxyURL"
 ```
+
 
 ## Next Steps
 

@@ -1,42 +1,43 @@
 # SSL Certificate Verification
 
-Requests verifies SSL certificates for HTTPS requests by default, preventing man-in-the-middle attacks. This verification relies on a system of trusted Certificate Authorities (CAs), similar to how your web browser operates. This section covers how to manage this behavior for different scenarios, such as using private CAs or client-side certificates.
+Requests verifies SSL certificates for HTTPS requests by default, a crucial security feature that prevents man-in-the-middle attacks. This verification relies on a system of trusted Certificate Authorities (CAs), much like a web browser. This section explains how to manage SSL/TLS verification, from using custom CAs to providing client-side certificates for authentication.
 
 ## Default CA Verification
 
-When you make a request to an `https://` URL, Requests checks that the server's certificate is valid and trusted. This behavior is enabled by default.
+By default, when you make a request to an `https://` URL, Requests validates the server's certificate against a bundle of trusted CAs.
 
 ```python
 import requests
 
-# This works out of the box because httpbin.org has a valid, trusted certificate.
+# This request succeeds because httpbin.org has a valid certificate 
+# trusted by the default CA bundle.
 response = requests.get('https://httpbin.org/get')
 print(response.status_code)
 # 200
 ```
 
-Internally, Requests uses the `certifi` package to provide its default set of trusted root certificates. You can find the path to the CA bundle it uses:
+Requests uses the `certifi` package to provide this default set of trusted root certificates. You can locate the CA bundle file it uses:
 
 ```python
-from certifi import where
+import certifi
 
-print(where())
+print(certifi.where())
 # /path/to/your/virtualenv/lib/pythonX.X/site-packages/certifi/cacert.pem
 ```
 
 ## Custom CA Bundle
 
-If you are interacting with a service that uses a private or self-signed certificate, such as in an enterprise or testing environment, you can direct Requests to trust a specific CA bundle by providing a path to it via the `verify` parameter.
+In enterprise or development environments, you may need to connect to services that use private or self-signed certificates. You can instruct Requests to trust a specific set of CAs by passing the path to a CA bundle file or a directory of certificates to the `verify` parameter.
 
 ```python
 # Using a single CA bundle file (.pem)
 requests.get('https://internal.service.com', verify='/path/to/ca.pem')
 
-# Using a directory of CA certificates
+# Using a directory containing multiple CA certificates
 requests.get('https://internal.service.com', verify='/path/to/certs/')
 ```
 
-For convenience, you can also set this on a `Session` object to apply it to all subsequent requests made with that session.
+To persist this setting across multiple requests, you can configure it on a `Session` object:
 
 ```python
 import requests
@@ -44,17 +45,17 @@ import requests
 s = requests.Session()
 s.verify = '/path/to/ca.pem'
 
-# This request will use your custom CA bundle
+# All requests made with this session will use the custom CA bundle
 response = s.get('https://another.internal.service.com')
 ```
 
-Additionally, Requests will respect the `REQUESTS_CA_BUNDLE` and `CURL_CA_BUNDLE` environment variables if the `verify` parameter is not explicitly set in your code.
+Alternatively, Requests will automatically use the CA bundle specified in the `REQUESTS_CA_BUNDLE` or `CURL_CA_BUNDLE` environment variables if `verify` is not set in your code.
 
 ## Client-Side Certificates
 
-Some services require clients to authenticate themselves using a certificate, a process known as mutual TLS (mTLS). You can provide a client-side certificate using the `cert` parameter.
+Some services require clients to present their own certificate for authentication, a process known as mutual TLS (mTLS). You can provide a client-side certificate using the `cert` parameter.
 
-If your certificate and private key are combined in a single file:
+If your private key and certificate are in the same file:
 
 ```python
 requests.get(
@@ -63,7 +64,7 @@ requests.get(
 )
 ```
 
-If your certificate and key are in separate files, pass them as a tuple:
+If the key and certificate are in separate files, pass them as a tuple:
 
 ```python
 requests.get(
@@ -72,31 +73,30 @@ requests.get(
 )
 ```
 
-Like the `verify` setting, `cert` can also be configured on a `Session` object to apply to all requests within that session.
+As with the `verify` setting, you can set `cert` on a `Session` object to apply it to all requests made within that session.
 
 ## Disabling Verification
 
-For local development or on a fully trusted internal network, you might need to bypass SSL verification. You can do this by setting `verify=False`. 
+For local testing or on a completely trusted network, you may need to disable SSL certificate verification. You can do this by setting `verify=False`. 
 
-**Warning**: This is insecure and should not be done in production environments, as it makes your application vulnerable to man-in-the-middle attacks.
+**Warning**: This is highly insecure and should never be done in production. Disabling verification exposes your application to man-in-the-middle attacks.
 
 ```python
 import requests
 
-# This will disable certificate verification.
-# It will likely produce an InsecureRequestWarning from urllib3.
+# This will disable certificate verification and may trigger an InsecureRequestWarning.
 response = requests.get('https://self-signed.badssl.com/', verify=False)
 ```
 
 ## Verification Workflow
 
-The following diagram illustrates how Requests decides which verification method to use.
+The following diagram illustrates how Requests determines which verification method to use for an HTTPS request.
 
 ```d2
 direction: down
 
 start: "Start Request"
-is_https: "URL scheme is HTTPS?" {
+is_https: "URL is HTTPS?" {
   shape: diamond
 }
 no_tls: "Proceed without TLS"
@@ -109,7 +109,7 @@ disable_verify: "Disable verification (insecure)" {
 is_path: "verify is a path?" {
     shape: diamond
 }
-custom_ca: "Use custom CA bundle at path"
+custom_ca: "Use custom CA bundle"
 default_ca: "Use default CA bundle (certifi)"
 make_request: "Make Request"
 end: "End"
@@ -131,4 +131,4 @@ no_tls -> end
 make_request -> end
 ```
 
-You can now manage SSL/TLS certificate verification for various scenarios, from using custom CAs to providing client-side certificates. For deeper customization of how Requests handles network connections, see the next section on [Custom Adapters and Hooks](./advanced-usage-adapters-and-hooks.md).
+You are now equipped to handle SSL/TLS certificate verification in various scenarios. For deeper control over network behavior, see the next section on [Custom Adapters and Hooks](./advanced-usage-adapters-and-hooks.md).

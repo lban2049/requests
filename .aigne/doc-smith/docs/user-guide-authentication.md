@@ -54,7 +54,7 @@ print(response.json())
 # {'authenticated': True, 'user': 'user'}
 ```
 
-Requests handles the entire challenge-response flow for you. The process involves an initial unauthorized request followed by a second, authenticated request.
+Requests handles the entire challenge-response flow for you. The process involves an initial unauthorized request which receives a `401` response from the server. Requests then uses information from the server's `WWW-Authenticate` header to construct a second, authenticated request.
 
 Here is a diagram illustrating the Digest Authentication flow:
 

@@ -6,7 +6,7 @@ While you have learned how to make individual requests in the [Making a Request]
 
 ## Basic Usage
 
-To get started, simply create an instance of the `Session` class. It can be used in the same way as the top-level `requests` module.
+To get started, simply create an instance of the `Session` class. It has the same methods as the top-level `requests` object, so you can use it to make `GET`, `POST`, and other requests.
 
 ```python
 import requests
@@ -74,7 +74,7 @@ with requests.Session() as s:
 }
 ```
 
-The `session.cookies` object is an instance of `RequestsCookieJar`, which can be used like a dictionary but offers more advanced features.
+The `session.cookies` object is an instance of `RequestsCookieJar`, which can be used like a dictionary but also offers more advanced features.
 
 ## Persisting Parameters Across Requests
 
@@ -108,7 +108,7 @@ response2 = s.get('https://httpbin.org/headers')
 print('Response 2 Headers:', response2.json()['headers']['X-Test-Header'])
 ```
 
-**Merging Parameters**
+### Merging Parameters
 
 If you provide parameters at the method level (e.g., in `s.get()`), they will be merged with the session-level parameters. Method-level parameters will override session parameters if there is a key conflict for that specific request.
 

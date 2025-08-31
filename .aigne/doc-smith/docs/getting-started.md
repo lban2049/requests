@@ -18,7 +18,7 @@ This command fetches the latest version of Requests from the Python Package Inde
 
 ## Making Your First Request
 
-With Requests installed, you can begin making web requests. The fundamental process involves sending a request to a URL and then processing the response that comes back from the server. 
+With Requests installed, you can begin making web requests. The fundamental process involves sending a request to a URL and then processing the response that comes back from the server.
 
 The following diagram illustrates this basic request-response cycle:
 

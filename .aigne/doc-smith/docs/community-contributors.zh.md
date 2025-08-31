@@ -1,8 +1,8 @@
 # 贡献者
 
-Requests 是一个社区驱动的项目，它的成功离不开其创建者的奉献以及众多贡献者的宝贵付出。本页面旨在向所有帮助该库发展至今的人们致谢。
+Requests 是一个社区驱动的项目，它的成功离不开其创建者的奉献以及众多贡献者的宝贵付出。本页面旨在向所有为该库的发展做出贡献的人们致以谢意。
 
-下图说明了社区内的核心角色：
+下图展示了社区中的核心角色：
 
 ```d2
 direction: down
@@ -12,35 +12,35 @@ Creator: "Kenneth Reitz" {
 }
 
 Maintainers: {
-  "现任维护者": {
+  "Current Maintainers": {
     "Nate Prewitt"
     "Seth M. Larson"
   }
-  "前任维护者": {
+  "Previous Maintainers": {
     "Kenneth Reitz"
     "Cory Benfield"
     "Ian Cordasco"
   }
 }
 
-Community: "提供补丁和建议的贡献者" {
+Community: "Contributors providing patches and suggestions" {
   shape: cloud
 }
 
-Creator -> Maintainers: "项目领导"
-Maintainers -> Community: "指导与合并"
-Community -> Creator: "贡献" {
+Creator -> Maintainers: "Project Leadership"
+Maintainers -> Community: "Guidance & Merging"
+Community -> Creator: "Contributions" {
     style.stroke-dash: 2
 }
 ```
 
 ## 创建者
 
-Requests 由 Kenneth Reitz 倾心创建。
+Requests 由 Kenneth Reitz 精心创建。
 
 ## 维护者
 
-该项目目前由一个专注的团队负责维护，我们对曾担任此角色的所有成员致以诚挚的谢意。
+该项目目前由一个专业的团队负责维护，我们对所有曾担任此职务的维护者表示由衷的感谢。
 
 ### 水晶守护者
 
@@ -49,13 +49,13 @@ Requests 由 Kenneth Reitz 倾心创建。
 
 ### 前任水晶守护者
 
-- [Kenneth Reitz (@kennethreitz)](https://github.com/kennethreitz)，不太情愿的主水晶守护者。
+- [Kenneth Reitz (@kennethreitz)](https://github.com/kennethreitz)，不情愿的主水晶守护者。
 - [Cory Benfield (@lukasa)](https://github.com/lukasa)
 - [Ian Cordasco (@sigmavirus24)](https://github.com/sigmavirus24)
 
-## 补丁和建议
+## 补丁与建议
 
-衷心感谢多年来所有提交补丁、提供建议和支持的人。以下个人为项目做出了重大贡献。
+衷心感谢多年来所有提交补丁、提供建议和支持的人们。以下人员为项目做出了重要贡献。
 
 | | | | |
 |---|---|---|---|

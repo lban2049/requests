@@ -60,7 +60,7 @@ except requests.exceptions.RetryError as e:
 
 ### Mounting an Adapter
 
-Custom adapters are registered with a `Session` object using the `session.mount()` method. You associate an adapter instance with a URL prefix, and the session will use the adapter with the longest matching prefix for a given request URL.
+Custom adapters are registered with a `Session` object using the `session.mount()` method. You associate an adapter instance with a URL prefix. When a request is made, the session uses the adapter with the longest matching prefix for the request's URL.
 
 For example, you could mount different adapters for different services:
 

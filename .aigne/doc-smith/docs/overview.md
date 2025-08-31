@@ -16,7 +16,7 @@ r = requests.get('https://www.python.org')
 >>> r.status_code
 200
 
->>> 'Python is a programming language' in r.text
+>>> b'Python is a programming language' in r.content
 True
 ```
 
@@ -38,7 +38,7 @@ App -> Lib: "calls requests.get(...)"
 Lib -> Server: "Sends HTTP Request"
 Server -> Lib: "Returns HTTP Response"
 Lib -> App: "Creates Response Object"
-App -> Process: "Accesses r.status_code, r.text"
+App -> Process: "Accesses r.status_code, r.content"
 ```
 
 ### Core Features
