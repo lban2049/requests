@@ -1,48 +1,47 @@
 # 高级用法
 
-掌握了[用户指南](./user-guide.md)中介绍的基础知识后，你可能会发现需要对 HTTP 请求进行更多控制。本节将深入探讨 Requests 的高级功能，帮助你处理涉及网络行为、安全性和自定义功能的复杂场景。
+Requests 因其在处理常见 HTTP 任务方面的简洁性而广受好评，但它也为更复杂、更严苛的场景提供了一系列强大的功能。本节将深入探讨这些高级功能，它们能让您对网络行为、安全协议以及库的核心功能进行精细控制。
 
-在这里，我们将介绍一些概念，帮助你对请求生命周期进行精细化控制。你将学习如何管理连接超时、自动重试失败的请求、通过代理路由流量、精确处理 SSL 证书验证，甚至使用传输适配器和事件钩子扩展 Requests 的核心功能。
-
-```d2
-direction: down
-
-"请求已启动" -> "会话对象"
-"会话对象" -> "选择 HTTPAdapter"
-
-"选择 HTTPAdapter" -> "默认 HTTPAdapter": "默认"
-"选择 HTTPAdapter" -> "自定义 HTTPAdapter": "自定义"
-
-"默认 HTTPAdapter" -> "代理配置？"
-"自定义 HTTPAdapter" -> "代理配置？"
-
-"代理配置？" -> "通过代理路由": "是"
-"代理配置？" -> "直接连接": "否"
-
-"通过代理路由" -> "建立连接"
-"直接连接" -> "建立连接"
-
-"建立连接" -> "SSL 证书验证": "如果是 HTTPS"
-"建立连接" -> "发送请求（含超时和重试）": "如果是 HTTP"
-
-"SSL 证书验证" -> "发送请求（含超时和重试）"
-"发送请求（含超时和重试）" -> "接收响应"
-"接收响应" -> "响应钩子"
-"响应钩子" -> "最终响应对象"
-```
+无论您需要配置特定的网络计时、管理 SSL 证书，还是使用自定义逻辑扩展 Requests，都有相应的工具可用。以下是本指南涵盖的高级主题概览。
 
 <x-cards data-columns="3">
-  <x-card data-title="超时、重试和代理" data-href="/advanced-usage/timeouts-retries-proxies" data-icon="lucide:timer">
-    网络状况可能无法预测。Requests 允许你通过配置超时来防止请求挂起、为瞬时故障设置自动重试，以及通过代理路由请求以实现安全或绕过网络限制，从而构建具有弹性的应用程序。
+  <x-card data-title="超时、重试和代理" data-icon="lucide:network" data-href="/advanced-usage/timeouts-retries-proxies">
+    了解如何控制连接超时、自动重试失败的请求以及通过代理服务器路由流量。
   </x-card>
-  <x-card data-title="SSL 证书验证" data-href="/advanced-usage/ssl-cert-verification" data-icon="lucide:shield-check">
-    通过 HTTPS 进行安全通信是标准做法。虽然 Requests 默认处理证书验证，但你可能需要指定自己的 CA 证书包、为双向 TLS 提供客户端证书，或者在特定情况下禁用验证。本节将介绍如何安全地管理这些 SSL/TLS 设置。
+  <x-card data-title="SSL 证书验证" data-icon="lucide:shield-check" data-href="/advanced-usage/ssl-cert-verification">
+    管理 SSL/TLS 验证、使用自定义证书颁发机构 (CA) 捆绑包以及提供客户端证书。
   </x-card>
-  <x-card data-title="自定义适配器和钩子" data-href="/advanced-usage/adapters-and-hooks" data-icon="lucide:puzzle">
-    针对特殊需求，Requests 提供了强大的扩展机制。你可以创建自定义传输适配器来实现独特的传输协议或连接逻辑。此外，钩子系统允许你注册回调函数来检查或修改响应，从而实现日志记录或自定义解析等任务。
+  <x-card data-title="自定义适配器和挂钩" data-icon="lucide:plug-zap" data-href="/advanced-usage/adapters-and-hooks">
+    通过创建自定义传输适配器和使用事件挂钩系统来修改请求行为，从而扩展 Requests 的功能。
   </x-card>
 </x-cards>
 
+## 超时、重试和代理
+
+网络状况可能难以预测。Requests 允许您通过为请求设置 `timeout` 来防止应用程序无限期挂起。您可以为连接服务器和等待响应分别指定超时时间。
+
+为处理瞬态网络错误，您可以配置 Requests 自动重试失败的请求。这可以通过将带有自定义 `Retry` 策略的 `HTTPAdapter` 挂载到 `Session` 对象上来实现。
+
+此外，如果您需要通过中间方路由请求，Requests 支持 HTTP 和 SOCKS 代理。您可以基于单个请求或整个 `Session` 来配置代理。
+
+有关这些功能的详细指南，请参阅 [超时、重试和代理](./advanced-usage-timeouts-retries-proxies.md)。
+
+## SSL 证书验证
+
+安全是网络通信中的首要考虑因素。默认情况下，Requests 会验证 HTTPS 请求的 SSL 证书，以确保您与预期的服务器通信。您可以通过传递 `verify` 参数来自定义此行为。该参数可以设置为布尔值以启用或禁用验证，也可以设置为自定义 CA 证书包文件或目录的字符串路径。
+
+对于需要客户端证书身份验证 (mTLS) 的服务，您可以使用 `cert` 参数提供证书。
+
+在 [SSL 证书验证](./advanced-usage-ssl-cert-verification.md) 部分探索这些安全配置。
+
+## 自定义适配器和挂钩
+
+Requests 采用模块化设计，支持高度自定义。传输适配器是该系统的核心，为处理 HTTP 和 HTTPS 请求提供逻辑。您可以创建自己的传输适配器以实现自定义传输协议或修改连接的管理方式。
+
+Requests 还提供了一个挂钩系统，允许您将回调函数附加到请求-响应周期中的特定点。可用的主要挂钩是 `response`，它允许您在响应对象从初始请求调用返回之前对其进行检查或修改。
+
+在 [自定义适配器和挂钩](./advanced-usage-adapters-and-hooks.md) 中了解如何根据您的特定需求扩展 Requests。
+
 ---
 
-通过利用这些高级功能，你可以定制 Requests 以满足应用程序的特定需求。要获取所有可用类和方法的完整详细说明，请查阅 [API 参考](./api-reference.md)。
+通过掌握这些高级功能，您可以使 Requests 适应各种复杂的网络任务。要获取所有类和方法的完整说明，请继续阅读 [API 参考](./api-reference.md)。

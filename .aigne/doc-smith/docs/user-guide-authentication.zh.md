@@ -1,124 +1,82 @@
-# 认证
+# 身份验证
 
-许多 Web 服务需要通过认证来授予对资源的访问权限。Requests 通过 `auth` 参数直接支持多种认证方案，从而简化了这一过程。
+许多 Web 服务需要身份验证才能访问其资源。Requests 提供了多种内置的身份验证机制和一种直接的使用方式，从而简化了这一过程。身份验证信息通常通过请求的 `auth` 参数传递。
 
-## 基本认证
+## 基本身份验证
 
-HTTP 基本认证是一种广泛使用且直接的认证方法。若要在 Requests 中使用它，你可以向 `auth` 参数提供一个 `(username, password)` 元组。
-
-```python
-import requests
-
-# 使用元组简写形式进行基本认证
-response = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
-
-print(f"Status Code: {response.status_code}")
-# Status Code: 200
-print(response.json())
-# {'authenticated': True, 'user': 'user'}
-```
-
-这个元组是一种方便的简写形式。在内部，Requests 会将其转换为 `requests.auth` 模块中的一个 `HTTPBasicAuth` 对象。你也可以直接创建和使用此对象，使代码更加明确。
+基本身份验证是一种广泛使用且简单的身份验证方案。使用 Requests 时，你可以通过将一个包含 `(username, password)` 的二元组传递给 `auth` 参数来提供凭据。
 
 ```python
 import requests
 from requests.auth import HTTPBasicAuth
 
-response = requests.get(
-    'https://httpbin.org/basic-auth/user/pass', 
-    auth=HTTPBasicAuth('user', 'pass')
-)
+# 使用元组作为简写形式
+response = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
 
-print(f"Status Code: {response.status_code}")
-# Status Code: 200
+print(response.status_code)
+# 200
 ```
-当你使用基本认证时，Requests 会自动为你构建带有正确编码凭据的 `Authorization` 标头，并将其添加到你的请求中。
 
-## 摘要认证
+这种简写形式便于快速使用。在底层，Requests 会将此元组转换为一个 `HTTPBasicAuth` 对象。你也可以直接创建并传递一个 `HTTPBasicAuth` 的实例，如果希望重用身份验证对象，这样做会非常有用。
 
-摘要认证采用质询-响应机制，避免了以明文形式发送密码，因此是比基本认证更安全的替代方案。其使用方法与基本认证同样简单。
+```python
+import requests
+from requests.auth import HTTPBasicAuth
 
-首先，导入 `HTTPDigestAuth`，然后将其一个实例传递给 `auth` 参数。
+auth = HTTPBasicAuth('user', 'pass')
+response = requests.get('https://httpbin.org/basic-auth/user/pass', auth=auth)
+
+print(response.status_code)
+# 200
+```
+
+## 摘要式身份验证
+
+摘要式身份验证是另一种常见的 HTTP 身份验证形式，与基本身份验证相比，它能以更安全的方式传输凭据。其使用方法同样简单。
+
+要使用摘要式身份验证，你需要导入 `HTTPDigestAuth` 并将其一个实例传递给 `auth` 参数。
 
 ```python
 import requests
 from requests.auth import HTTPDigestAuth
 
-url = 'https://httpbin.org/digest-auth/qop/user/pass'
+url = 'https://httpbin.org/digest-auth/auth/user/pass'
 
 response = requests.get(url, auth=HTTPDigestAuth('user', 'pass'))
 
-print(f"Status Code: {response.status_code}")
-# Status Code: 200
-print(response.json())
-# {'authenticated': True, 'user': 'user'}
+print(response.status_code)
+# 200
 ```
 
-Requests 会为你处理整个质询-响应流程。该过程首先会发送一个未授权的初始请求，并从服务器接收到 `401` 响应。然后，Requests 会利用服务器 `WWW-Authenticate` 标头中的信息来构建第二个经过认证的请求。
+Requests 会自动处理摘要式身份验证所需的多步质询-响应流程。
 
-下图展示了摘要认证的流程：
+## 代理身份验证
 
-```d2
-shape: sequence_diagram
-direction: down
-
-Client: "你的应用程序"
-Server: "Web 服务"
-
-Client -> Server: "GET /resource (无认证)"
-Server -> Client: "401 Unauthorized\nWWW-Authenticate: Digest, nonce=..."
-
-Client: {
-  note: "使用凭据和服务器 nonce 计算响应"
-}
-
-Client -> Server: "GET /resource\nAuthorization: Digest, response=..."
-Server -> Client: "200 OK"
-
-```
-
-## 自定义认证
-
-Requests 具有一个可插拔的认证系统，允许你实现非内置的认证方案。你可以通过创建一个可调用类来自定义认证处理器，该类在 `Request` 对象发送前对其进行修改。
-
-最简单的方法是继承 `requests.auth.AuthBase` 并实现 `__call__` 方法。该方法接收 `PreparedRequest` 对象，应根据需要对其进行修改（例如，添加自定义标头），并且必须返回修改后的对象。
-
-以下是一个基于令牌的认证方案的自定义处理器示例：
+如果你通过需要身份验证的代理来路由请求，Requests 也能满足你的需求。你可以使用 `HTTPProxyAuth` 辅助工具来提供代理凭据。
 
 ```python
 import requests
-from requests.auth import AuthBase
+from requests.auth import HTTPProxyAuth
 
-class TokenAuth(AuthBase):
-    """将自定义令牌附加到 Authorization 标头。"""
-    def __init__(self, token):
-        self.token = token
+proxies = {
+   'http': 'http://proxy.example.com:8080',
+   'https': 'https://proxy.example.com:8080',
+}
 
-    def __call__(self, r):
-        # 通过添加 Authorization 标头来修改请求 `r`
-        r.headers['Authorization'] = f'Token {self.token}'
-        return r
+# 假设代理需要身份验证
+auth = HTTPProxyAuth('proxy_user', 'proxy_pass')
 
-# 使用自定义认证处理器
-response = requests.get('https://httpbin.org/headers', auth=TokenAuth('12345abcde'))
+response = requests.get('https://httpbin.org/get', proxies=proxies, auth=auth)
 
-print(response.json())
-
-# 预期的响应显示了自定义的 Authorization 标头：
-# {
-#   "headers": {
-#     "Accept": "*/*", 
-#     "Accept-Encoding": "gzip, deflate", 
-#     "Authorization": "Token 12345abcde", 
-#     "Host": "httpbin.org", 
-#     "User-Agent": "python-requests/x.x.x", 
-#     "X-Amzn-Trace-Id": "..."
-#   }
-# }
+print(response.status_code)
 ```
 
-这种模块化的方法提供了与任何自定义或复杂认证协议集成的灵活性。
+这会在你的请求中发送相应的 `Proxy-Authorization` 标头。
+
+## 其他身份验证方案
+
+Requests 的设计考虑了可扩展性。如果你需要实现更复杂的身份验证方案（如 OAuth），可以创建自己的自定义身份验证处理程序。任何接受 `Request` 对象并返回修改后的 `Request` 对象的可调用对象均可使用。这使得 Requests 几乎可以与任何身份验证机制集成。
 
 ---
 
-现在你已经可以对请求进行认证，下一步是学习如何处理非预期的情況。请继续阅读 [错误处理](./user-guide-error-handling.md) 指南以了解更多详情。
+现在你已经了解了如何为请求进行身份验证，接下来了解如何管理潜在问题就变得非常重要。请继续阅读下一节，学习有关[错误处理](./user-guide-error-handling.md)的内容。

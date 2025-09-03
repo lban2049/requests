@@ -1,136 +1,91 @@
 # Timeouts, Retries, and Proxies
 
-Controlling network behavior is essential for building robust applications that interact with web services. This section covers how to configure timeouts to prevent indefinite hangs, set up automatic retries for transient network failures, and route your requests through proxies.
+Fine-tuning network behavior is essential for building resilient applications that can handle unreliable network conditions and complex corporate environments. This guide covers how to configure request timeouts, automatic retries for failed connections, and how to route your requests through proxies.
 
 ## Timeouts
 
-You can tell Requests to stop waiting for a response after a given number of seconds with the `timeout` parameter. In most cases, this is a crucial setting to prevent your program from hanging indefinitely when network issues arise.
+You can configure Requests to stop waiting for a response after a given number of seconds. The `timeout` parameter can prevent your program from hanging indefinitely when network issues occur.
 
-The `timeout` value applies to both the connect and read phases of the request.
-
-```python
-# Set a timeout of 5 seconds for the entire request
-response = requests.get('https://api.github.com/events', timeout=5)
-```
-
-For more granular control, you can specify the connect and read timeouts separately by passing a tuple:
-
-*   **Connect timeout**: The time allowed for the client to establish a connection to the server.
-*   **Read timeout**: The time allowed for the client to wait for a response from the server after the connection has been established.
-
-```python
-# Wait 3.05 seconds to connect, and then wait 27 seconds for the server to send a response
-response = requests.get('https://api.github.com/events', timeout=(3.05, 27))
-```
-
-If the timeout is reached, Requests will raise a `Timeout` exception. You can catch this to handle the error gracefully.
+Most requests to external servers should have a timeout. Without one, your code might hang for minutes or more.
 
 ```python
 import requests
-from requests.exceptions import Timeout
 
-try:
-    response = requests.get('https://api.github.com/events', timeout=0.001)
-except Timeout:
-    print('The request timed out.')
+# Wait for a maximum of 2.5 seconds before giving up
+requests.get('https://httpbin.org/delay/3', timeout=2.5)
+# Raises a ReadTimeout error
 ```
+
+The `timeout` value can be a single float, representing the total time to wait for the server to send data. For more granular control, you can provide a tuple of two floats: `(connect_timeout, read_timeout)`.
+
+- **Connect Timeout**: The time allowed for the client to establish a connection to the server.
+- **Read Timeout**: The time allowed for the client to receive data from the server after the connection is established.
+
+```python
+import requests
+
+# 1 second to connect, 3 seconds to wait for the first byte of the response
+r = requests.get('https://httpbin.org/delay/2', timeout=(1.0, 3.0))
+print(r.status_code)
+
+# This will raise a ConnectTimeout
+try:
+    requests.get('https://httpbin.org/', timeout=(0.001, 3.0))
+except requests.exceptions.ConnectTimeout:
+    print("Connection timed out.")
+```
+
+If you want to wait indefinitely, you can pass `None` as the timeout value. However, this is generally not recommended for production code.
+
 
 ## Retries
 
-By default, Requests does not automatically retry failed requests. To implement a retry strategy, you need to use a custom `HTTPAdapter` and mount it to a `Session` object.
+By default, Requests does not retry failed connections. To implement a retry strategy, you need to use a `Session` object and mount a custom `HTTPAdapter` with a configured retry policy.
 
-### Simple Retries
+The `HTTPAdapter` allows you to specify the maximum number of retries for a connection. This retry logic applies to specific failures like DNS lookups, socket connection errors, and connection timeouts. It does not apply to requests where data has already been sent to the server.
 
-The simplest way to configure retries is to provide an integer to the `max_retries` parameter of an `HTTPAdapter`. This will apply a default retry mechanism for failed DNS lookups, socket connections, and connection timeouts.
+Here is how to configure a `Session` to retry requests up to 3 times:
 
 ```python
 import requests
 from requests.adapters import HTTPAdapter
 
-# Create a session
+# Create a session object
 s = requests.Session()
 
-# Configure an adapter with a simple retry strategy
-# This will retry a request up to 3 times for connection-related errors.
+# Create an adapter with a retry strategy
+# In this case, it will retry 3 times on failed connections
 a = HTTPAdapter(max_retries=3)
 
-# Mount the adapter to the session for both HTTP and HTTPS
+# Mount the adapter to the session for both http and https prefixes
 s.mount('http://', a)
 s.mount('https://', a)
 
+# Make a request using the session
 try:
-    # This request will fail, but the adapter will retry it 3 times
-    response = s.get('http://a-domain-that-does-not-exist.com')
+    response = s.get('http://a.non.existent.domain/')
 except requests.exceptions.ConnectionError as e:
-    print(f'Request failed after multiple retries: {e}')
+    print(f"Failed after multiple retries: {e}")
+
 ```
 
-### Advanced Retries
+For more advanced control over which status codes to retry on or to implement exponential backoff, you can import and configure `urllib3.util.retry.Retry` and pass an instance of it to the `max_retries` parameter.
 
-For more advanced control, such as retrying on specific HTTP status codes or implementing a backoff delay, you can pass a `urllib3.util.retry.Retry` object to `max_retries`. This gives you fine-grained control over the retry behavior.
-
-```python
-import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
-
-s = requests.Session()
-
-# Configure a more robust retry strategy
-retries = Retry(total=5,
-                backoff_factor=0.1,
-                status_forcelist=[ 500, 502, 503, 504 ])
-
-adapter = HTTPAdapter(max_retries=retries)
-
-s.mount('http://', adapter)
-s.mount('https://', adapter)
-
-try:
-    # This will retry on 503 errors with a backoff delay
-    response = s.get('http://httpbin.org/status/503')
-    response.raise_for_status()
-except requests.exceptions.RequestException as e:
-    print(f'Request failed: {e}')
-```
-
-Here is a visual representation of the retry flow with a backoff factor:
-
-```d2
-shape: sequence_diagram
-
-Client
-"Session with Adapter"
-Server
-
-Client -> "Session with Adapter": s.get('http://service.com/api')
-"Session with Adapter" -> Server: GET /api
-Server -> "Session with Adapter": 503 Service Unavailable
-
-"Session with Adapter": {
-  note: "Status in forcelist. Initiate retry with backoff (e.g., wait 0.1s)."
-}
-
-"Session with Adapter" -> Server: GET /api (Retry 1)
-Server -> "Session with Adapter": 503 Service Unavailable
-
-"Session with Adapter": {
-  note: "Status in forcelist. Initiate retry with increased backoff (e.g., wait 0.2s)."
-}
-
-"Session with Adapter" -> Server: GET /api (Retry 2)
-Server -> "Session with Adapter": 200 OK
-"Session with Adapter" -> Client: Response (200 OK)
-```
 
 ## Proxies
 
-If you need to route your requests through a proxy server, you can use the `proxies` argument on any request method or configure it on a `Session` object.
+If you need to route your requests through a proxy server, you can use the `proxies` argument.
+
+### Basic Proxy Usage
+
+The `proxies` argument is a dictionary mapping the protocol scheme to the URL of the proxy.
 
 ```python
+import requests
+
 proxies = {
-   'http': 'http://10.10.1.10:3128',
-   'https': 'http://10.10.1.10:1080',
+  'http': 'http://10.10.1.10:3128',
+  'https': 'http://10.10.1.10:1080',
 }
 
 requests.get('http://example.org', proxies=proxies)
@@ -138,23 +93,23 @@ requests.get('http://example.org', proxies=proxies)
 
 ### Authentication
 
-If your proxy requires authentication, you can include the username and password in the proxy URL:
+If your proxy requires authentication, you can include it in the proxy URL:
 
 ```python
 proxies = {
-   'http': 'http://user:password@10.10.1.10:3128/',
+    'http': 'http://user:password@10.10.1.10:3128/',
 }
 ```
 
 ### SOCKS Proxies
 
-Requests also supports SOCKS proxies, but you first need to install the necessary third-party library:
+To use a SOCKS proxy, you need to install the `PySocks` library:
 
 ```bash
 pip install pysocks
 ```
 
-Once installed, you can specify the SOCKS scheme in the proxy URL. Use `socks5` for local DNS resolution or `socks5h` to resolve DNS on the proxy server.
+Once installed, you can specify the proxy scheme as `socks5`, `socks5h`, `socks4`, or `socks4a`.
 
 ```python
 proxies = {
@@ -164,29 +119,38 @@ proxies = {
 
 requests.get('http://example.org', proxies=proxies)
 ```
+`socks5h` indicates that DNS resolution should happen on the proxy server, which is often the desired behavior.
 
 ### Environment Variables
 
-Requests will automatically use proxies configured in your environment variables if the `proxies` argument is not explicitly set. It respects `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY`.
-
-You can configure these variables in your shell:
+Requests automatically reads and uses proxy settings from environment variables like `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY`. You can disable this behavior on a `Session` object by setting `trust_env=False`.
 
 ```bash
 export HTTP_PROXY="http://10.10.1.10:3128"
-export HTTPS_PROXY="https://10.10.1.10:1080"
-
-# Bypass the proxy for specific hosts, domains, or IP ranges
-export NO_PROXY="localhost,127.0.0.1,example.com"
+export HTTPS_PROXY="http://10.10.1.10:1080"
 ```
 
-With these environment variables set, the following Python code will automatically use the configured proxies without any extra parameters:
+With these variables set, the following Python code will automatically use the defined proxies without needing the `proxies` argument:
 
 ```python
-# This request will be sent through the proxy defined in HTTPS_PROXY
-requests.get('https://httpbin.org/ip')
+import requests
 
-# This request will bypass the proxy due to the NO_PROXY setting
-requests.get('http://example.com')
+# This request will be sent through http://10.10.1.10:3128
+requests.get('http://example.org') 
 ```
 
-With these network configurations mastered, you can further secure your connections. Learn more in the [SSL Certificate Verification](./advanced-usage-ssl-cert-verification.md) guide.
+### Bypassing Proxies
+
+You can use the `NO_PROXY` environment variable to specify hosts that should bypass the proxy. This variable should be a comma-separated list of domain names, domain suffixes, or IP addresses.
+
+For example, to bypass the proxy for `internal.example.com` and all hosts in the `192.168.0.0/16` network:
+
+```bash
+export NO_PROXY="internal.example.com,192.168.0.0/16"
+```
+
+Requests will check this variable and send requests to matching hosts directly, bypassing the configured proxy.
+
+---
+
+With these configurations, you can build more robust applications that handle network failures gracefully and operate within various network architectures. For securing your connections, proceed to the next section on [SSL Certificate Verification](./advanced-usage-ssl-cert-verification.md).

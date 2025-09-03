@@ -1,221 +1,224 @@
 # 处理响应
 
-发出请求后，`requests` 会返回一个 `Response` 对象。该对象包含服务器对 HTTP 请求的响应，包括内容、状态码和标头。本指南将引导你如何访问和使用这些信息。
+在您使用 `requests.get()` 等方法发出请求后，会收到一个 `Response` 对象。该对象包含了服务器返回的所有信息，学习如何处理它是继[发出请求](./user-guide-making-a-request.md)之后的合理步骤。
 
-有关如何创建初始请求的详细信息，请参阅[发出请求](./user-guide-making-a-request.md)指南。
+让我们先向 GitHub API 发出一个简单的请求：
 
-## 响应内容
+```python
+import requests
 
-`requests` 简化了以各种格式访问响应正文的过程。
+r = requests.get('https://api.github.com/events')
+```
+
+现在，我们有了一个名为 `r` 的 `Response` 对象。我们可以开始检查它的属性和方法，以获取所需的数据。
+
+## 访问响应内容
+
+Requests 提供了多种访问响应体的方式，具体取决于内容类型。
 
 ### 二进制响应内容
 
-你可以使用 `content` 属性访问响应正文的原始字节。这对于非文本内容非常有用，例如图片、PDF 或其他文件。`requests` 会自动为你解码 `gzip` 和 `deflate` 传输编码。
+您可以使用 `r.content` 属性访问响应的原始字节。这对于图片、音频或其他文件等非文本内容非常有用。
 
-**示例：保存图片**
 ```python
-import requests
-
-r = requests.get('https://httpbin.org/image/png')
-
-# r.content returns the image data in bytes.
-with open('example.png', 'wb') as f:
-    f.write(r.content)
+# 这将打印响应的原始字节
+print(r.content)
+# b'[{"id":"35003554473","type":"PushEvent","actor":{"id":...}]'
 ```
-这段代码获取一个 PNG 图片，并以二进制写入模式将其保存到名为 `example.png` 的文件中。
+
+Requests 会自动为您解压 `gzip` 和 `deflate` 传输编码。在下载压缩文件时，您可以看到这一过程。
 
 ### 文本响应内容
 
-对于文本数据，`text` 属性以标准 Python 字符串的形式提供响应内容。`requests` 会尝试从响应的 HTTP 标头中确定字符编码。如果服务器未指定编码，`requests` 会使用像 `chardet` 这样的外部库来估算。
+对于基于文本的响应，`r.text` 属性以字符串形式提供内容。Requests 会自动解码 `r.content` 来创建 `r.text`。
 
-你可以找出 `requests` 正在使用哪种编码：
+它是如何确定编码的？
+1.  它会检查 HTTP 标头中是否有编码（在 `Content-Type` 标头中）。
+2.  如果标头中未指定编码，它会回退到使用 `chardet` 等库来猜测编码。
 
 ```python
-import requests
-
-r = requests.get('https://httpbin.org/html')
-print(r.encoding)
-# Output: utf-8
-
 print(r.text)
-# Output: The HTML content as a string
+# '[{"id":"35003554473","type":"PushEvent","actor":{"id":...}]'
 ```
 
-如果你需要覆盖检测到的编码，可以在访问 `.text` 之前手动设置 `encoding` 属性：
+您可以查看 Requests 正在使用的编码，甚至可以在访问 `r.text` 之前更改它：
 
 ```python
+print(r.encoding)  # utf-8
+
 r.encoding = 'ISO-8859-1'
+# 现在将使用新的编码对文本进行解码
+print(r.text)
 ```
 
 ### JSON 响应内容
 
-如果响应包含 JSON 数据，你可以使用内置的 `json()` 方法。该方法会解析内容并返回一个 Python 字典或列表。
+如果您正在处理 JSON API，可以使用内置的 `r.json()` 方法。该方法会将响应文本解析为 JSON，并返回一个 Python 字典或列表。
+
+```python
+r = requests.get('https://api.github.com/events')
+json_response = r.json()
+
+# 现在您可以像处理常规 Python 对象一样处理它
+print(json_response[0]['type']) # 例如 'PushEvent'
+```
+
+如果响应不包含有效的 JSON，调用 `r.json()` 将会引发 `requests.exceptions.JSONDecodeError`。
 
 ```python
 import requests
-from requests.exceptions import JSONDecodeError
 
-r = requests.get('https://httpbin.org/json')
+r_html = requests.get('https://github.com')
 try:
-    data = r.json()
-    print(data['slideshow']['title'])
-except JSONDecodeError:
-    print("Response could not be decoded as JSON.")
-except KeyError:
-    print("JSON does not contain expected keys.")
-
-```
-如果响应正文不包含有效的 JSON，调用 `.json()` 将会引发 `requests.exceptions.JSONDecodeError`。
-
-### 原始响应流
-
-对于需要处理大型响应而又不想将其全部加载到内存的高级场景，你可以使用原始流。要启用此功能，请在初始请求中设置 `stream=True`。这样你就可以访问原始响应并对其进行迭代。
-
-```python
-import requests
-
-r = requests.get('https://httpbin.org/stream/20', stream=True)
-
-# Set encoding if not provided by the server
-if r.encoding is None:
-    r.encoding = 'utf-8'
-
-# iter_lines processes the stream line by line
-for line in r.iter_lines(decode_unicode=True):
-    if line:
-        print(line)
+    r_html.json()
+except requests.exceptions.JSONDecodeError:
+    print("响应无法解码为 JSON。")
 ```
 
-## 响应状态
+## 检查响应元数据
 
-收到响应后，第一步通常是检查其状态，看请求是否成功。
-
-```d2
-direction: down
-
-response: "Receive Response object"
-check_status: "Check status (r.ok, r.raise_for_status())"
-is_ok: "Successful (2xx)?"
-process: "Process content (r.json(), r.text)"
-handle_error: "Handle error (4xx/5xx)"
-done: "Done"
-
-response -> check_status
-check_status -> is_ok
-is_ok -> process: Yes
-is_ok -> handle_error: No
-process -> done
-handle_error -> done
-```
+除了内容之外，`Response` 对象还包含有关服务器回复的有用信息。
 
 ### 状态码
 
-`status_code` 属性以整数形式提供 HTTP 状态码。
+您可以使用 `status_code` 属性检查响应的 HTTP 状态码。
 
 ```python
-import requests
-
-r = requests.get('https://httpbin.org/status/404')
-print(r.status_code)
-# Output: 404
+print(r.status_code) # 200
 ```
 
-`requests` 还包含一个状态码查询对象 `requests.codes`，通过使用描述性名称而非数字，可以使你的代码更具可读性。
+为了提高可读性，Requests 提供了一个查找对象 `requests.codes`，其中按名称包含了常见的状态码。
 
 ```python
-if r.status_code == requests.codes.not_found:
-    print('The requested resource was not found.')
+if r.status_code == requests.codes.ok: # .ok 是 200 的别名
+    print("请求成功！")
+else:
+    print(f"请求失败，状态码为 {r.status_code}")
 ```
 
-### 检查错误
+### 响应标头
 
-除了手动检查状态码，你还可以使用 `raise_for_status()` 方法。如果请求返回了不成功的状态码（4xx 客户端错误或 5xx 服务器错误），该方法会引发 `HTTPError`。
+响应标头可通过 `r.headers` 以 Python 字典的形式获取。标头键不区分大小写。
 
 ```python
-import requests
+print(r.headers)
+# {'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60, s-maxage=60', ...}
+
+print(r.headers['Content-Type'])
+# 'application/json; charset=utf-8'
+
+# 访问不区分大小写
+print(r.headers.get('content-type'))
+# 'application/json; charset=utf-8'
+```
+
+### Cookies
+
+如果响应包含任何 Cookies，您可以使用 `r.cookies` 访问它们。
+
+```python
+r_with_cookies = requests.get('https://httpbin.org/cookies/set/sessioncookie/123456789')
+print(r_with_cookies.cookies['sessioncookie'])
+# '123456789'
+```
+
+## 检查错误
+
+Requests 简化了检查请求是否成功的流程。
+
+### ok 属性
+
+如果 `status_code` 小于 400（即不是客户端或服务器错误），`ok` 属性将返回 `True`。这提供了一个简单的布尔值来检查请求是否成功。
+
+```python
+r_success = requests.get('https://httpbin.org/status/200')
+if r_success.ok:
+    print("成功！") # 将会打印
+
+r_fail = requests.get('https://httpbin.org/status/404')
+if not r_fail.ok:
+    print("失败！") # 将会打印
+```
+
+### raise_for_status() 方法
+
+如果需要更直接的方式，您可以使用 `raise_for_status()` 方法。如果 HTTP 请求返回了不成功的状态码（4xx 客户端错误或 5xx 服务器错误），该方法将引发 `HTTPError`。
+
+```python
 from requests.exceptions import HTTPError
 
-for status in [200, 404, 500]:
-    try:
-        url = f'https://httpbin.org/status/{status}'
-        r = requests.get(url)
-        r.raise_for_status()
-    except HTTPError as http_err:
-        print(f'HTTP error for status {status}: {http_err}')
-    else:
-        print(f'Success for status {status}!')
+bad_r = requests.get('https://httpbin.org/status/404')
+
+try:
+    bad_r.raise_for_status()
+except HTTPError as http_err:
+    print(f'发生 HTTP 错误: {http_err}') # 发生 HTTP 错误: 404 Client Error: NOT FOUND for url: https://httpbin.org/status/404
 ```
 
-`Response` 对象还有一个布尔值属性 `ok`，如果状态码小于 400，该属性为 `True`。
-
+成功的请求不会引发异常：
 ```python
-r = requests.get('https://httpbin.org/get')
-if r.ok:  # or simply `if r:`
-    print('Request was successful.')
-else:
-    print('Request failed.')
+good_r = requests.get('https://httpbin.org/status/200')
+good_r.raise_for_status() # 不执行任何操作
 ```
 
-## 响应标头
-
-响应标头可通过 `headers` 属性获取。该属性是一个类似字典的对象，其键不区分大小写。
-
-```python
-import requests
-
-r = requests.get('https://httpbin.org/get')
-
-print(r.headers)
-# Output: A CaseInsensitiveDict object of headers
-
-# Access is case-insensitive
-print(r.headers['Content-Type'])
-# Output: 'application/json'
-
-print(r.headers.get('content-type'))
-# Output: 'application/json'
-```
-
-## Cookie
-
-如果服务器发送了任何 Cookie，你可以通过 `cookies` 属性访问它们，该属性是一个 `RequestsCookieJar` 对象。
-
-```python
-import requests
-
-r = requests.get('https://httpbin.org/cookies/set?name=mycookie&value=12345')
-
-print(r.cookies['mycookie'])
-# Output: '12345'
-```
+在应用程序的控制流中，此方法是断言请求成功的一种便捷方式。
 
 ## 重定向与历史记录
 
-默认情况下，`requests` 会自动处理重定向。你收到的 `Response` 对象是所有重定向发生后的最终响应。你可以通过 `history` 属性访问导致最终目标的请求历史记录。它包含一个 `Response` 对象列表，按从旧到新的顺序排列。
+默认情况下，除了 HEAD 请求外，Requests 会自动对所有请求动词执行重定向。您可以检查导致最终响应的重定向历史记录。
+
+`history` 属性包含一个 `Response` 对象列表，这些对象是为了完成请求而创建的。该列表按从最旧到最新的响应排序。
 
 ```python
-import requests
+r = requests.get('http://github.com') # 这将重定向到 https://github.com
 
-r = requests.get('https://httpbin.org/redirect/3')
+print(r.url)
+# 'https://github.com/'
 
-print(f"Final URL: {r.url}")
-print(f"Final Status Code: {r.status_code}")
+print(r.status_code)
+# 200
 
-print("Request History:")
-for resp in r.history:
-    print(f"  - {resp.status_code} from {resp.url}")
-
-# You can also check if the response was a permanent redirect
-if r.is_permanent_redirect:
-    print("This was a permanent redirect.")
+print(r.history)
+# [<Response [301]>]
 ```
 
-## 后续步骤
+301 重定向的原始 `Response` 对象存储在 `history` 列表中。
 
-现在你已经了解如何处理响应，可以学习如何在多个请求之间持久化参数和 Cookie，以提高性能和进行状态管理。
+## 流式内容
 
-<x-card data-title="Session Objects" data-href="/user-guide/session-objects" data-icon="lucide:book-copy" data-cta="Continue Reading">
-  利用 Session 对象在多个请求之间持久化参数、Cookie 和标头。
-</x-card>
+对于大型响应，最好避免一次性将全部内容读入内存。您可以通过在请求中设置 `stream=True` 来实现这一点。
 
-这种实践是构建高效且有状态的应用程序的关键。
+### 迭代内容
+
+当 `stream=True` 时，您可以使用 `iter_content()` 方法来迭代响应数据。这对于下载大文件非常理想。
+
+```python
+# 在此示例中，我们下载一个大文件并分块保存到磁盘
+url = 'https://files.pythonhosted.org/packages/source/r/requests/requests-2.31.0.tar.gz'
+with requests.get(url, stream=True) as r:
+    r.raise_for_status()
+    with open('requests.tar.gz', 'wb') as f:
+        for chunk in r.iter_content(chunk_size=8192):
+            f.write(chunk)
+```
+
+`chunk_size` 参数控制每次读入内存的字节数。
+
+### 逐行迭代
+
+对于返回行分隔数据（如文本或 JSON 行）的流式 API，您可以使用 `iter_lines()` 方法。
+
+```python
+r = requests.get('https://httpbin.org/stream/20', stream=True)
+
+for line in r.iter_lines():
+    if line:
+        decoded_line = line.decode('utf-8')
+        print(decoded_line)
+```
+
+该方法会为您处理行尾符并解码内容，使得逐行处理变得容易。
+
+---
+
+现在您已经了解了如何检查和处理响应，可以构建更稳健的应用程序。下一步是学习如何在多个请求之间持久化状态。为此，请继续阅读[会话对象](./user-guide-session-objects.md)。

@@ -2,72 +2,79 @@
 
 ![Requests Logo](../../../ext/requests-logo.svg)
 
-Requests is an elegant and simple HTTP library for Python, designed for human beings. It allows you to send HTTP/1.1 requests with ease, handling the complexities of query strings, form encoding, and connection management. As one of the most downloaded Python packages—with approximately 30 million downloads per week—and a dependency for over 1,000,000 repositories on GitHub, Requests provides reliable code you can trust.
+Requests is an elegant and simple HTTP library for Python, built for human beings. It allows you to send HTTP/1.1 requests with extreme ease, abstracting away the complexities of network connections so you can focus on interacting with services and consuming data in your application.
 
-### Quick Example
-
-Making a web request is straightforward. Here’s how to fetch a web page and check the response:
-
-```python
-import requests
-
-r = requests.get('https://www.python.org')
-
->>> r.status_code
-200
-
->>> b'Python is a programming language' in r.content
-True
-```
-
-This example sends a `GET` request. The library manages the connection and returns a `Response` object containing the server's data and metadata.
-
-### The Request-Response Cycle
-
-The library simplifies the interaction between your application and a web server. The flow involves creating a request, receiving a response, and processing the returned data.
+It is one of the most downloaded Python packages, with around 30 million downloads per week, and is a dependency for over 1,000,000 repositories on GitHub. You can put your trust in this code.
 
 ```d2
 direction: down
 
-App: "Your Application"
-Lib: "Requests Library"
-Server: "Web Server"
-Process: "Process Data"
+"Your Python App": {
+  shape: rectangle
+}
 
-App -> Lib: "calls requests.get(...)"
-Lib -> Server: "Sends HTTP Request"
-Server -> Lib: "Returns HTTP Response"
-Lib -> App: "Creates Response Object"
-App -> Process: "Accesses r.status_code, r.content"
+"Requests Library": {
+  shape: package
+  "import requests"
+}
+
+"Web Server / API": {
+  shape: cylinder
+  "Remote HTTP Service"
+}
+
+"Your Python App" -> "Requests Library": "Makes simple API calls\n(e.g., requests.get())"
+"Requests Library" -> "Web Server / API": "Handles complex HTTP details\n(Connection Pooling, SSL, etc.)"
+"Web Server / API" -> "Requests Library": "HTTP Response"
+"Requests Library" -> "Your Python App": "Returns a simple Response object"
 ```
 
-### Core Features
+## A Simple Request
 
-Requests is built to support the development of reliable HTTP applications and includes a wide range of features.
+With Requests, you can perform a complex authenticated GET request in just a few lines of code and interact with the response data using intuitive methods.
 
-<x-cards data-columns="3">
-  <x-card data-title="Connection Pooling" data-icon="lucide:network">
-    Reuses underlying TCP connections with Keep-Alive for improved performance.
+```python
+>>> import requests
+>>> r = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
+>>> r.status_code
+200
+>>> r.headers['content-type']
+'application/json; charset=utf8'
+>>> r.encoding
+'utf-8'
+>>> r.text
+'{"authenticated": true, ...'
+>>> r.json()
+{'authenticated': True, ...}
+```
+
+## Core Features
+
+Requests is ready to support robust and reliable HTTP-speaking applications with a comprehensive feature set.
+
+<x-cards data-columns="2">
+  <x-card data-title="Connection Management" data-icon="lucide:plug-zap">
+    Features like Keep-Alive, connection pooling, and connection timeouts ensure robust and efficient network communication.
   </x-card>
-  <x-card data-title="Session Objects" data-icon="lucide:cookie">
-    Persist parameters, cookies, and headers across multiple requests for stateful interactions.
+  <x-card data-title="Authentication" data-icon="lucide:key-round">
+    Built-in support for Basic and Digest authentication schemes.
+  </x-card>
+  <x-card data-title="Session Persistence" data-icon="lucide:cookies">
+    Use Session objects to persist cookies and other parameters across multiple requests to the same host.
+  </x-card>
+  <x-card data-title="Data Handling" data-icon="lucide:file-code-2">
+    Automatic content decompression, multi-part file uploads, and a simple `.json()` method for handling JSON data.
   </x-card>
   <x-card data-title="SSL Verification" data-icon="lucide:shield-check">
-    Automatically verifies server certificates for HTTPS requests, similar to a web browser.
+    Provides browser-style TLS/SSL verification by default for secure connections.
   </x-card>
-  <x-card data-title="Automatic Decompression" data-icon="lucide:file-archive">
-    Natively decodes `gzip` and `deflate` compressed content.
-  </x-card>
-  <x-card data-title="File Uploads" data-icon="lucide:upload">
-    Simplifies sending multi-part file uploads with an intuitive interface.
-  </x-card>
-  <x-card data-title="Built-in Authentication" data-icon="lucide:key-round">
-    Includes simple helpers for Basic and Digest authentication schemes.
+  <x-card data-title="Proxy Support" data-icon="lucide:route">
+    Easily route your requests through SOCKS proxies.
   </x-card>
 </x-cards>
 
----
+## Next Steps
 
-This overview covers the purpose and main features of the Requests library. To install it and make your first request, continue to the next section.
-
-➡️ **Next: [Getting Started](./getting-started.md)**
+<x-card data-title="Getting Started" data-icon="lucide:rocket" data-href="/getting-started" data-cta="Install Requests">
+  Ready to begin? Follow the simple, step-by-step instructions to install the library and make your first HTTP request.
+</x-card>

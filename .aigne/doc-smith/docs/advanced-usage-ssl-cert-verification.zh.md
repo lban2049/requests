@@ -1,133 +1,103 @@
 # SSL 证书验证
 
-Requests 默认会为 HTTPS 请求验证 SSL 证书，这是一项防止中间人攻击的关键安全功能。这种验证依赖于一个受信任的证书颁发机构 (CA) 系统，与网络浏览器类似。本节将介绍如何管理 SSL/TLS 验证，内容涵盖使用自定义 CA 到提供用于身份验证的客户端证书。
+默认情况下，Requests 会为 HTTPS 请求验证 SSL 证书，这是一项关键的安全功能，可确保您连接到预期的服务器。此验证依赖一组受信任的证书颁发机构 (CA) 来验证服务器的证书。
 
-## 默认 CA 验证
+本节将说明此验证的工作原理，以及如何针对特定场景进行管理，例如使用自定义 CA、提供用于身份验证的客户端证书，或为受信任的环境禁用验证。
 
-默认情况下，当你向一个 `https://` URL 发出请求时，Requests 会根据一组受信任的 CA 证书包来验证服务器的证书。
+## 默认验证
+
+默认情况下，Requests 使用由 `certifi` 包提供的 CA 包。当您发出 HTTPS 请求时，此行为会自动启用。
 
 ```python
 import requests
 
-# 此请求会成功，因为 httpbin.org 拥有受默认 CA 证书包信任的有效证书。
+# 此请求将根据 certifi 的 CA 包验证服务器的 SSL 证书。
 response = requests.get('https://httpbin.org/get')
-print(response.status_code)
-# 200
 ```
 
-Requests 使用 `certifi` 包来提供这套默认的受信任根证书。你可以找到它使用的 CA 证书包文件：
+如果验证失败，Requests 将引发 `SSLError`。
+
+## 自定义 CA 包
+
+您可以通过向 `verify` 参数传递 CA 包文件或 CA 证书目录的路径来指定自己的 CA 包，而不是使用默认的 CA 包。
 
 ```python
-import certifi
+import requests
 
-print(certifi.where())
-# /path/to/your/virtualenv/lib/pythonX.X/site-packages/certifi/cacert.pem
+# 使用自定义 CA 包文件
+ca_bundle_path = '/path/to/your/ca.pem'
+response = requests.get('https://httpbin.org/get', verify=ca_bundle_path)
+
+# 使用 CA 证书目录
+ca_cert_dir_path = '/path/to/your/certs/'
+response = requests.get('https://httpbin.org/get', verify=ca_cert_dir_path)
 ```
 
-## 自定义 CA 证书包
+### 使用环境变量
 
-在企业或开发环境中，你可能需要连接到使用私有或自签名证书的服务。你可以通过向 `verify` 参数传入 CA 证书包文件的路径或证书目录的路径，来让 Requests 信任一组特定的 CA。
+Requests 也会遵循 `REQUESTS_CA_BUNDLE` 和 `CURL_CA_BUNDLE` 环境变量。如果将其中任何一个设置为有效路径，Requests 将其用作所有请求的默认 CA 包，从而覆盖 `certifi` 包。
+
+```bash
+export REQUESTS_CA_BUNDLE=/path/to/your/ca.pem
+```
+
+## 禁用 SSL 验证
+
+在某些情况下，例如在本地开发或针对具有自签名证书的服务器进行测试时，您可能需要禁用 SSL 验证。您可以通过设置 `verify=False` 来实现。
+
+> **警告：** 禁用 SSL 证书验证会使您的应用程序容易受到中间人 (MitM) 攻击。如果没有验证，则无法保证您正在与预期的服务器通信。这只应在受控的非生产环境中进行。
 
 ```python
-# 使用单个 CA 证书包文件 (.pem)
-requests.get('https://internal.service.com', verify='/path/to/ca.pem')
+import requests
 
-# 使用包含多个 CA 证书的目录
-requests.get('https://internal.service.com', verify='/path/to/certs/')
+# 这将禁用 SSL 证书验证并抑制任何警告。
+response = requests.get('https://localhost:5000/get', verify=False)
 ```
 
-要在多个请求中保持此设置，你可以在一个 `Session` 对象上进行配置：
+## 客户端证书
+
+对于双向 TLS (mTLS) 身份验证，您可能需要提供客户端证书。您可以使用 `cert` 参数来实现。该值可以是一个包含证书和私钥的单个文件的路径，也可以是一个包含证书文件和密钥文件路径的元组。
+
+**单个文件（证书和密钥）**
+
+```python
+import requests
+
+cert_file_path = '/path/to/client.pem'
+response = requests.get('https://api.example.com', cert=cert_file_path)
+```
+
+**单独的文件（证书和密钥）**
+
+```python
+import requests
+
+cert_file_path = '/path/to/client.cert'
+key_file_path = '/path/to/client.key'
+response = requests.get('https://api.example.com', cert=(cert_file_path, key_file_path))
+```
+
+## 使用 Session 持久化验证设置
+
+如果您需要使用相同的验证设置向同一主机发出多个请求，使用 `Session` 对象会更高效。您可以在 Session 上配置 `verify` 和 `cert` 属性，这些设置将应用于使用该 Session 发出的所有后续请求。
 
 ```python
 import requests
 
 s = requests.Session()
+
+# 为 Session 设置自定义 CA 包
 s.verify = '/path/to/ca.pem'
 
-# 使用此会话发出的所有请求都将使用自定义 CA 证书包
-response = s.get('https://another.internal.service.com')
+# 为 Session 设置客户端证书
+s.cert = ('/path/to/client.cert', '/path/to/client.key')
+
+# 这两个设置都将用于此请求
+response = s.get('https://api.example.com/data')
 ```
 
-另外，如果在你的代码中没有设置 `verify`，Requests 会自动使用 `REQUESTS_CA_BUNDLE` 或 `CURL_CA_BUNDLE` 环境变量中指定的 CA 证书包。
+通过有效管理 SSL 设置，您可以确保应用程序安全通信，同时适应各种网络环境和身份验证要求。
 
-## 客户端证书
+---
 
-某些服务要求客户端提供自己的证书进行身份验证，这个过程称为双向 TLS (mTLS)。你可以使用 `cert` 参数来提供客户端证书。
-
-如果你的私钥和证书在同一个文件中：
-
-```python
-requests.get(
-    'https://api.service.com/resource',
-    cert='/path/to/client.pem'
-)
-```
-
-如果密钥和证书是分开的文件，将它们以元组的形式传入：
-
-```python
-requests.get(
-    'https://api.service.com/resource',
-    cert=('/path/to/client.crt', '/path/to/client.key')
-)
-```
-
-与 `verify` 设置一样，你可以在 `Session` 对象上设置 `cert`，以将其应用于该会话中发出的所有请求。
-
-## 禁用验证
-
-对于本地测试或在完全受信任的网络上，你可能需要禁用 SSL 证书验证。你可以通过设置 `verify=False` 来实现。 
-
-**警告**：这样做非常不安全，绝不应在生产环境中使用。禁用验证会使你的应用程序面临中间人攻击的风险。
-
-```python
-import requests
-
-# 这将禁用证书验证，并可能触发 InsecureRequestWarning。
-response = requests.get('https://self-signed.badssl.com/', verify=False)
-```
-
-## 验证工作流
-
-下图说明了 Requests 如何确定对 HTTPS 请求使用哪种验证方法。
-
-```d2
-direction: down
-
-start: "开始请求"
-is_https: "URL 是否为 HTTPS？" {
-  shape: diamond
-}
-no_tls: "不使用 TLS 继续"
-verify_false: "verify=False？" {
-    shape: diamond
-}
-disable_verify: "禁用验证 (不安全)" {
-    style.fill: "#fce7c6"
-}
-is_path: "verify 是一个路径？" {
-    shape: diamond
-}
-custom_ca: "使用自定义 CA 证书包"
-default_ca: "使用默认 CA 证书包 (certifi)"
-make_request: "发出请求"
-end: "结束"
-
-start -> is_https
-is_https -- "否" -> no_tls
-is_https -- "是" -> verify_false
-
-verify_false -- "是" -> disable_verify
-verify_false -- "否" -> is_path
-
-is_path -- "是" -> custom_ca
-is_path -- "否" -> default_ca
-
-disable_verify -> make_request
-custom_ca -> make_request
-default_ca -> make_request
-no_tls -> end
-make_request -> end
-```
-
-现在，你已经掌握了在各种场景下处理 SSL/TLS 证书验证的方法。要更深入地控制网络行为，请参阅下一节关于[自定义适配器和钩子](./advanced-usage-adapters-and-hooks.md)的内容。
+要进行更高级的网络控制，例如定义自定义连接逻辑或处理特定协议，请继续阅读下一节关于[自定义适配器和钩子](./advanced-usage-adapters-and-hooks.md)的内容。

@@ -1,136 +1,91 @@
 # 超时、重试和代理
 
-控制网络行为对于构建与 Web 服务交互的健壮应用程序至关重要。本节将介绍如何配置超时以防止无限期挂起、如何为暂时性网络故障设置自动重试，以及如何通过代理路由请求。
+优化网络行为对于构建能够应对不可靠网络状况和复杂企业环境的弹性应用程序至关重要。本指南将介绍如何配置请求超时、连接失败时的自动重试，以及如何通过代理路由请求。
 
 ## 超时
 
-你可以通过 `timeout` 参数告知 Requests 在等待响应指定秒数后停止。在大多数情况下，这是一个至关重要的设置，可以防止程序在出现网络问题时无限期挂起。
+你可以配置 Requests 在等待指定秒数后停止等待响应。`timeout` 参数可以防止程序在发生网络问题时无限期挂起。
 
-`timeout` 值同时适用于请求的连接阶段和读取阶段。
-
-```python
-# 为整个请求设置 5 秒的超时时间
-response = requests.get('https://api.github.com/events', timeout=5)
-```
-
-为了进行更精细的控制，你可以通过传递一个元组来分别指定连接和读取超时时间：
-
-*   **连接超时**：允许客户端与服务器建立连接的时间。
-*   **读取超时**：建立连接后，允许客户端等待服务器响应的时间。
-
-```python
-# 等待 3.05 秒连接，然后等待 27 秒让服务器发送响应
-response = requests.get('https://api.github.com/events', timeout=(3.05, 27))
-```
-
-如果达到超时时间，Requests 将引发 `Timeout` 异常。你可以捕获此异常以优雅地处理错误。
+对外部服务器的大多数请求都应设置超时。如果没有超时设置，代码可能会挂起数分钟甚至更长时间。
 
 ```python
 import requests
-from requests.exceptions import Timeout
 
-try:
-    response = requests.get('https://api.github.com/events', timeout=0.001)
-except Timeout:
-    print('请求超时。')
+# 最多等待 2.5 秒，超时则放弃
+requests.get('https://httpbin.org/delay/3', timeout=2.5)
+# 引发 ReadTimeout 错误
 ```
+
+`timeout` 值可以是一个浮点数，表示等待服务器发送数据的总时间。若要进行更精细的控制，可以提供一个包含两个浮点数的元组：`(connect_timeout, read_timeout)`。
+
+- **连接超时**：允许客户端与服务器建立连接的时间。
+- **读取超时**：建立连接后，允许客户端从服务器接收数据的时间。
+
+```python
+import requests
+
+# 1 秒用于连接，3 秒用于等待响应的第一个字节
+r = requests.get('https://httpbin.org/delay/2', timeout=(1.0, 3.0))
+print(r.status_code)
+
+# 这将引发 ConnectTimeout
+try:
+    requests.get('https://httpbin.org/', timeout=(0.001, 3.0))
+except requests.exceptions.ConnectTimeout:
+    print("Connection timed out.")
+```
+
+如果希望无限期等待，可以将 `None` 作为超时值传入。但是，通常不建议在生产代码中使用此方法。
+
 
 ## 重试
 
-默认情况下，Requests 不会自动重试失败的请求。要实现重试策略，你需要使用自定义的 `HTTPAdapter` 并将其挂载到 `Session` 对象上。
+默认情况下，Requests 不会重试失败的连接。要实现重试策略，需要使用 `Session` 对象并挂载一个配置了重试策略的自定义 `HTTPAdapter`。
 
-### 简单重试
+`HTTPAdapter` 允许你为连接指定最大重试次数。此重试逻辑适用于 DNS 查找、套接字连接错误和连接超时等特定故障，但不适用于已向服务器发送数据的请求。
 
-配置重试最简单的方法是为 `HTTPAdapter` 的 `max_retries` 参数提供一个整数。这将为失败的 DNS 查找、套接字连接和连接超时应用默认的重试机制。
+以下是如何配置 `Session` 以便最多重试请求 3 次：
 
 ```python
 import requests
 from requests.adapters import HTTPAdapter
 
-# 创建一个会话
+# 创建一个 session 对象
 s = requests.Session()
 
-# 配置一个带有简单重试策略的适配器
-# 这将因连接相关错误而重试请求最多 3 次。
+# 创建一个带重试策略的适配器
+# 在本例中，它将在连接失败时重试 3 次
 a = HTTPAdapter(max_retries=3)
 
-# 将适配器挂载到会话上，同时适用于 HTTP 和 HTTPS
+# 将适配器挂载到 session 上，适配 http 和 https 前缀
 s.mount('http://', a)
 s.mount('https://', a)
 
+# 使用 session 发出请求
 try:
-    # 此请求将失败，但适配器会重试 3 次
-    response = s.get('http://a-domain-that-does-not-exist.com')
+    response = s.get('http://a.non.existent.domain/')
 except requests.exceptions.ConnectionError as e:
-    print(f'多次重试后请求失败: {e}')
+    print(f"Failed after multiple retries: {e}")
+
 ```
 
-### 高级重试
+若要更精细地控制重试的状态码或实现指数退避，可以导入并配置 `urllib3.util.retry.Retry`，然后将其一个实例传递给 `max_retries` 参数。
 
-对于更高级的控制，例如针对特定 HTTP 状态码进行重试或实现退避延迟，你可以将一个 `urllib3.util.retry.Retry` 对象传递给 `max_retries`。这使你能够对重试行为进行精细控制。
-
-```python
-import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
-
-s = requests.Session()
-
-# 配置一个更稳健的重试策略
-retries = Retry(total=5,
-                backoff_factor=0.1,
-                status_forcelist=[ 500, 502, 503, 504 ])
-
-adapter = HTTPAdapter(max_retries=retries)
-
-s.mount('http://', adapter)
-s.mount('https://', adapter)
-
-try:
-    # 这将在出现 503 错误时以退避延迟的方式进行重试
-    response = s.get('http://httpbin.org/status/503')
-    response.raise_for_status()
-except requests.exceptions.RequestException as e:
-    print(f'请求失败: {e}')
-```
-
-下面是带有退避因子的重试流程示意图：
-
-```d2
-shape: sequence_diagram
-
-客户端
-"带适配器的会话"
-服务器
-
-客户端 -> "带适配器的会话": s.get('http://service.com/api')
-"带适配器的会话" -> 服务器: GET /api
-服务器 -> "带适配器的会话": 503 服务不可用
-
-"带适配器的会话": {
-  note: "状态在强制重试列表中。以退避方式启动重试（例如，等待 0.1 秒）。"
-}
-
-"带适配器的会话" -> 服务器: GET /api (重试 1)
-服务器 -> "带适配器的会话": 503 服务不可用
-
-"带适配器的会话": {
-  note: "状态在强制重试列表中。以增加的退避时间启动重试（例如，等待 0.2 秒）。"
-}
-
-"带适配器的会话" -> 服务器: GET /api (重试 2)
-服务器 -> "带适配器的会话": 200 OK
-"带适配器的会话" -> 客户端: 响应 (200 OK)
-```
 
 ## 代理
 
-如果你需要通过代理服务器路由请求，可以在任何请求方法上使用 `proxies` 参数，或者在 `Session` 对象上进行配置。
+如果需要通过代理服务器路由请求，可以使用 `proxies` 参数。
+
+### 基本代理用法
+
+`proxies` 参数是一个字典，用于将协议方案映射到代理的 URL。
 
 ```python
+import requests
+
 proxies = {
-   'http': 'http://10.10.1.10:3128',
-   'https': 'http://10.10.1.10:1080',
+  'http': 'http://10.10.1.10:3128',
+  'https': 'http://10.10.1.10:1080',
 }
 
 requests.get('http://example.org', proxies=proxies)
@@ -138,23 +93,23 @@ requests.get('http://example.org', proxies=proxies)
 
 ### 身份验证
 
-如果你的代理需要身份验证，可以在代理 URL 中包含用户名和密码：
+如果代理需要身份验证，可以将其包含在代理 URL 中：
 
 ```python
 proxies = {
-   'http': 'http://user:password@10.10.1.10:3128/',
+    'http': 'http://user:password@10.10.1.10:3128/',
 }
 ```
 
 ### SOCKS 代理
 
-Requests 也支持 SOCKS 代理，但首先需要安装必要的第三方库：
+要使用 SOCKS 代理，需要安装 `PySocks` 库：
 
 ```bash
 pip install pysocks
 ```
 
-安装后，你可以在代理 URL 中指定 SOCKS 协议。使用 `socks5` 进行本地 DNS 解析，或使用 `socks5h` 在代理服务器上解析 DNS。
+安装后，可以将代理方案指定为 `socks5`、`socks5h`、`socks4` 或 `socks4a`。
 
 ```python
 proxies = {
@@ -164,29 +119,38 @@ proxies = {
 
 requests.get('http://example.org', proxies=proxies)
 ```
+`socks5h` 表示 DNS 解析应在代理服务器上进行，这通常是所期望的行为。
 
 ### 环境变量
 
-如果未显式设置 `proxies` 参数，Requests 将自动使用在环境变量中配置的代理。它会遵循 `HTTP_PROXY`、`HTTPS_PROXY` 和 `NO_PROXY`。
-
-你可以在 shell 中配置这些变量：
+Requests 会自动从 `HTTP_PROXY`、`HTTPS_PROXY` 和 `NO_PROXY` 等环境变量中读取并使用代理设置。可以在 `Session` 对象上设置 `trust_env=False` 来禁用此行为。
 
 ```bash
 export HTTP_PROXY="http://10.10.1.10:3128"
-export HTTPS_PROXY="https://10.10.1.10:1080"
-
-# 为特定主机、域或 IP 范围绕过代理
-export NO_PROXY="localhost,127.0.0.1,example.com"
+export HTTPS_PROXY="http://10.10.1.10:1080"
 ```
 
-设置这些环境变量后，以下 Python 代码将自动使用配置的代理，无需任何额外参数：
+设置这些变量后，以下 Python 代码将自动使用已定义的代理，无需再传入 `proxies` 参数：
 
 ```python
-# 此请求将通过 HTTPS_PROXY 中定义的代理发送
-requests.get('https://httpbin.org/ip')
+import requests
 
-# 由于设置了 NO_PROXY，此请求将绕过代理
-requests.get('http://example.com')
+# 此请求将通过 http://10.10.1.10:3128 发送
+requests.get('http://example.org') 
 ```
 
-掌握了这些网络配置后，你可以进一步保护你的连接。在 [SSL 证书验证](./advanced-usage-ssl-cert-verification.md) 指南中了解更多信息。
+### 绕过代理
+
+可以使用 `NO_PROXY` 环境变量指定应绕过代理的主机。该变量应为以逗号分隔的域名、域后缀或 IP 地址列表。
+
+例如，要为 `internal.example.com` 以及 `192.168.0.0/16` 网络中的所有主机绕过代理：
+
+```bash
+export NO_PROXY="internal.example.com,192.168.0.0/16"
+```
+
+Requests 会检查此变量，并将发往匹配主机的请求直接发送，从而绕过已配置的代理。
+
+---
+
+通过这些配置，你可以构建出更稳健的应用程序，从而从容地处理网络故障并在各种网络架构下运行。要保护连接安全，请继续阅读下一节关于 [SSL 证书验证](./advanced-usage-ssl-cert-verification.md) 的内容。

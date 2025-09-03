@@ -1,188 +1,199 @@
 # Making a Request
 
-Making an HTTP request with the Requests library is designed to be simple and intuitive. To begin, ensure you have the library imported:
+The Requests library simplifies sending HTTP requests. To get started, you'll use one of the functions corresponding to the desired HTTP method. All of these functions are wrappers around the main `requests.request()` function.
+
+## HTTP Methods
+
+Requests provides a function for each of the most common HTTP methods:
+
+*   `requests.get()`: Retrieves data from a specified URL.
+*   `requests.post()`: Submits data to be processed to a specified resource.
+*   `requests.put()`: Updates a resource or creates a new one if it does not exist.
+*   `requests.patch()`: Applies partial modifications to a resource.
+*   `requests.delete()`: Deletes the specified resource.
+*   `requests.head()`: Requests the headers of a resource without the body.
+*   `requests.options()`: Describes the communication options for the target resource.
+
+Here are simple examples for each method:
 
 ```python
 import requests
+
+r = requests.get('https://httpbin.org/get')
+print(r)
+
+r = requests.post('https://httpbin.org/post', data={'key': 'value'})
+print(r)
+
+r = requests.put('https://httpbin.org/put', data={'key': 'value'})
+print(r)
+
+r = requests.patch('https://httpbin.org/patch', data={'key': 'value'})
+print(r)
+
+r = requests.delete('https://httpbin.org/delete')
+print(r)
+
+r = requests.head('https://httpbin.org/get')
+print(r)
+
+r = requests.options('https://httpbin.org/get')
+print(r)
 ```
 
-The entire API is centered around seven primary functions, one for each HTTP verb. These functions are straightforward wrappers for the underlying `requests.request()` method, providing a clean and readable way to interact with web services.
-
-The fundamental interaction follows a clear request-response cycle.
-
-```d2
-direction: right
-shape: sequence_diagram
-
-Client: {
-  shape: person
-  label: "Your Application"
-}
-
-Server: {
-  shape: cloud
-  label: "Web Server"
-}
-
-Client -> Server: "HTTP Request (GET, POST, etc.)\n- URL: /get\n- Headers: {'user-agent': 'my-app'}\n- Body: (optional)" {
-    style.animated: true
-}
-
-Server -> Client: "HTTP Response\n- Status Code: 200 OK\n- Headers: {'content-type': 'application/json'}\n- Body: {'key': 'value'}" {
-    style.animated: true
-}
+Response:
+```
+<Response [200]>
+<Response [200]>
+<Response [200]>
+<Response [200]>
+<Response [200]>
+<Response [200]>
+<Response [200]>
 ```
 
-Here is a summary of the most common parameters you will use when constructing a request:
+## Passing Parameters in URLs
 
-| Parameter | Description |
-|---|---|
-| `url` | The URL for the new `Request` object. |
-| `params` | A dictionary, list of tuples, or bytes to be sent in the query string of the request. |
-| `data` | A dictionary, list of tuples, bytes, or a file-like object to send in the body of the request (typically for form data). |
-| `json` | A JSON-serializable Python object to send in the body of the request. This automatically sets the `Content-Type` header to `application/json`. |
-| `headers` | A dictionary of HTTP headers to send with the request. |
-| `files` | A dictionary for multipart encoding file uploads. |
-| `timeout` | The number of seconds to wait for the server to send data before giving up. It can be a single float or a `(connect, read)` tuple. |
+Often, you need to send data in the URL's query string. Instead of manually building the URL, you can provide these parameters as a dictionary or a list of tuples using the `params` keyword argument. Requests will correctly URL-encode them for you.
 
-## GET Requests & URL Parameters
-
-To make a `GET` request to retrieve data from a URL, use the `requests.get()` method. This is one of the most common types of requests.
+For example, to pass `key1=value1` and `key2=value2` to `httpbin.org/get`:
 
 ```python
-# Make a simple GET request
-r = requests.get('https://api.github.com/events')
-```
+import requests
 
-Frequently, you'll need to pass data in the URL's query string. Instead of manually constructing the URL, you can provide a dictionary to the `params` argument, and Requests will build the URL for you.
-
-```python
-# Define a dictionary of parameters
-payload = {'key1': 'value1', 'key2': ['value2', 'value3']}
-
-# Make the request with the parameters
+# Using a dictionary
+payload = {'key1': 'value1', 'key2': 'value2'}
 r = requests.get('https://httpbin.org/get', params=payload)
 
-# You can inspect the URL that was constructed
+# The URL constructed by Requests
 print(r.url)
-# Expected Output: https://httpbin.org/get?key1=value1&key2=value2&key2=value3
 ```
 
-## POST, PUT, PATCH & Request Bodies
+Response:
+```
+https://httpbin.org/get?key1=value1&key2=value2
+```
 
-Methods like `POST`, `PUT`, and `PATCH` are used to send data to a server. This data is transmitted in the request body.
+You can also pass a list of tuples if you need to provide multiple values for a single key:
+
+```python
+import requests
+
+# Using a list of tuples
+payload_list = [('key1', 'value1'), ('key1', 'value2')]
+r = requests.get('https://httpbin.org/get', params=payload_list)
+
+print(r.url)
+```
+
+Response:
+```
+https://httpbin.org/get?key1=value1&key1=value2
+```
+
+## Request Body
+
+For methods like `POST`, `PUT`, and `PATCH`, you typically send data in the request body.
 
 ### Form-Encoded Data
 
-To send form-encoded data, which is what a browser does when a user submits a form, pass a dictionary to the `data` parameter. Your dictionary of data will be automatically form-encoded when the request is made.
+To send form-encoded data, similar to what an HTML form would submit, pass a dictionary to the `data` parameter. Your dictionary of data will be automatically form-encoded when the request is made.
 
 ```python
+import requests
+
 payload = {'key1': 'value1', 'key2': 'value2'}
 r = requests.post('https://httpbin.org/post', data=payload)
 
-# You can view the form data the server received
+# Print the form data echoed by httpbin
 print(r.json()['form'])
-# Expected Output: {'key1': 'value1', 'key2': 'value2'}
 ```
 
-### JSON Data
+Response:
+```json
+{
+  "key1": "value1",
+  "key2": "value2"
+}
+```
 
-For many modern APIs, sending JSON-encoded data is required. You can use the `json` parameter, which accepts a Python dictionary or other JSON-serializable object. Requests handles the serialization and automatically sets the correct `Content-Type` header (`application/json`).
+### JSON Encoded Data
+
+Instead of form-encoding the data, you can send it as a JSON-serialized string. Use the `json` parameter, which accepts a Python object (like a dictionary or list). Requests will automatically encode it to JSON and set the `Content-Type` header to `application/json`.
 
 ```python
+import requests
+
 payload = {'some': 'data'}
 r = requests.post('https://httpbin.org/post', json=payload)
 
-# View the JSON data received by the server
+# Print the JSON data echoed by httpbin
 print(r.json()['json'])
-# Expected Output: {'some': 'data'}
 ```
 
-### Other Methods
-
-The `PUT` and `PATCH` methods function identically to `POST` when it comes to sending body data.
-
-```python
-r = requests.put('https://httpbin.org/put', data={'key': 'value'})
-r = requests.patch('https://httpbin.org/patch', data={'key': 'value'})
+Response:
+```json
+{
+  "some": "data"
+}
 ```
 
-## DELETE, HEAD, and OPTIONS
+### Multipart-Encoded File Upload
 
-Other HTTP methods are available through a similarly simple and consistent API, though they typically do not involve sending a request body.
-
-```python
-r = requests.delete('https://httpbin.org/delete')
-r = requests.head('https://httpbin.org/get')
-r = requests.options('https://httpbin.org/get')
-```
-
-## Custom Headers
-
-To add or modify HTTP headers for a request, pass a dictionary to the `headers` parameter. This is useful for setting custom `User-Agent` strings, authentication tokens, or other request metadata.
+To upload a multipart-encoded file, use the `files` parameter. You can pass a dictionary where the key is the field name and the value is a file-like object.
 
 ```python
-url = 'https://api.github.com/some/endpoint'
-headers = {'user-agent': 'my-app/0.0.1'}
+import requests
 
-r = requests.get(url, headers=headers)
-```
-
-## Multipart File Uploads
-
-Requests simplifies the process of uploading files using multipart-encoded data. Provide a dictionary of file-like objects (opened in binary mode) to the `files` parameter.
-
-```python
 url = 'https://httpbin.org/post'
-
-# Create a dummy file for the example
+# You need a file named 'report.txt' in the same directory
+# with some content for this to run.
 with open('report.txt', 'w') as f:
     f.write('This is a test report.')
 
-# Open the file in binary read mode and pass it to the files parameter
 with open('report.txt', 'rb') as f:
     files = {'file': f}
     r = requests.post(url, files=files)
 
-# The server will receive the file in the 'files' field
-print(r.json()['files'])
-# Expected Output: {'file': 'This is a test report.'}
-```
-
-For more control over the uploaded file, you can provide a tuple for the dictionary value. This allows you to specify a custom filename, content type, and additional headers for that file.
-
-```python
-# The tuple format is ('filename', file_object, 'content_type', custom_headers)
-with open('report.csv', 'w') as f:
-    f.write('col1,col2\nval1,val2')
-
-with open('report.csv', 'rb') as f:
-    files = {'file': ('custom_report_name.csv', f, 'text/csv', {'Expires': '0'})}
-    r = requests.post(url, files=files)
-
-# Inspect the headers and filename as received by the server
+# httpbin will echo back the uploaded file's contents
 print(r.json()['files'])
 ```
 
-## Timeouts
-
-To prevent your program from waiting indefinitely for a response from a slow or unresponsive server, you should always specify a timeout. The `timeout` parameter accepts a float value representing the number of seconds to wait for the server to send a response.
-
-```python
-# Wait a maximum of 5 seconds for a response
-try:
-    r = requests.get('https://httpbin.org/delay/10', timeout=5)
-except requests.exceptions.Timeout:
-    print('The request timed out.')
+Response:
+```json
+{
+  "file": "This is a test report."
+}
 ```
 
-You can also specify different timeouts for connecting to the server and for reading the response by passing a tuple.
+You can also explicitly set the filename, content type, and custom headers by providing a tuple for the file value:
 
 ```python
-# Wait 3.05 seconds to establish a connection, and then 10 seconds to receive the response
-r = requests.get('https://httpbin.org/get', timeout=(3.05, 10))
+files = {'file': ('report.csv', 'some,data,to,send\n', 'text/csv', {'Expires': '0'})}
+r = requests.post(url, files=files)
+```
+
+## Custom Headers
+
+To add or modify HTTP headers for a request, pass a dictionary of headers to the `headers` parameter.
+
+```python
+import requests
+
+url = 'https://httpbin.org/get'
+headers = {'user-agent': 'my-app/0.0.1'}
+
+r = requests.get(url, headers=headers)
+
+# httpbin will echo the headers back
+print(r.json()['headers']['User-Agent'])
+```
+
+Response:
+```
+my-app/0.0.1
 ```
 
 ---
 
-Now that you are familiar with how to construct and send requests, the next step is to process the data that the server sends back. To learn more, proceed to the next section on [Handling Responses](./user-guide-handling-responses.md).
+Now that you know how to construct and send requests, the next step is to understand what you get back from the server. For more details, proceed to the [Handling Responses](./user-guide-handling-responses.md) guide.

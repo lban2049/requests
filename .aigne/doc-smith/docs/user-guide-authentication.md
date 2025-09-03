@@ -1,124 +1,82 @@
 # Authentication
 
-Many web services require authentication to grant access to resources. Requests simplifies this by supporting various authentication schemes directly through the `auth` parameter.
+Many web services require authentication to access their resources. Requests simplifies this by providing several built-in authentication mechanisms and a straightforward way to use them. Authentication is typically passed to the `auth` parameter of a request.
 
 ## Basic Authentication
 
-HTTP Basic Authentication is a widely used, straightforward authentication method. To use it with Requests, you can provide a tuple of `(username, password)` to the `auth` parameter.
-
-```python
-import requests
-
-# Using the tuple shorthand for Basic Auth
-response = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
-
-print(f"Status Code: {response.status_code}")
-# Status Code: 200
-print(response.json())
-# {'authenticated': True, 'user': 'user'}
-```
-
-This tuple is a convenient shorthand. Internally, Requests converts it into an `HTTPBasicAuth` object from the `requests.auth` module. You can also create and use this object directly for more explicit code.
+Basic Authentication is a widely used, simple authentication scheme. With Requests, you can supply your credentials by passing a two-item tuple of `(username, password)` to the `auth` parameter.
 
 ```python
 import requests
 from requests.auth import HTTPBasicAuth
 
-response = requests.get(
-    'https://httpbin.org/basic-auth/user/pass', 
-    auth=HTTPBasicAuth('user', 'pass')
-)
+# Using a tuple as a shorthand
+response = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
 
-print(f"Status Code: {response.status_code}")
-# Status Code: 200
+print(response.status_code)
+# 200
 ```
-When you use Basic Authentication, Requests automatically constructs and adds the `Authorization` header to your request with the properly encoded credentials.
+
+This shorthand is convenient for quick use. Under the hood, Requests converts this tuple into an `HTTPBasicAuth` object. You can also create and pass an instance of `HTTPBasicAuth` directly, which can be useful if you want to reuse the authentication object.
+
+```python
+import requests
+from requests.auth import HTTPBasicAuth
+
+auth = HTTPBasicAuth('user', 'pass')
+response = requests.get('https://httpbin.org/basic-auth/user/pass', auth=auth)
+
+print(response.status_code)
+# 200
+```
 
 ## Digest Authentication
 
-Digest Authentication offers a more secure alternative to Basic Authentication by using a challenge-response mechanism that avoids sending the password in cleartext. Using it is just as simple as using Basic Auth.
+Digest Authentication is another common form of HTTP authentication that provides a more secure way to transmit credentials than Basic Authentication. Using it is just as simple.
 
-First, import `HTTPDigestAuth` and then pass an instance of it to the `auth` parameter.
+To use Digest Authentication, you need to import `HTTPDigestAuth` and pass an instance of it to the `auth` parameter.
 
 ```python
 import requests
 from requests.auth import HTTPDigestAuth
 
-url = 'https://httpbin.org/digest-auth/qop/user/pass'
+url = 'https://httpbin.org/digest-auth/auth/user/pass'
 
 response = requests.get(url, auth=HTTPDigestAuth('user', 'pass'))
 
-print(f"Status Code: {response.status_code}")
-# Status Code: 200
-print(response.json())
-# {'authenticated': True, 'user': 'user'}
+print(response.status_code)
+# 200
 ```
 
-Requests handles the entire challenge-response flow for you. The process involves an initial unauthorized request which receives a `401` response from the server. Requests then uses information from the server's `WWW-Authenticate` header to construct a second, authenticated request.
+Requests will automatically handle the multi-step challenge-response process required for Digest Authentication.
 
-Here is a diagram illustrating the Digest Authentication flow:
+## Proxy Authentication
 
-```d2
-shape: sequence_diagram
-direction: down
-
-Client: "Your Application"
-Server: "Web Service"
-
-Client -> Server: "GET /resource (no auth)"
-Server -> Client: "401 Unauthorized\nWWW-Authenticate: Digest, nonce=..."
-
-Client: {
-  note: "Calculates response using credentials & server nonce"
-}
-
-Client -> Server: "GET /resource\nAuthorization: Digest, response=..."
-Server -> Client: "200 OK"
-
-```
-
-## Custom Authentication
-
-Requests features a pluggable authentication system, allowing you to implement authentication schemes that are not built-in. You can create a custom authentication handler by creating a callable class that modifies the `Request` object before it is sent.
-
-The simplest way is to inherit from `requests.auth.AuthBase` and implement the `__call__` method. This method receives the `PreparedRequest` object, should modify it as needed (e.g., by adding custom headers), and must return the modified object.
-
-Here is an example of a custom handler for a token-based authentication scheme:
+If you are routing your requests through a proxy that requires authentication, Requests has you covered. You can provide proxy credentials using the `HTTPProxyAuth` helper.
 
 ```python
 import requests
-from requests.auth import AuthBase
+from requests.auth import HTTPProxyAuth
 
-class TokenAuth(AuthBase):
-    """Attaches a custom token to the Authorization header."""
-    def __init__(self, token):
-        self.token = token
+proxies = {
+   'http': 'http://proxy.example.com:8080',
+   'https': 'https://proxy.example.com:8080',
+}
 
-    def __call__(self, r):
-        # Modify the request `r` by adding the Authorization header
-        r.headers['Authorization'] = f'Token {self.token}'
-        return r
+# Assuming the proxy requires authentication
+auth = HTTPProxyAuth('proxy_user', 'proxy_pass')
 
-# Use the custom auth handler
-response = requests.get('https://httpbin.org/headers', auth=TokenAuth('12345abcde'))
+response = requests.get('https://httpbin.org/get', proxies=proxies, auth=auth)
 
-print(response.json())
-
-# Expected Response shows the custom Authorization header:
-# {
-#   "headers": {
-#     "Accept": "*/*", 
-#     "Accept-Encoding": "gzip, deflate", 
-#     "Authorization": "Token 12345abcde", 
-#     "Host": "httpbin.org", 
-#     "User-Agent": "python-requests/x.x.x", 
-#     "X-Amzn-Trace-Id": "..."
-#   }
-# }
+print(response.status_code)
 ```
 
-This modular approach provides the flexibility to integrate with any custom or complex authentication protocol.
+This will send the appropriate `Proxy-Authorization` header with your request.
+
+## Other Authentication Schemes
+
+Requests is designed with extensibility in mind. If you need to implement a more complex authentication scheme (like OAuth), you can create your own custom authentication handler. Any callable object that accepts a `Request` object and returns a modified `Request` object can be used. This allows for integration with virtually any authentication mechanism.
 
 ---
 
-Now that you can authenticate your requests, the next step is to learn how to manage situations where things don't go as planned. Continue to the [Error Handling](./user-guide-error-handling.md) guide for more details.
+Now that you know how to authenticate your requests, it's important to understand how to manage potential problems. Continue to the next section to learn about [Error Handling](./user-guide-error-handling.md).

@@ -1,193 +1,175 @@
 # Custom Adapters and Hooks
 
-Requests provides powerful, low-level customization options through Transport Adapters and an event hook system. Adapters allow you to modify or replace the core logic for how requests are sent, while hooks let you register callbacks to inspect or alter parts of the request lifecycle, primarily the response.
+Requests is designed to be extensible, allowing you to modify or replace core components to suit specific needs. The two primary mechanisms for this are Transport Adapters, which handle the logic of sending requests, and Event Hooks, which allow you to intercept and process responses.
 
-This section covers how to extend Requests' functionality for advanced use cases like custom retry strategies, non-standard authentication, or response post-processing.
+This guide will demonstrate how to create and use both to extend the functionality of your HTTP requests.
 
 ## Transport Adapters
 
-Transport Adapters are the core of how Requests handles network operations. When you make a call like `requests.get()`, a `Session` object determines the appropriate adapter based on the URL prefix (e.g., `http://` or `https://`) and delegates the request to it. The default is the `HTTPAdapter`, which uses the `urllib3` library for all HTTP and HTTPS communication.
+A Transport Adapter provides a low-level interface for handling requests for a specific URL scheme, like `http://` or `https://`. When you make a request, a `Session` object selects the appropriate adapter based on the request's URL prefix and delegates the actual network communication to it.
 
-By creating a custom adapter, you can implement unique transport behavior for specific protocols or hosts.
+By creating a custom adapter, you can implement unique transport behaviors, such as custom authentication, specialized logging, or non-standard retry logic.
 
 ### Creating a Custom Adapter
 
-To create a custom adapter, you subclass `requests.adapters.BaseAdapter` and, at a minimum, implement the `send()` method. This method is responsible for executing the request and must return a `requests.Response` object.
+The simplest way to create a custom adapter is to subclass `requests.adapters.HTTPAdapter` and override its methods. The most common method to override is `send()`, which is responsible for sending a `PreparedRequest`.
 
-The base `send` method signature is:
-
-```python
-def send(self, request, stream=False, timeout=None, verify=True, cert=None, proxies=None):
-    """Sends PreparedRequest object. Returns Response object."""
-    raise NotImplementedError
-```
-
-A practical approach is to inherit from the existing `HTTPAdapter` and override its methods. This allows you to add functionality without rewriting the entire HTTP/HTTPS connection logic.
-
-#### Example: Custom Retry Adapter
-
-The `HTTPAdapter` already supports retry logic through `urllib3`. You can create a specialized adapter to configure this behavior for specific needs, such as retrying only on certain HTTP status codes.
+Here is an example of a simple adapter that logs the time taken for each request and its status code.
 
 ```python
 import requests
+import time
 from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 
-class RetryAdapter(HTTPAdapter):
-    def __init__(self, *args, **kwargs):
-        # Configure a retry strategy to retry on 5xx server errors
-        retries = Retry(
-            total=5, # Total number of retries
-            backoff_factor=0.2, # A delay factor between attempts
-            status_forcelist=[500, 502, 503, 504], # Status codes to retry on
-            allowed_methods=frozenset(['GET', 'POST']) # Methods to retry
-        )
-        # The 'max_retries' parameter is passed to the parent HTTPAdapter
-        super().__init__(max_retries=retries, *args, **kwargs)
-
-# Create a session and mount the custom adapter for all HTTPS requests
-session = requests.Session()
-session.mount("https://", RetryAdapter())
-
-try:
-    # This request will be retried up to 5 times if it returns a 503 status
-    response = session.get("https://httpbin.org/status/503")
-    print(f"Request succeeded with status: {response.status_code}")
-except requests.exceptions.RetryError as e:
-    print(f"Request failed after multiple retries: {e}")
-
+class TimingAdapter(HTTPAdapter):
+    def send(self, request, stream=False, timeout=None, verify=True, cert=None, proxies=None):
+        start = time.time()
+        print(f'Starting request to {request.url}')
+        
+        # Call the parent class's send method to perform the actual request
+        response = super().send(request, stream, timeout, verify, cert, proxies)
+        
+        end = time.time()
+        total_time = round(end - start, 2)
+        print(f'Request to {request.url} finished in {total_time}s with status {response.status_code}')
+        
+        return response
 ```
 
 ### Mounting an Adapter
 
-Custom adapters are registered with a `Session` object using the `session.mount()` method. You associate an adapter instance with a URL prefix. When a request is made, the session uses the adapter with the longest matching prefix for the request's URL.
-
-For example, you could mount different adapters for different services:
+Once you have a custom adapter, you need to instruct a `Session` object to use it for certain requests. This is done using the `mount()` method, which associates a URL prefix with your adapter.
 
 ```python
-s = requests.Session()
-
-# Use a standard adapter for most sites
-s.mount('https://', HTTPAdapter())
-
-# Use our special retry adapter only for a specific API
-s.mount('https://api.example.com', RetryAdapter())
-
-s.get('https://google.com') # Uses the standard HTTPAdapter
-s.get('https://api.example.com/data') # Uses the RetryAdapter
-```
-
-### Adapter Request Flow
-
-The following diagram illustrates how a `Session` selects and uses an adapter to send a request.
-
-```d2
-shape: sequence_diagram
-
-User
-Session
-Adapter: CustomAdapter
-
-User -> Session: "session.get(url, ...)"
-Session -> Session: "get_adapter(url) to find matching adapter"
-Session -> Adapter: "send(prepared_request, **kwargs)"
-Adapter -> Session: "Returns Response object"
-Session -> User: "Returns final Response object"
-```
-
-## Event Hooks
-
-Requests also includes a hook system that allows you to attach callbacks to a single event in the request/response cycle: `response`.
-
-This hook is triggered after a response is received from the server but before it is returned to your application code. Hooks are useful for implementing cross-cutting concerns like global logging, response modification, or centralized error handling.
-
-### The `response` Hook
-
-The only available hook is `response`. A `response` hook is a callable that accepts the `response` object as its first argument, along with any other keyword arguments passed to the request method.
-
-```python
-def my_hook(response, **kwargs):
-    # Inspect the response
-    print(f"Received response from {response.url} with status {response.status_code}")
-
-    # Optionally, modify and return it
-    if 'X-Special-Header' not in response.headers:
-        response.headers['X-Special-Header'] = 'Added by hook!'
-    return response
-```
-If the hook function returns a value, that value will replace the original response. If it returns `None`, the original response is used.
-
-### Registering Hooks
-
-You can register hooks either on a `Session` object for all subsequent requests or on a per-request basis.
-
-#### Session-level Hooks
-Hooks are stored in the `session.hooks` dictionary. The value for each event key should be a list of callables.
-
-```python
-import requests
-
-def log_response_details(response, **kwargs):
-    print(f"URL: {response.url}, Elapsed: {response.elapsed}")
-
+# Create a session object
 session = requests.Session()
-session.hooks['response'] = [log_response_details]
 
-session.get('https://httpbin.org/get')
-session.get('https://httpbin.org/delay/1')
-```
+# Create an instance of our custom adapter
+timing_adapter = TimingAdapter()
 
-#### Per-request Hooks
-Alternatively, you can pass a `hooks` dictionary directly to a request method.
+# Mount the adapter to handle all HTTPS requests
+session.mount('https://', timing_adapter)
 
-```python
-import requests
-
-def check_for_error(response, **kwargs):
-    """A hook that automatically raises an exception for HTTP errors."""
-    response.raise_for_status()
-
+# Any request made with this session to an https:// URL will use our adapter
 try:
-    # This request will use the hook and raise an exception
-    requests.get('https://httpbin.org/status/500', hooks={'response': [check_for_error]})
-except requests.exceptions.HTTPError as e:
-    print(f"Caught expected error: {e}")
+    session.get('https://httpbin.org/get')
+except requests.exceptions.RequestException as e:
+    print(f'An error occurred: {e}')
 
-# This request will not use the hook and will not raise an exception
-response = requests.get('https://httpbin.org/status/500')
-print(f"Request without hook completed with status: {response.status_code}")
+# Expected output:
+# Starting request to https://httpbin.org/get
+# Request to https://httpbin.org/get finished in Xs with status 200
 ```
 
-### Hook Execution Flow
+Requests will use the most specific prefix when selecting an adapter. For example, an adapter mounted on `'https://api.example.com'` would be chosen for requests to that host over one mounted on `'https://'`.
 
-The hook system processes the response before returning it to the user, allowing for inspection or modification at a critical point.
+### Request Lifecycle with Adapters
+
+The following diagram illustrates where Transport Adapters fit into the request lifecycle.
 
 ```d2
 direction: down
 
-A: "Request sent via Adapter"
-B: "Response Received"
-C: "Hooks for 'response' event?" {
-  shape: diamond
+"Request Initiated": {
+  shape: oval
 }
-D: "Iterate through hook functions"
-E: "Hook returned a value?" {
-    shape: diamond
+
+"Session Object": {
+  shape: rectangle
+  "1. get_adapter(url)": {
+    shape: rectangle
+  }
 }
-F: "Replace response with new value"
-G: "Return final response to user"
 
-A -> B -> C
+"Transport Adapter": {
+  shape: package
+  "2. send(request)": {
+    shape: rectangle
+  }
+  "4. build_response(raw_resp)": {
+    shape: rectangle
+  }
+}
 
-C -> D: Yes
-C -> G: No
+"Network Communication": {
+  shape: cylinder
+  label: "HTTP/HTTPS"
+}
 
-D -> E: "call hook(response, **kwargs)"
-E -> F: Yes
-F -> D
-E -> D: No
+"Response Processing": {
+  shape: rectangle
+  "5. dispatch_hook('response', ...)"
+}
 
-D -> G: "Finished all hooks"
+"Final Response": {
+  shape: oval
+}
+
+"Request Initiated" -> "Session Object"
+"Session Object" -> "Transport Adapter": "Selects appropriate adapter"
+"Transport Adapter" -> "Network Communication": "3. Sends request"
+"Network Communication" -> "Transport Adapter": "Receives raw response"
+"Transport Adapter" -> "Response Processing": "Returns requests.Response object"
+"Response Processing" -> "Final Response": "Returns to user"
 ```
 
-By leveraging custom adapters and hooks, you can tailor Requests' behavior to fit nearly any networking requirement. For more detailed information on the classes and methods discussed, please consult the [API Reference](./api-reference.md).
+## Event Hooks
+
+Requests also provides a hook system for developers to attach callbacks to certain parts of the request process. The primary available hook is `response`, which is triggered after a response has been received but before it is returned to the caller.
+
+Hooks are useful for inspecting or modifying response objects globally without needing to wrap every request call.
+
+### Using the `response` Hook
+
+A hook is simply a function that accepts the `response` object as its first argument, along with any other keyword arguments passed to the original request method.
+
+Here's an example of a hook that prints a response header:
+
+```python
+import requests
+
+def print_server_header(response, **kwargs):
+    """This hook prints the value of the Server header."""
+    if 'Server' in response.headers:
+        print(f"Response was served by: {response.headers['Server']}")
+    return response
+
+# Attach the hook to a single request
+requests.get('https://httpbin.org/get', hooks={'response': print_server_header})
+
+# Expected output:
+# Response was served by: gunicorn/19.9.0
+```
+
+You can also attach a hook to a `Session` object to have it run for every request made through that session.
+
+```python
+session = requests.Session()
+# Note: session hooks should be a list of callables
+session.hooks['response'] = [print_server_header]
+
+session.get('https://httpbin.org/get')
+session.get('https://httpbin.org/ip')
+```
+
+### Modifying the Response
+
+A hook can also modify the response object. If a hook function returns a value, that value will replace the original response object for any subsequent processing and for the final return to the user.
+
+This example shows a hook that attaches a custom attribute to the response.
+
+```python
+import requests
+
+def add_custom_attribute(response, **kwargs):
+    response.hook_was_here = True
+    return response
+
+response = requests.get('https://httpbin.org/get', hooks={'response': add_custom_attribute})
+
+if hasattr(response, 'hook_was_here') and response.hook_was_here:
+    print("Custom attribute added by hook successfully.")
+
+# Expected output:
+# Custom attribute added by hook successfully.
+```
