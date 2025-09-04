@@ -1,37 +1,12 @@
 # 概述
 
-![Requests Logo](../../../ext/requests-logo.svg)
+![Requests Logo](../../../ext/requests-logo.png)
 
-Requests 是一个为人类构建的、优雅简洁的 Python HTTP 库。它能让你轻松发送 HTTP/1.1 请求，并封装了复杂的网络连接，使你能够专注于与服务交互和在应用程序中处理数据。
+Requests 是一个为人类设计的、优雅简洁的 Python HTTP 库。它能让你轻松发送 HTTP/1.1 请求，而无需手动为 URL 添加查询字符串，也无需对 `PUT` 和 `POST` 数据进行表单编码。
 
-它是下载次数最多的 Python 包之一，每周下载量约 3000 万次，同时也是 GitHub 上超过 1,000,000 个代码库的依赖项。你可以完全信赖此代码。
+如今，Requests 是下载次数最多的 Python 包之一，每周下载量约 `3000 万次`，并且是 GitHub 上超过 `1,000,000` 个代码库的依赖项。你可以完全信赖这段代码。
 
-```d2
-direction: down
-
-"你的 Python 应用": {
-  shape: rectangle
-}
-
-"Requests 库": {
-  shape: package
-  "import requests"
-}
-
-"Web 服务器 / API": {
-  shape: cylinder
-  "远程 HTTP 服务"
-}
-
-"你的 Python 应用" -> "Requests 库": "进行简单的 API 调用\n(例如，requests.get())"
-"Requests 库" -> "Web 服务器 / API": "处理复杂的 HTTP 细节\n(连接池、SSL 等)"
-"Web 服务器 / API" -> "Requests 库": "HTTP 响应"
-"Requests 库" -> "你的 Python 应用": "返回一个简单的 Response 对象"
-```
-
-## 一个简单的请求
-
-使用 Requests，你只需几行代码即可执行一个复杂的、带身份验证的 GET 请求，并能通过直观的方法与响应数据进行交互。
+以下是使用 Requests 执行带有基本身份验证的 `GET` 请求的简单示例：
 
 ```python
 >>> import requests
@@ -48,33 +23,55 @@ direction: down
 {'authenticated': True, ...}
 ```
 
-## 核心功能
+## 功能特性
 
-Requests 具备全面的功能集，足以支持构建稳健可靠的 HTTP 应用程序。
+Requests 足以满足构建稳健可靠的 HTTP 应用程序的需求。它提供了丰富的开箱即用功能。
 
-<x-cards data-columns="2">
-  <x-card data-title="连接管理" data-icon="lucide:plug-zap">
-    Keep-Alive、连接池和连接超时等功能可确保网络通信的稳健与高效。
+<x-cards data-columns="3">
+  <x-card data-title="连接管理" data-icon="lucide:network">
+    包含 Keep-Alive 和连接池，可实现高效的网络利用。
   </x-card>
-  <x-card data-title="身份验证" data-icon="lucide:key-round">
-    内置对基本和摘要式身份验证方案的支持。
+  <x-card data-title="国际化支持" data-icon="lucide:globe">
+    原生处理国际化域名和 URL。
   </x-card>
-  <x-card data-title="会话持久化" data-icon="lucide:cookies">
-    使用会话对象可以在对同一主机的多次请求之间保持 Cookie 和其他参数。
-  </x-card>
-  <x-card data-title="数据处理" data-icon="lucide:file-code-2">
-    自动内容解压、多部分文件上传以及用于处理 JSON 数据的简单 `.json()` 方法。
+  <x-card data-title="会话持久化" data-icon="lucide:cookie">
+    使用会话对象，可在多个请求之间保持 Cookie。
   </x-card>
   <x-card data-title="SSL 验证" data-icon="lucide:shield-check">
-    默认提供浏览器风格的 TLS/SSL 验证，以确保连接安全。
+    具备浏览器风格的 TLS/SSL 验证功能，确保连接安全。
   </x-card>
-  <x-card data-title="代理支持" data-icon="lucide:route">
-    可轻松通过 SOCKS 代理路由你的请求。
+  <x-card data-title="身份验证" data-icon="lucide:key-round">
+    内置支持基本和摘要式身份验证。
+  </x-card>
+  <x-card data-title="Cookie 处理" data-icon="lucide:cookie">
+    提供类似字典的熟悉接口来管理 Cookie。
+  </x-card>
+  <x-card data-title="内容解压缩" data-icon="lucide:file-archive">
+    自动进行内容解压缩和解码。
+  </x-card>
+  <x-card data-title="文件上传" data-icon="lucide:upload">
+    轻松处理多部分文件上传。
+  </x-card>
+  <x-card data-title="代理支持" data-icon="lucide:server">
+    支持 SOCKS 代理路由请求。
+  </x-card>
+  <x-card data-title="超时" data-icon="lucide:timer">
+    可配置连接超时，防止请求挂起。
+  </x-card>
+  <x-card data-title="流式传输" data-icon="lucide:download">
+    支持大文件的流式下载。
+  </x-card>
+  <x-card data-title="分块请求" data-icon="lucide:box-select">
+    能够发送分块的 HTTP 请求。
   </x-card>
 </x-cards>
 
+## 完整文档
+
+如需查阅包括详细 API 参考和高级用法在内的完整指南，请参阅托管在 Read the Docs 上的官方文档。
+
+[![Read the Docs](https://raw.githubusercontent.com/psf/requests/main/ext/ss.png)](https://requests.readthedocs.io)
+
 ## 后续步骤
 
-<x-card data-title="开始使用" data-icon="lucide:rocket" data-href="/getting-started" data-cta="安装 Requests">
-  准备好开始了吗？请遵循简单明了的分步说明来安装该库并发出你的第一个 HTTP 请求。
-</x-card>
+准备好开始了吗？请继续阅读 [入门指南](./getting-started.md)，了解安装说明并发出你的第一个请求。

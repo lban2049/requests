@@ -1,103 +1,99 @@
 # SSL 证书验证
 
-默认情况下，Requests 会为 HTTPS 请求验证 SSL 证书，这是一项关键的安全功能，可确保您连接到预期的服务器。此验证依赖一组受信任的证书颁发机构 (CA) 来验证服务器的证书。
+Requests 默认会为 HTTPS 请求验证 SSL 证书以确保安全通信，这与 Web 浏览器的运作方式类似。如果证书无法验证，Requests 将会抛出 `SSLError`。此行为是一项关键的安全功能，可防止中间人攻击。
 
-本节将说明此验证的工作原理，以及如何针对特定场景进行管理，例如使用自定义 CA、提供用于身份验证的客户端证书，或为受信任的环境禁用验证。
+默认情况下，Requests 使用由 `certifi` 包提供的 CA 捆绑包。本节详细介绍如何针对不同场景（例如使用私有 CA 或提供客户端证书）自定义此行为。
 
-## 默认验证
+## 自定义 CA 证书
 
-默认情况下，Requests 使用由 `certifi` 包提供的 CA 包。当您发出 HTTPS 请求时，此行为会自动启用。
+你可以通过向 `verify` 参数传递你自己的 CA 捆绑包文件路径或证书目录路径来覆盖默认的受信任 CA 捆绑包。
 
-```python
-import requests
-
-# 此请求将根据 certifi 的 CA 包验证服务器的 SSL 证书。
-response = requests.get('https://httpbin.org/get')
-```
-
-如果验证失败，Requests 将引发 `SSLError`。
-
-## 自定义 CA 包
-
-您可以通过向 `verify` 参数传递 CA 包文件或 CA 证书目录的路径来指定自己的 CA 包，而不是使用默认的 CA 包。
+这在与使用自签名证书的内部服务器或服务交互时特别有用。
 
 ```python
 import requests
 
-# 使用自定义 CA 包文件
-ca_bundle_path = '/path/to/your/ca.pem'
-response = requests.get('https://httpbin.org/get', verify=ca_bundle_path)
+# 使用自定义 CA 捆绑包文件
+response = requests.get('https://some-internal-site.com', verify='/path/to/your/ca.pem')
 
 # 使用 CA 证书目录
-ca_cert_dir_path = '/path/to/your/certs/'
-response = requests.get('https://httpbin.org/get', verify=ca_cert_dir_path)
+response = requests.get('https://some-internal-site.com', verify='/path/to/certs/')
 ```
+
+如果 `verify` 设置为目录路径，Requests 将从该目录加载证书。
 
 ### 使用环境变量
 
-Requests 也会遵循 `REQUESTS_CA_BUNDLE` 和 `CURL_CA_BUNDLE` 环境变量。如果将其中任何一个设置为有效路径，Requests 将其用作所有请求的默认 CA 包，从而覆盖 `certifi` 包。
+或者，你可以通过设置 `REQUESTS_CA_BUNDLE` 或 `CURL_CA_BUNDLE` 环境变量来为所有请求配置自定义 CA 捆绑包：
 
 ```bash
 export REQUESTS_CA_BUNDLE=/path/to/your/ca.pem
 ```
 
-## 禁用 SSL 验证
-
-在某些情况下，例如在本地开发或针对具有自签名证书的服务器进行测试时，您可能需要禁用 SSL 验证。您可以通过设置 `verify=False` 来实现。
-
-> **警告：** 禁用 SSL 证书验证会使您的应用程序容易受到中间人 (MitM) 攻击。如果没有验证，则无法保证您正在与预期的服务器通信。这只应在受控的非生产环境中进行。
-
-```python
-import requests
-
-# 这将禁用 SSL 证书验证并抑制任何警告。
-response = requests.get('https://localhost:5000/get', verify=False)
-```
+设置此环境变量后，Requests 将其用作默认的 CA 捆绑包，因此你无需在代码中指定 `verify` 参数。
 
 ## 客户端证书
 
-对于双向 TLS (mTLS) 身份验证，您可能需要提供客户端证书。您可以使用 `cert` 参数来实现。该值可以是一个包含证书和私钥的单个文件的路径，也可以是一个包含证书文件和密钥文件路径的元组。
+一些服务器要求客户端提供证书进行身份验证，这个过程称为双向 TLS (mTLS)。你可以使用 `cert` 参数提供客户端证书。
 
-**单个文件（证书和密钥）**
+`cert` 参数可以是一个包含私钥和证书的单一文件路径，也可以是一个包含证书文件和密钥文件路径的元组。
 
 ```python
 import requests
 
+# 如果你的私钥包含在证书文件中
 cert_file_path = '/path/to/client.pem'
-response = requests.get('https://api.example.com', cert=cert_file_path)
+response = requests.get('https://api.some-secure-service.com', cert=cert_file_path)
+
+# 如果你的证书和私钥位于不同的文件中
+cert_file_path = '/path/to/client.crt'
+key_file_path = '/path/to/client.key'
+response = requests.get('https://api.some-secure-service.com', cert=(cert_file_path, key_file_path))
 ```
 
-**单独的文件（证书和密钥）**
+如果指定的证书或密钥文件不存在，Requests 将会抛出 `OSError`。
+
+## 禁用验证
+
+在某些情况下，例如本地开发或针对使用临时自签名证书的服务器进行测试时，你可能需要禁用 SSL 验证。可以通过设置 `verify=False` 来实现。
+
+> **警告：** 禁用 SSL 证书验证会使你的应用程序容易受到中间人 (MitM) 攻击。它会绕过对服务器身份的验证，这意味着你发送的任何数据都可能被截获。这只应在受控的非生产环境中使用。
 
 ```python
 import requests
 
-cert_file_path = '/path/to/client.cert'
-key_file_path = '/path/to/client.key'
-response = requests.get('https://api.example.com', cert=(cert_file_path, key_file_path))
+# 这将禁用证书验证，并可能导致安全警告。
+response = requests.get('https://self-signed.badssl.com/', verify=False)
 ```
 
-## 使用 Session 持久化验证设置
+当 `verify=False` 时，Requests 会接受服务器提供的任何 TLS 证书，并忽略主机名不匹配和证书过期的情况。
 
-如果您需要使用相同的验证设置向同一主机发出多个请求，使用 `Session` 对象会更高效。您可以在 Session 上配置 `verify` 和 `cert` 属性，这些设置将应用于使用该 Session 发出的所有后续请求。
+## 会话中的 SSL 验证
+
+如果你需要对多个请求应用相同的 SSL 配置，可以在 `Session` 对象上设置 `verify` 和 `cert` 属性。这样可以避免为每个请求调用传递相同的参数。
 
 ```python
 import requests
 
 s = requests.Session()
 
-# 为 Session 设置自定义 CA 包
+# 为此会话中的所有请求设置自定义 CA 捆绑包
 s.verify = '/path/to/ca.pem'
 
-# 为 Session 设置客户端证书
-s.cert = ('/path/to/client.cert', '/path/to/client.key')
+# 为此会话中的所有请求设置客户端证书
+s.cert = ('/path/to/client.crt', '/path/to/client.key')
 
-# 这两个设置都将用于此请求
-response = s.get('https://api.example.com/data')
+# 这些请求将使用会话的 SSL 配置
+response1 = s.get('https://api.example.com/endpoint1')
+response2 = s.get('https://api.example.com/endpoint2')
 ```
 
-通过有效管理 SSL 设置，您可以确保应用程序安全通信，同时适应各种网络环境和身份验证要求。
+直接传递给请求方法的任何参数（例如 `s.get(url, verify=False)`）都将覆盖该特定请求的会话设置。
 
 ---
 
-要进行更高级的网络控制，例如定义自定义连接逻辑或处理特定协议，请继续阅读下一节关于[自定义适配器和钩子](./advanced-usage-adapters-and-hooks.md)的内容。
+要了解更多关于网络行为的高级自定义，例如创建自定义连接逻辑或处理特定的身份验证方案，请继续阅读下一节。
+
+<x-card data-title="自定义适配器和钩子" data-icon="lucide:git-merge" data-href="/advanced-usage/adapters-and-hooks" data-cta="阅读更多">
+  学习如何通过创建自定义传输适配器和使用事件钩子系统来扩展 Requests 的功能。
+</x-card>

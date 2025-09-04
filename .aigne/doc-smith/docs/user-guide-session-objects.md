@@ -1,116 +1,205 @@
 # Session Objects
 
-The Session object allows you to persist certain parameters across requests. It also persists cookies over all requests made from the Session instance, and will use `urllib3`'s connection pooling. So if you're making several requests to the same host, the underlying TCP connection will be reused, which can result in a significant performance increase.
+The Session object is a powerful tool that allows you to persist parameters across multiple requests. It also reuses the underlying TCP connection for requests made to the same host, which can result in a significant performance increase. In essence, it manages cookies, headers, and connection pooling for you.
 
-A Session object has all the methods of the main Requests API.
+While you can make individual requests with `requests.get()`, `requests.post()`, etc., using a `Session` object is highly recommended when you need to make several requests to the same API or website.
 
-Let's persist some cookies across requests:
+## Basic Usage
 
-```python
-import requests
-
-s = requests.Session()
-
-s.get('https://httpbin.org/cookies/set/sessioncookie/123456789')
-r = s.get('https://httpbin.org/cookies')
-
-print(r.text)
-# '{\n  "cookies": {\n    "sessioncookie": "123456789"\n  }\n}'
-```
-
-Sessions can also be used to provide default data to the request methods. This is done by providing data to the properties on a Session object:
+The `Session` object has the same methods as the top-level `requests` module. Let's start by creating a session and making a simple GET request.
 
 ```python
 import requests
 
 s = requests.Session()
-s.auth = ('user', 'pass')
-s.headers.update({'x-test': 'true'})
 
-# both 'x-test' and 'x-test2' are sent
-r = s.get('https://httpbin.org/headers', headers={'x-test2': 'true'})
-
-print(r.text)
-# {
-#   "headers": {
-#     "Accept": "*/*", 
-#     "Accept-Encoding": "gzip, deflate", 
-#     "Authorization": "Basic dXNlcjpwYXNz", 
-#     "Host": "httpbin.org", 
-#     "User-Agent": "python-requests/2.32.3", 
-#     "X-Amzn-Trace-Id": "Root=1-66a7b732-2d85835b446108130386811a", 
-#     "X-Test": "true", 
-#     "X-Test2": "true"
-#   }
-# }
+response = s.get('https://httpbin.org/get')
+print(response.status_code)
 ```
 
-Any dictionaries that you pass to a request method will be merged with the session-level values that are set. The method-level parameters override session parameters.
+For proper resource management, it's best to use the `with` statement, which ensures the session is closed automatically when you're done with it.
 
-### Session Workflow Diagram
+```python
+import requests
 
-The following diagram illustrates how a Session object maintains state, like cookies and headers, across multiple requests.
+with requests.Session() as s:
+    response = s.get('https://httpbin.org/get')
+    print(response.json())
+```
+
+## Cookie Persistence
+
+A key feature of a Session is its ability to persist cookies. When you make a request, any cookies set by the server are stored in the Session's cookie jar and automatically sent with subsequent requests to the same domain. This is how a web browser maintains a logged-in state.
+
+Here’s an example that demonstrates this behavior:
+
+```python
+import requests
+
+with requests.Session() as s:
+    # First, let's visit a URL that sets a cookie
+    s.get('https://httpbin.org/cookies/set/sessioncookie/123456789')
+
+    # Now, let's make another request to a different URL that can read cookies
+    response = s.get('https://httpbin.org/cookies')
+
+    # The response will show the cookie we received from the first request
+    print(response.json())
+```
+
+**Example Response**
+```json
+{
+  "cookies": {
+    "sessioncookie": "123456789"
+  }
+}
+```
+As you can see, the `sessioncookie` set in the first request was automatically included in the second request.
+
+## Persisting Parameters
+
+Sessions are also useful for persisting other request data, such as headers, query parameters, and authentication details. Any dictionaries you assign to the session's properties will be merged with the request-specific parameters.
+
+### Default Headers
+
+If you need to send the same headers with every request, you can set them on the session's `headers` attribute.
+
+```python
+import requests
+
+with requests.Session() as s:
+    s.headers.update({'x-test-header': 'true'})
+
+    # This request will have the 'x-test-header'
+    response_1 = s.get('https://httpbin.org/headers')
+    print('Response 1:', response_1.json()['headers']['X-Test-Header'])
+
+    # This request will also have it, along with a new one
+    response_2 = s.get('https://httpbin.org/headers', headers={'x-another-header': 'true'})
+    print('Response 2:', response_2.json()['headers']['X-Test-Header'])
+    print('Response 2:', response_2.json()['headers']['X-Another-Header'])
+```
+
+This example shows that the `x-test-header` is sent with both requests, and request-level headers are merged with session-level headers.
+
+### Default Query Parameters
+
+Similarly, you can set default query string parameters on the `params` attribute.
+
+```python
+import requests
+
+with requests.Session() as s:
+    s.params = {'api_key': 'shared_key'}
+
+    # This will be sent to https://httpbin.org/get?api_key=shared_key
+    response = s.get('https://httpbin.org/get')
+    print(response.json()['args'])
+```
+
+**Example Response**
+```json
+{
+  "api_key": "shared_key"
+}
+```
+
+## Performance and Connection Pooling
+
+When you make multiple requests to the same host with a `Session` object, it reuses the underlying TCP connection, which can lead to a substantial performance improvement. This process is known as connection pooling.
+
+Here’s a conceptual diagram comparing individual requests with session-based requests:
 
 ```d2
 direction: down
 
-"Your App": {
+"App": {
   shape: rectangle
 }
 
-"requests.Session()": {
-  shape: package
-  "Cookies": { shape: stored_data }
-  "Headers": { shape: document }
-  "Auth": { shape: document }
-}
-
-"Remote Server": {
+"Server": {
   shape: cylinder
 }
 
-"Your App" -> "requests.Session()": "1. Create Session"
-"requests.Session()" -> "Remote Server": "2. Make Request 1 (e.g., Login)"
-"Remote Server" -> "requests.Session()": "3. Receives Response + Cookies"
-"requests.Session()" -> "Remote Server": "4. Make Request 2 (sends stored cookies)"
-"Remote Server" -> "requests.Session()": "5. Receives authenticated response"
-"requests.Session()" -> "Your App": "Returns final response"
+"Individual Requests": {
+  shape: package
+
+  "Req 1": {
+    label: "Request 1"
+    shape: rectangle
+  }
+  "TCP 1": {
+    label: "New TCP Connection"
+  }
+
+  "Req 2": {
+    label: "Request 2"
+    shape: rectangle
+  }
+  "TCP 2": {
+    label: "New TCP Connection"
+  }
+
+  "App" -> "Req 1": "sends"
+  "Req 1" -> "TCP 1": "opens"
+  "TCP 1" -> "Server": "connects"
+  "Server" -> "TCP 1": "responds"
+  "TCP 1" -> "Req 1": "delivers"
+  "Req 1" -> "App": "returns"
+
+  "App" -> "Req 2": "sends"
+  "Req 2" -> "TCP 2": "opens"
+  "TCP 2" -> "Server": "connects"
+  "Server" -> "TCP 2": "responds"
+  "TCP 2" -> "Req 2": "delivers"
+  "Req 2" -> "App": "returns"
+}
+
+"Session-based Requests": {
+  shape: package
+
+  "Session": {
+    label: "Session Object"
+    shape: rectangle
+  }
+
+  "Connection Pool": {
+    shape: queue
+  }
+
+  "Req 3": {
+    label: "Request 1"
+    shape: rectangle
+  }
+
+  "Req 4": {
+    label: "Request 2"
+    shape: rectangle
+  }
+
+  "App" -> "Session": "creates"
+  "Session" -> "Req 3": "sends"
+  "Req 3" -> "Connection Pool": "opens new TCP conn"
+  "Connection Pool" -> "Server": "connects"
+  "Server" -> "Connection Pool": "responds"
+  "Connection Pool" -> "Req 3": "delivers"
+  "Req 3" -> "Session": "returns"
+  
+  "Session" -> "Req 4": "sends"
+  "Req 4" -> "Connection Pool": "reuses TCP conn"
+  "Connection Pool" -> "Server": "connects"
+  "Server" -> "Connection Pool": "responds"
+  "Connection Pool" -> "Req 4": "delivers"
+  "Req 4" -> "Session": "returns"
+}
 
 ```
 
-Note, however, that method-level parameters will *not* be persisted across requests, even if using a session. This example will only send the cookies with the first request, but not the second:
+By avoiding the overhead of establishing a new connection for every request, sessions can significantly reduce latency, especially when dealing with HTTPS, which requires a TLS handshake.
 
-```python
-import requests
+---
 
-s = requests.Session()
+By using `Session` objects, you can write cleaner code, manage state like cookies effortlessly, and improve the performance of your application. The next section will cover how to handle different types of authentication, a task often simplified by using sessions.
 
-r = s.get('https://httpbin.org/cookies', cookies={'from-my': 'browser'})
-print(r.text)
-# '{\n  "cookies": {\n    "from-my": "browser"\n  }\n}'
-
-r = s.get('https://httpbin.org/cookies')
-print(r.text)
-# '{\n  "cookies": {}\n}'
-```
-
-If you want to remove a property from the Session, you can set its value to `None`. For instance, to remove session-level headers:
-
-```python
-s.headers = None
-```
-
-### Context Manager
-
-Sessions can also be used as a context manager, which will ensure the session is closed even if an exception is raised. This is the recommended way to use a Session.
-
-```python
-with requests.Session() as s:
-    s.get('https://httpbin.org/get')
-```
-
-Closing a session cleans up all the adapters, which in turn closes any pooled connections.
-
-All of the values that are contained within a session are directly available to you. See the [Session API Docs](https://requests.readthedocs.io/en/latest/api/#requests.Session) for more information.
-
-Now that you understand how to manage state with sessions, let's explore how to implement different types of [Authentication](./user-guide-authentication.md).
+Continue to the next section to learn about [Authentication](./user-guide-authentication.md).

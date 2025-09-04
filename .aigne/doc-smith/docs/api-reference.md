@@ -1,56 +1,60 @@
 # API Reference
 
-This section provides a detailed reference for the public classes, methods, and functions in the Requests library. It is intended for developers who need a comprehensive understanding of the available tools and their specific parameters.
+This section provides a detailed and comprehensive reference for all public classes, methods, and functions in the Requests library. For more practical examples, see the [User Guide](./user-guide.md).
 
-## Top-Level API
+## Top-Level Functions
 
-The most common way to use Requests is through its simple, top-level API. These functions are convenient wrappers that handle the creation and sending of requests in a single call.
+The `requests` module provides a set of top-level functions that mirror the most common HTTP methods. These are simple wrappers around a temporary `Session` object.
 
 ### `requests.request(method, url, **kwargs)`
 
-Constructs and sends a `Request`. This is the foundational function that all other top-level HTTP method functions call.
+Constructs and sends a `Request`. This is the foundational function that all other top-level functions call.
 
 **Parameters**
 
 | Parameter | Description |
 |---|---|
-| `method` | The HTTP method for the new `Request` object (e.g., `'GET'`, `'POST'`, `'PUT'`). |
+| `method` | The HTTP method for the new `Request` object (e.g., `'GET'`, `'POST'`). |
 | `url` | The URL for the new `Request` object. |
-| `params` | (optional) A dictionary, list of tuples, or bytes to be sent in the query string of the `Request`. |
-| `data` | (optional) A dictionary, list of tuples, bytes, or file-like object to send in the body of the `Request`. |
-| `json` | (optional) A JSON-serializable Python object to send in the body of the `Request`. |
-| `headers` | (optional) A dictionary of HTTP headers to send with the `Request`. |
-| `cookies` | (optional) A dictionary or `CookieJar` object to send with the `Request`. |
-| `files` | (optional) A dictionary for multipart encoding uploads. Format: `{'name': file-like-object}` or `{'name': ('filename', fileobj, 'content_type', custom_headers)}`. |
-| `auth` | (optional) An authentication tuple or callable to enable Basic/Digest/Custom HTTP Auth. |
-| `timeout` | (optional) How many seconds to wait for the server to send data. Can be a float or a `(connect_timeout, read_timeout)` tuple. |
+| `params` | (optional) A dictionary, list of tuples, or bytes to be sent in the query string. |
+| `data` | (optional) A dictionary, list of tuples, bytes, or file-like object to send in the request body. |
+| `json` | (optional) A JSON-serializable Python object to send in the request body. |
+| `headers` | (optional) A dictionary of HTTP headers to send with the request. |
+| `cookies` | (optional) A dictionary or `CookieJar` object to send with the request. |
+| `files` | (optional) A dictionary for multipart encoding uploads (e.g., `{'name': file-like-object}`). |
+| `auth` | (optional) An authentication object to enable Basic/Digest/Custom HTTP Auth. |
+| `timeout` | (optional) The number of seconds to wait for the server to send data. Can be a float or a `(connect, read)` tuple. |
 | `allow_redirects` | (optional) A boolean to enable or disable redirection. Defaults to `True`. |
 | `proxies` | (optional) A dictionary mapping protocol to the URL of the proxy. |
-| `verify` | (optional) Either a boolean to control TLS certificate verification or a string path to a CA bundle. Defaults to `True`. |
-| `stream` | (optional) If `False` (default), the response content will be immediately downloaded. |
-| `cert` | (optional) A path to an SSL client certificate file (`.pem`) or a `('cert', 'key')` tuple. |
+| `verify` | (optional) A boolean to control SSL certificate verification or a string path to a CA bundle. Defaults to `True`. |
+| `stream` | (optional) If `False`, the response content will be immediately downloaded. Defaults to `False`. |
+| `cert` | (optional) A path to an SSL client certificate file (`.pem`). Can be a single file or a `('cert', 'key')` tuple. |
 
 **Returns:** A `requests.Response` object.
 
-### Convenience Methods
+### Convenience Functions
 
-These functions are shortcuts that call `requests.request()` with the specified method.
+For convenience, Requests provides functions for common HTTP methods.
 
--   `requests.get(url, params=None, **kwargs)`: Sends a GET request.
--   `requests.post(url, data=None, json=None, **kwargs)`: Sends a POST request.
--   `requests.put(url, data=None, **kwargs)`: Sends a PUT request.
--   `requests.patch(url, data=None, **kwargs)`: Sends a PATCH request.
--   `requests.delete(url, **kwargs)`: Sends a DELETE request.
--   `requests.head(url, **kwargs)`: Sends a HEAD request. `allow_redirects` is set to `False` by default.
--   `requests.options(url, **kwargs)`: Sends an OPTIONS request.
+- `requests.get(url, params=None, **kwargs)`: Sends a GET request.
+- `requests.post(url, data=None, json=None, **kwargs)`: Sends a POST request.
+- `requests.put(url, data=None, **kwargs)`: Sends a PUT request.
+- `requests.patch(url, data=None, **kwargs)`: Sends a PATCH request.
+- `requests.delete(url, **kwargs)`: Sends a DELETE request.
+- `requests.head(url, **kwargs)`: Sends a HEAD request.
+- `requests.options(url, **kwargs)`: Sends an OPTIONS request.
 
-**Example:**
+These functions accept the same keyword arguments as `requests.request()`.
+
 ```python
 import requests
 
-response = requests.get('https://httpbin.org/get', params={'key': 'value'})
-print(response.url)
-# Output: https://httpbin.org/get?key=value
+response = requests.get('https://api.github.com/events')
+print(response.status_code)
+
+payload = {'key1': 'value1', 'key2': 'value2'}
+response = requests.post('https://httpbin.org/post', data=payload)
+print(response.json())
 ```
 
 ## Session Object
@@ -61,104 +65,203 @@ For making multiple requests to the same host, the `Session` object allows you t
 
 A Requests session that provides cookie persistence, connection-pooling, and configuration.
 
-**Basic Usage**
+**Usage**
+
 ```python
 import requests
 
-s = requests.Session()
-s.headers.update({'x-test': 'true'})
-
-# The 'x-test' header is sent on both requests
-s.get('https://httpbin.org/get')
-s.get('https://httpbin.org/headers')
-```
-
-**Context Manager Usage**
-```python
-import requests
-
+# Using a context manager is recommended
 with requests.Session() as s:
-    s.get('https://httpbin.org/get')
+    s.get('https://httpbin.org/cookies/set/sessioncookie/123456789')
+    r = s.get('https://httpbin.org/cookies')
+
+    print(r.text)
+    # '{\n  "cookies": {\n    "sessioncookie": "123456789"\n  }\n}'
 ```
 
-**Session Methods**
+### Session Methods
 
-A `Session` object has all the same HTTP method functions as the top-level API (`get`, `post`, `put`, etc.). When you call a method on a `Session` object, it uses the configuration set on that session.
+A `Session` object has all the methods of the top-level API:
+- `Session.request()`
+- `Session.get()`
+- `Session.post()`
+- `Session.put()`
+- `Session.patch()`
+- `Session.delete()`
+- `Session.head()`
+- `Session.options()`
+- `Session.send()`: Sends a `PreparedRequest`.
 
-**Key Attributes**
+### Session Attributes
+
+You can configure a `Session` object by setting its attributes:
 
 | Attribute | Description |
 |---|---|
-| `headers` | A `CaseInsensitiveDict` of headers to be sent on each request. |
-| `cookies` | A `RequestsCookieJar` containing all cookies set on the session. |
-| `auth` | Default authentication to attach to each request. |
-| `proxies` | A dictionary of proxies to be used for each request. |
+| `headers` | A case-insensitive dictionary of headers to be sent on each request. |
+| `cookies` | A `RequestsCookieJar` object containing cookies for the session. |
+| `auth` | A default authentication tuple or object. |
+| `proxies` | A dictionary of proxies to use for requests. |
+| `hooks` | A dictionary of event-handling hooks. The only supported hook is `'response'`. |
 | `params` | A dictionary of query string data to attach to each request. |
-| `verify` | Default SSL verification setting. Defaults to `True`. |
+| `verify` | Default SSL verification setting (`True`, `False`, or a path to a CA bundle). |
 | `cert` | Default SSL client certificate. |
-| `max_redirects` | Maximum number of redirects allowed. Defaults to 30. |
+| `max_redirects` | The maximum number of redirects allowed. Defaults to 30. |
+| `stream` | Default for streaming response content. Defaults to `False`. |
+| `trust_env` | If `True`, trusts environment settings for proxies, etc. Defaults to `True`. |
+| `adapters` | A dictionary of mounted transport adapters. |
 
-## Response Object
+## Main Interface
 
-When you make a request, Requests returns a `Response` object which contains the server's response.
+These are the primary objects you interact with when using Requests.
+
+### `requests.Request(method, url, **kwargs)`
+
+A user-created `Request` object, used to prepare a `PreparedRequest` which is sent to the server. It holds all the information for a request before it is processed.
+
+### `requests.PreparedRequest`
+
+The fully mutable object containing the exact bytes that will be sent to the server. You typically don't create this manually but receive it from `Session.prepare_request()` or `Request.prepare()`. Its attributes include `method`, `url`, `headers`, and `body`.
 
 ### `requests.Response`
 
-This object contains the server's response to an HTTP request.
+The `Response` object contains a server's response to an HTTP request.
 
-**Key Attributes and Methods**
+**Attributes**
 
-| Attribute/Method | Description |
+| Attribute | Description |
 |---|---|
-| `status_code` | The integer HTTP status code (e.g., `200`, `404`). |
-| `headers` | A `CaseInsensitiveDict` of the response headers. |
-| `encoding` | The encoding used to decode `r.text`. |
-| `text` | The content of the response, in unicode. |
+| `status_code` | Integer code of the HTTP status (e.g., `200`, `404`). |
+| `headers` | Case-insensitive dictionary of response headers. |
+| `encoding` | The encoding to use when decoding `r.text`. |
+| `text` | The content of the response, in Unicode. |
 | `content` | The content of the response, in bytes. |
-| `json(**kwargs)` | Decodes the response body as JSON. Raises `JSONDecodeError` on failure. |
-| `ok` | A boolean that is `True` if `status_code` is less than 400. |
-| `is_redirect` | A boolean that is `True` if the response is a well-formed HTTP redirect. |
 | `url` | The final URL location of the response. |
-| `reason` | The textual reason for the HTTP status (e.g., `'OK'`, `'Not Found'`). |
+| `history` | A list of `Response` objects from the history of the request (redirects). |
+| `reason` | The textual reason of the HTTP status (e.g., `'OK'`, `'Not Found'`). |
 | `cookies` | A `RequestsCookieJar` of cookies the server sent back. |
 | `elapsed` | A `timedelta` object representing the time elapsed between sending the request and the arrival of the response. |
-| `history` | A list of `Response` objects from the history of the request (redirects). |
 | `request` | The `PreparedRequest` object to which this is a response. |
+| `ok` | A boolean that is `True` if `status_code` is less than 400. |
+| `is_redirect` | A boolean that is `True` if the response is a redirect. |
+
+**Methods**
+
+| Method | Description |
+|---|---|
+| `json(**kwargs)` | Decodes the response body as a Python object if it contains valid JSON. |
 | `raise_for_status()` | Raises an `HTTPError` if the HTTP request returned an unsuccessful status code (4xx or 5xx). |
-| `iter_content()` | Iterates over the response data, useful for streaming large files. |
-| `close()` | Releases the connection back to the pool. |
+| `close()` | Releases the connection back to the pool. Not usually needed. |
+| `iter_content(chunk_size=1, decode_unicode=False)` | Iterates over the response data. |
+| `iter_lines(chunk_size=512, decode_unicode=False)` | Iterates over the response data, one line at a time. |
 
 ## Exceptions
 
-Requests raises exceptions for various errors. All exceptions are available in the `requests.exceptions` module.
+Requests raises exceptions for various errors. All exceptions are available in the `requests.exceptions` module and inherit from `requests.exceptions.RequestException`.
 
--   `requests.exceptions.RequestException`: The base class for all exceptions in Requests.
--   `requests.exceptions.ConnectionError`: Raised for network-related problems (e.g., DNS failure, refused connection).
--   `requests.exceptions.HTTPError`: Raised by `raise_for_status()` for unsuccessful status codes (4xx or 5xx).
--   `requests.exceptions.URLRequired`: Raised when a valid URL is not provided.
--   `requests.exceptions.TooManyRedirects`: Raised when a request exceeds the configured number of maximum redirections.
--   `requests.exceptions.ConnectTimeout`: Raised when a connection times out.
--   `requests.exceptions.ReadTimeout`: Raised when the server does not send any data in the allotted amount of time.
--   `requests.exceptions.Timeout`: The base class for both `ConnectTimeout` and `ReadTimeout`.
--   `requests.exceptions.SSLError`: Raised for SSL-related errors.
--   `requests.exceptions.ProxyError`: Raised for errors with the proxy.
--   `requests.exceptions.JSONDecodeError`: Raised when `response.json()` fails to decode the response body.
+Here is a diagram showing the exception hierarchy:
+
+```d2
+direction: down
+
+# Base Exception
+RequestException: { shape: class }
+
+# Level 1 Exceptions (inherit from RequestException)
+InvalidJSONError: { shape: class }
+HTTPError: { shape: class }
+ConnectionError: { shape: class }
+Timeout: { shape: class }
+URLRequired: { shape: class }
+TooManyRedirects: { shape: class }
+MissingSchema: { shape: class }
+InvalidSchema: { shape: class }
+InvalidURL: { shape: class }
+ChunkedEncodingError: { shape: class }
+ContentDecodingError: { shape: class }
+StreamConsumedError: { shape: class }
+RetryError: { shape: class }
+UnrewindableBodyError: { shape: class }
+
+RequestException -> InvalidJSONError
+RequestException -> HTTPError
+RequestException -> ConnectionError
+RequestException -> Timeout
+RequestException -> URLRequired
+RequestException -> TooManyRedirects
+RequestException -> MissingSchema
+RequestException -> InvalidSchema
+RequestException -> InvalidURL
+RequestException -> ChunkedEncodingError
+RequestException -> ContentDecodingError
+RequestException -> StreamConsumedError
+RequestException -> RetryError
+RequestException -> UnrewindableBodyError
+
+# Level 2 Exceptions
+JSONDecodeError: { shape: class }
+ProxyError: { shape: class }
+SSLError: { shape: class }
+ReadTimeout: { shape: class }
+ConnectTimeout: { shape: class }
+
+InvalidJSONError -> JSONDecodeError
+ConnectionError -> ProxyError
+ConnectionError -> SSLError
+Timeout -> ReadTimeout
+
+# Multi-inheritance for ConnectTimeout
+ConnectionError -> ConnectTimeout
+Timeout -> ConnectTimeout
+```
+
+**Common Exceptions**
+
+- `requests.exceptions.RequestException`: The base exception that all other exceptions inherit from.
+- `requests.exceptions.ConnectionError`: Raised for network-related problems (e.g., DNS failure, refused connection).
+- `requests.exceptions.HTTPError`: Raised in response to `raise_for_status()` for unsuccessful status codes.
+- `requests.exceptions.Timeout`: Raised when a request times out.
+- `requests.exceptions.TooManyRedirects`: Raised when a request exceeds the configured number of maximum redirections.
+
+```python
+import requests
+
+try:
+    response = requests.get('http://example.com/nonexistent', timeout=0.1)
+    response.raise_for_status() # Raises an HTTPError for 404
+except requests.exceptions.Timeout:
+    print('The request timed out')
+except requests.exceptions.HTTPError as err:
+    print(f'HTTP error occurred: {err}')
+except requests.exceptions.RequestException as err:
+    print(f'An error occurred: {err}')
+```
 
 ## Authentication
 
-Requests provides several built-in authentication handlers.
+Requests provides several built-in authentication handlers. These are passed to the `auth` parameter in a request.
 
--   `requests.auth.HTTPBasicAuth(username, password)`: Attaches HTTP Basic Authentication to a request.
-    ```python
-    from requests.auth import HTTPBasicAuth
-    requests.get('https://httpbin.org/basic-auth/user/pass', auth=HTTPBasicAuth('user', 'pass'))
-    ```
--   `requests.auth.HTTPDigestAuth(username, password)`: Attaches HTTP Digest Authentication to a request.
--   `requests.auth.HTTPProxyAuth(username, password)`: Attaches HTTP Proxy Authentication to a request.
+- `requests.auth.HTTPBasicAuth(username, password)`: Attaches HTTP Basic Authentication to a request.
+- `requests.auth.HTTPProxyAuth(username, password)`: Attaches HTTP Proxy Authentication to a request.
+- `requests.auth.HTTPDigestAuth(username, password)`: Attaches HTTP Digest Authentication to a request.
+- `requests.auth.AuthBase`: The base class for creating custom authentication schemes.
 
-## Other Useful Components
+```python
+from requests.auth import HTTPBasicAuth
 
--   `requests.codes`: A `LookupDict` object that provides access to HTTP status codes by common names (e.g., `requests.codes.ok` is `200`).
--   `requests.models.Request`: An object for creating a request with its parameters before it is prepared and sent.
--   `requests.models.PreparedRequest`: The object containing the exact bytes that will be sent to the server. `Session.send()` accepts this object.
--   `requests.adapters.HTTPAdapter`: A transport adapter that can be mounted to a `Session` to customize connection behavior, such as setting retry policies.
+response = requests.get('https://httpbin.org/basic-auth/user/pass', auth=HTTPBasicAuth('user', 'pass'))
+print(response.status_code)
+
+# A shorthand is to pass a tuple
+response = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
+print(response.status_code)
+```
+
+## Lower-Level Classes & Objects
+
+These components provide advanced control and form the building blocks of the library.
+
+- **`requests.adapters.HTTPAdapter`**: A transport adapter that allows you to configure connection pooling, retries, and other low-level HTTP settings. You can mount an adapter to a `Session` object using `Session.mount()`.
+- **`requests.structures.CaseInsensitiveDict`**: A dictionary-like object that is case-insensitive for key lookups. Used for request and response headers.
+- **`requests.cookies.RequestsCookieJar`**: A `CookieJar` that also exposes a dict-like interface for managing cookies.
+- **`requests.codes`**: A lookup object that provides access to HTTP status codes by their common names (e.g., `requests.codes.ok` is `200`, `requests.codes.not_found` is `404`).
