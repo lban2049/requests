@@ -6,7 +6,7 @@ Sending an HTTP request with Requests is straightforward. This guide covers how 
 
 To make a simple `GET` request, use the `requests.get()` function. This is often the first step in interacting with a web service or API.
 
-```python
+```python Simple GET Request icon=logos:python
 import requests
 
 r = requests.get('https://api.github.com/events')
@@ -17,7 +17,7 @@ r = requests.get('https://api.github.com/events')
 
 To add URL query parameters, you can provide them as a dictionary to the `params` argument. Requests will correctly construct the URL for you.
 
-```python
+```python Using the 'params' Argument icon=logos:python
 import requests
 
 # Define the parameters
@@ -32,18 +32,22 @@ print(r.url)
 
 Running the code above will output the following URL, with the parameters properly encoded:
 
-```
+```text
 https://httpbin.org/get?key1=value1&key2=value2
 ```
 
-If you need to provide multiple values for a single key, you can use a list of tuples:
+If you need to provide multiple values for a single key, you can pass a list of tuples:
 
-```python
+```python Passing a List of Tuples icon=logos:python
+import requests
 
 payload = [('key1', 'value1'), ('key1', 'value2')]
 r = requests.get('https://httpbin.org/get', params=payload)
 print(r.url)
-# Output: https://httpbin.org/get?key1=value1&key1=value2
+```
+Output:
+```text
+https://httpbin.org/get?key1=value1&key1=value2
 ```
 
 ## Other HTTP Methods
@@ -73,7 +77,9 @@ Requests provides simple functions for all common HTTP methods. They all work si
 
 Here's how you might use them:
 
-```python
+```python HTTP Method Examples icon=logos:python
+import requests
+
 r = requests.post('https://httpbin.org/post', data={'key': 'value'})
 r = requests.put('https://httpbin.org/put', data={'key': 'value'})
 r = requests.patch('https://httpbin.org/patch', data={'key': 'value'})
@@ -90,7 +96,7 @@ For methods like `POST`, `PUT`, and `PATCH`, you often need to send data in the 
 
 To send data as `application/x-www-form-urlencoded` (the default for HTML forms), pass a dictionary to the `data` parameter.
 
-```python
+```python Sending Form Data icon=logos:python
 import requests
 
 payload = {'key1': 'value1', 'key2': 'value2'}
@@ -99,7 +105,7 @@ r = requests.post('https://httpbin.org/post', data=payload)
 print(r.json()['form'])
 ```
 
-Response:
+The server receives the data as form fields:
 ```json
 {
   "key1": "value1",
@@ -111,7 +117,7 @@ Response:
 
 For modern APIs, sending data as JSON is common. Instead of manually encoding a dictionary with `json.dumps()`, you can use the `json` parameter. Requests will automatically encode the data and set the `Content-Type` header to `application/json`.
 
-```python
+```python Sending JSON Data icon=logos:python
 import requests
 
 payload = {'some': 'data'}
@@ -119,7 +125,7 @@ r = requests.post('https://httpbin.org/post', json=payload)
 
 print(r.json()['json'])
 ```
-Response:
+The server receives the data in the JSON body:
 ```json
 {
   "some": "data"
@@ -130,7 +136,7 @@ Response:
 
 To upload a file, you can pass a file-like object to the `files` parameter. The file should be opened in binary mode.
 
-```python
+```python Uploading a File icon=logos:python
 import requests
 
 url = 'https://httpbin.org/post'
@@ -148,7 +154,7 @@ with open('report.txt', 'rb') as f:
 print(r.json()['files'])
 ```
 
-Response:
+The server receives the file content:
 ```json
 {
   "file": "This is a test report."
@@ -157,16 +163,21 @@ Response:
 
 You can also explicitly set the filename, content type, and headers by passing a tuple to the dictionary value:
 
-```python
+```python Explicit File Upload Parameters icon=logos:python
+import requests
+
+url = 'https://httpbin.org/post'
 files = {'file': ('report.csv', 'some,data,to,send\n', 'application/vnd.ms-excel', {'Expires': '0'})}
+
 r = requests.post(url, files=files)
+print(r.json()['files'])
 ```
 
 ## Custom Headers
 
 To add or modify HTTP headers, pass a dictionary to the `headers` parameter. For example, you might need to set a custom `User-Agent`.
 
-```python
+```python Setting Custom Headers icon=logos:python
 import requests
 
 url = 'https://httpbin.org/headers'
@@ -178,10 +189,10 @@ print(r.json()['headers']['User-Agent'])
 ```
 
 Response:
-```
+```text
 my-custom-app/0.0.1
 ```
 
-Now that you know how to construct and send a request, the next step is to understand the server's response. Proceed to the next section to learn more.
+Now that you know how to construct and send a request, the next step is to understand the server's response.
 
 ➡️ Next: [Handling Responses](./user-guide-handling-responses.md)

@@ -1,10 +1,10 @@
 # API Reference
 
-This section provides a detailed and comprehensive reference for all public classes, methods, and functions in the Requests library. For more practical examples, see the [User Guide](./user-guide.md).
+This section provides a detailed and comprehensive reference for all public classes, methods, and functions in the Requests library. For more practical examples and narrative-style guides, please see the [User Guide](./user-guide.md).
 
 ## Top-Level Functions
 
-The `requests` module provides a set of top-level functions that mirror the most common HTTP methods. These are simple wrappers around a temporary `Session` object.
+The `requests` module provides a set of top-level functions that mirror the most common HTTP methods. These are simple wrappers that manage a temporary `Session` object for you.
 
 ### `requests.request(method, url, **kwargs)`
 
@@ -34,7 +34,7 @@ Constructs and sends a `Request`. This is the foundational function that all oth
 
 ### Convenience Functions
 
-For convenience, Requests provides functions for common HTTP methods.
+For convenience, Requests provides functions for common HTTP methods that call `request()` with the appropriate method argument.
 
 - `requests.get(url, params=None, **kwargs)`: Sends a GET request.
 - `requests.post(url, data=None, json=None, **kwargs)`: Sends a POST request.
@@ -46,7 +46,7 @@ For convenience, Requests provides functions for common HTTP methods.
 
 These functions accept the same keyword arguments as `requests.request()`.
 
-```python
+```python Using Top-Level Functions icon=logos:python
 import requests
 
 response = requests.get('https://api.github.com/events')
@@ -59,18 +59,16 @@ print(response.json())
 
 ## Session Object
 
-For making multiple requests to the same host, the `Session` object allows you to persist certain parameters, such as cookies and headers, across requests. It also utilizes connection pooling, which can result in a significant performance increase.
+For making multiple requests to the same host, the `Session` object allows you to persist certain parameters, such as cookies and headers, across requests. It also utilizes connection pooling from `urllib3`, which can result in a significant performance increase.
 
 ### `requests.Session()`
 
 A Requests session that provides cookie persistence, connection-pooling, and configuration.
 
-**Usage**
-
-```python
+```python Session Usage icon=logos:python
 import requests
 
-# Using a context manager is recommended
+# Using a context manager ensures the session is closed properly
 with requests.Session() as s:
     s.get('https://httpbin.org/cookies/set/sessioncookie/123456789')
     r = s.get('https://httpbin.org/cookies')
@@ -94,7 +92,7 @@ A `Session` object has all the methods of the top-level API:
 
 ### Session Attributes
 
-You can configure a `Session` object by setting its attributes:
+You can configure a `Session` object by setting its attributes before making requests:
 
 | Attribute | Description |
 |---|---|
@@ -111,7 +109,7 @@ You can configure a `Session` object by setting its attributes:
 | `trust_env` | If `True`, trusts environment settings for proxies, etc. Defaults to `True`. |
 | `adapters` | A dictionary of mounted transport adapters. |
 
-## Main Interface
+## Main Interface Objects
 
 These are the primary objects you interact with when using Requests.
 
@@ -133,10 +131,10 @@ The `Response` object contains a server's response to an HTTP request.
 |---|---|
 | `status_code` | Integer code of the HTTP status (e.g., `200`, `404`). |
 | `headers` | Case-insensitive dictionary of response headers. |
-| `encoding` | The encoding to use when decoding `r.text`. |
+| `encoding` | The encoding to use when decoding `r.text`. If `None`, it will be guessed. |
 | `text` | The content of the response, in Unicode. |
 | `content` | The content of the response, in bytes. |
-| `url` | The final URL location of the response. |
+| `url` | The final URL location of the response after any redirects. |
 | `history` | A list of `Response` objects from the history of the request (redirects). |
 | `reason` | The textual reason of the HTTP status (e.g., `'OK'`, `'Not Found'`). |
 | `cookies` | A `RequestsCookieJar` of cookies the server sent back. |
@@ -151,8 +149,8 @@ The `Response` object contains a server's response to an HTTP request.
 |---|---|
 | `json(**kwargs)` | Decodes the response body as a Python object if it contains valid JSON. |
 | `raise_for_status()` | Raises an `HTTPError` if the HTTP request returned an unsuccessful status code (4xx or 5xx). |
-| `close()` | Releases the connection back to the pool. Not usually needed. |
-| `iter_content(chunk_size=1, decode_unicode=False)` | Iterates over the response data. |
+| `close()` | Releases the connection back to the pool. Not usually needed when not using `stream=True`. |
+| `iter_content(chunk_size=1, decode_unicode=False)` | Iterates over the response data in chunks. |
 | `iter_lines(chunk_size=512, decode_unicode=False)` | Iterates over the response data, one line at a time. |
 
 ## Exceptions
@@ -161,27 +159,55 @@ Requests raises exceptions for various errors. All exceptions are available in t
 
 Here is a diagram showing the exception hierarchy:
 
-```d2
+```d2 Exception Hierarchy
 direction: down
 
-# Base Exception
-RequestException: { shape: class }
+RequestException: { 
+  shape: class 
+}
 
-# Level 1 Exceptions (inherit from RequestException)
-InvalidJSONError: { shape: class }
-HTTPError: { shape: class }
-ConnectionError: { shape: class }
-Timeout: { shape: class }
-URLRequired: { shape: class }
-TooManyRedirects: { shape: class }
-MissingSchema: { shape: class }
-InvalidSchema: { shape: class }
-InvalidURL: { shape: class }
-ChunkedEncodingError: { shape: class }
-ContentDecodingError: { shape: class }
-StreamConsumedError: { shape: class }
-RetryError: { shape: class }
-UnrewindableBodyError: { shape: class }
+InvalidJSONError: { 
+  shape: class 
+}
+HTTPError: { 
+  shape: class 
+}
+ConnectionError: { 
+  shape: class 
+}
+Timeout: { 
+  shape: class 
+}
+URLRequired: { 
+  shape: class 
+}
+TooManyRedirects: { 
+  shape: class 
+}
+MissingSchema: { 
+  shape: class 
+}
+InvalidSchema: { 
+  shape: class 
+}
+InvalidURL: { 
+  shape: class 
+}
+ChunkedEncodingError: { 
+  shape: class 
+}
+ContentDecodingError: { 
+  shape: class 
+}
+StreamConsumedError: { 
+  shape: class 
+}
+RetryError: { 
+  shape: class 
+}
+UnrewindableBodyError: { 
+  shape: class 
+}
 
 RequestException -> InvalidJSONError
 RequestException -> HTTPError
@@ -198,36 +224,46 @@ RequestException -> StreamConsumedError
 RequestException -> RetryError
 RequestException -> UnrewindableBodyError
 
-# Level 2 Exceptions
-JSONDecodeError: { shape: class }
-ProxyError: { shape: class }
-SSLError: { shape: class }
-ReadTimeout: { shape: class }
-ConnectTimeout: { shape: class }
+JSONDecodeError: { 
+  shape: class 
+}
+ProxyError: { 
+  shape: class 
+}
+SSLError: { 
+  shape: class 
+}
+ReadTimeout: { 
+  shape: class 
+}
+ConnectTimeout: { 
+  shape: class 
+}
 
 InvalidJSONError -> JSONDecodeError
 ConnectionError -> ProxyError
 ConnectionError -> SSLError
 Timeout -> ReadTimeout
 
-# Multi-inheritance for ConnectTimeout
 ConnectionError -> ConnectTimeout
 Timeout -> ConnectTimeout
 ```
 
 **Common Exceptions**
 
-- `requests.exceptions.RequestException`: The base exception that all other exceptions inherit from.
-- `requests.exceptions.ConnectionError`: Raised for network-related problems (e.g., DNS failure, refused connection).
-- `requests.exceptions.HTTPError`: Raised in response to `raise_for_status()` for unsuccessful status codes.
-- `requests.exceptions.Timeout`: Raised when a request times out.
+- `requests.exceptions.RequestException`: The base exception class from which all other exceptions in the library inherit.
+- `requests.exceptions.ConnectionError`: Raised for network-related problems, such as DNS failure or a refused connection.
+- `requests.exceptions.HTTPError`: Raised by the `raise_for_status()` method for unsuccessful status codes (4xx or 5xx).
+- `requests.exceptions.Timeout`: Raised when a request times out. This is a base class for more specific timeouts.
+- `requests.exceptions.ConnectTimeout`: Raised when a timeout occurs while trying to connect to the remote server.
+- `requests.exceptions.ReadTimeout`: Raised when the server does not send any data in the allotted amount of time.
 - `requests.exceptions.TooManyRedirects`: Raised when a request exceeds the configured number of maximum redirections.
 
-```python
+```python Handling Exceptions icon=logos:python
 import requests
 
 try:
-    response = requests.get('http://example.com/nonexistent', timeout=0.1)
+    response = requests.get('https://example.com/nonexistent', timeout=1)
     response.raise_for_status() # Raises an HTTPError for 404
 except requests.exceptions.Timeout:
     print('The request timed out')
@@ -246,13 +282,14 @@ Requests provides several built-in authentication handlers. These are passed to 
 - `requests.auth.HTTPDigestAuth(username, password)`: Attaches HTTP Digest Authentication to a request.
 - `requests.auth.AuthBase`: The base class for creating custom authentication schemes.
 
-```python
+```python Basic Authentication icon=logos:python
 from requests.auth import HTTPBasicAuth
 
+# Using the class explicitly
 response = requests.get('https://httpbin.org/basic-auth/user/pass', auth=HTTPBasicAuth('user', 'pass'))
 print(response.status_code)
 
-# A shorthand is to pass a tuple
+# A convenient shorthand is to pass a tuple
 response = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
 print(response.status_code)
 ```
@@ -265,3 +302,11 @@ These components provide advanced control and form the building blocks of the li
 - **`requests.structures.CaseInsensitiveDict`**: A dictionary-like object that is case-insensitive for key lookups. Used for request and response headers.
 - **`requests.cookies.RequestsCookieJar`**: A `CookieJar` that also exposes a dict-like interface for managing cookies.
 - **`requests.codes`**: A lookup object that provides access to HTTP status codes by their common names (e.g., `requests.codes.ok` is `200`, `requests.codes.not_found` is `404`).
+
+```python Using Status Codes icon=logos:python
+import requests
+
+response = requests.get('https://httpbin.org/status/418')
+if response.status_code == requests.codes.im_a_teapot:
+    print("I'm a teapot!")
+```

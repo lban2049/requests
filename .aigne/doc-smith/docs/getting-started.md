@@ -1,12 +1,12 @@
 # Getting Started
 
-This guide provides the essential steps to install the Requests library and make your first HTTP request. It's designed to get you up and running quickly.
+This guide provides the essential steps to install the Requests library and make your first HTTP request. It's designed to get you up and running quickly so you can start building.
 
 ## Installation
 
 Before you begin, ensure you have a supported version of Python (3.9+). Requests is available on the Python Package Index (PyPI) and can be installed using `pip`.
 
-```console
+```console Installing Requests icon=logos:python
 $ python -m pip install requests
 ```
 
@@ -14,9 +14,9 @@ This single command downloads and installs Requests along with its necessary dep
 
 ## Make Your First Request
 
-With Requests installed, you can start making HTTP requests. The process is straightforward. Here is how you can send a `GET` request to a test endpoint.
+With Requests installed, you can start making HTTP requests. The process is straightforward and mirrors the simplicity of the web. Here is how you can send a `GET` request to a test endpoint.
 
-```python
+```python Make a GET request icon=logos:python
 import requests
 
 r = requests.get('https://httpbin.org/get')
@@ -32,7 +32,7 @@ The `Response` object provides easy access to the details of the server's reply.
 
 You can check the HTTP status code to verify if the request was successful. A status code of `200` indicates success.
 
-```python
+```python Check the status code
 >>> r.status_code
 200
 ```
@@ -41,25 +41,25 @@ You can check the HTTP status code to verify if the request was successful. A st
 
 The server's response headers are available in a dictionary-like object. You can access any header by its key.
 
-```python
+```python Access response headers
 >>> r.headers['content-type']
-'application/json'
+'application/json; charset=utf8'
 ```
 
 ### Response Body
 
 For text-based responses, you can access the content as a string using the `.text` attribute.
 
-```python
+```python Get the response body as text
 >>> r.text
-'{\n  "args": {}, \n  "headers": {\n    "Accept": "*/*", \n    "Accept-Encoding": "gzip, deflate", \n    "Host": "httpbin.org", \n    "User-Agent": "python-requests/2.XX.X", \n  }, \n  "origin": "...", \n  "url": "https://httpbin.org/get"\n}'
+'{"authenticated": true, ...'
 ```
 
-If the endpoint returns JSON, as is common with many APIs, Requests has a convenient built-in JSON decoder.
+If the endpoint returns JSON, as is common with many APIs, Requests has a convenient built-in JSON decoder that will parse the content into a Python dictionary.
 
-```python
+```python Decode the JSON response
 >>> r.json()
-{'args': {}, 'headers': {'Accept': '*/*', 'Accept-Encoding': 'gzip, deflate', 'Host': 'httpbin.org', 'User-Agent': 'python-requests/2.XX.X'}, 'origin': '...', 'url': 'https://httpbin.org/get'}
+{'authenticated': True, ...}
 ```
 
 ## Next Steps

@@ -1,6 +1,6 @@
 # Community
 
-Requests is one of the most downloaded Python packages today, with around 30 million downloads per week, and is depended upon by over 1,000,000 repositories on GitHub. This success is built on the efforts of a large and active community, from its original creator to the current maintainers and the many developers who have contributed patches and suggestions over the years.
+Requests is one of the most downloaded Python packages today, pulling in around 30 million downloads per week. According to GitHub, it is currently depended upon by over 1,000,000 repositories. This success is built on the efforts of a large and active community, from its original creator to the current maintainers and the many developers who have contributed patches and suggestions over the years.
 
 This section provides insight into the project's history and the people who make it possible.
 

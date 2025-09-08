@@ -2,13 +2,13 @@
 
 ![Requests Logo](../../../ext/requests-logo.png)
 
-Requests is an elegant and simple HTTP library for Python, built for human beings. It allows you to send HTTP/1.1 requests with extreme ease, without the need to manually add query strings to your URLs or form-encode your `PUT` & `POST` data.
+Requests is an elegant and simple HTTP library for Python, built for human beings. It allows you to send HTTP/1.1 requests with extreme ease, eliminating the need to manually add query strings to your URLs or form-encode your `PUT` & `POST` data.
 
 Today, Requests is one of the most downloaded Python packages, with around `30M downloads / week`, and is a dependency for over `1,000,000` repositories on GitHub. You can put your trust in this code.
 
 Here is a simple example of using Requests to perform a `GET` request with basic authentication:
 
-```python
+```python Basic GET Request icon=logos:python
 >>> import requests
 >>> r = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
 >>> r.status_code
@@ -25,7 +25,7 @@ Here is a simple example of using Requests to perform a `GET` request with basic
 
 ## Features
 
-Requests is ready for the demands of building robust and reliable HTTP-speaking applications. It comes with a wide range of features out of the box.
+Requests is ready for the demands of building reliable HTTP–speaking applications. It comes with a wide range of features out of the box.
 
 <x-cards data-columns="3">
   <x-card data-title="Connection Management" data-icon="lucide:network">
@@ -58,7 +58,7 @@ Requests is ready for the demands of building robust and reliable HTTP-speaking 
   <x-card data-title="Timeouts" data-icon="lucide:timer">
     Configure connection timeouts to prevent hanging requests.
   </x-card>
-  <x-card data-title="Streaming" data-icon="lucide:download">
+  <x-card data-title="Streaming Downloads" data-icon="lucide:download">
     Supports streaming downloads for large files.
   </x-card>
   <x-card data-title="Chunked Requests" data-icon="lucide:box-select">

@@ -1,19 +1,19 @@
 # 贡献者
 
-Requests 是一个社区驱动的项目，其成功离不开众多贡献出时间和专业知识的个人。本页面旨在感谢所有帮助 Requests 发展至今的贡献者。
+Requests 是一个由社区驱动的项目，其成功离不开众多贡献者投入的时间与专业知识。本页旨在致谢所有为 Requests 的发展做出贡献的人。
 
-Requests 由 **Kenneth Reitz** 创建。
+Requests 由 **Kenneth Reitz** 精心创建。
 
 ## 维护者
 
-该项目目前由以下专门团队维护：
+该项目目前由一个专门的团队维护：
 
 - Nate Prewitt ([@nateprewitt](https://github.com/nateprewitt))
 - Seth M. Larson ([@sethmlarson](https://github.com/sethmlarson))
 
 ## 前维护者
 
-我们向曾为项目提供指导的前维护者们表示感谢：
+我们向指导过该项目的往届维护者表示感谢：
 
 - Kenneth Reitz ([@kennethreitz](https://github.com/kennethreitz))
 - Cory Benfield ([@lukasa](https://github.com/lukasa))
@@ -21,7 +21,7 @@ Requests 由 **Kenneth Reitz** 创建。
 
 ## 补丁与建议
 
-以下个人为项目贡献了补丁、建议和支持。我们对他们的贡献表示由衷感谢。
+以下人士贡献了补丁、建议和支持。我们非常感谢他们的贡献。
 
 | | | | |
 |---|---|---|---|
