@@ -1,77 +1,60 @@
 # Overview
 
-![Requests Logo](../../../ext/requests-logo.png)
+Requests is a simple, yet elegant, HTTP library for Python, designed to be used by humans. It allows you to send HTTP/1.1 requests with extreme ease, abstracting away the complexities of manual query string creation and form-encoding.
 
-Requests is an elegant and simple HTTP library for Python, built for human beings. It allows you to send HTTP/1.1 requests with extreme ease, eliminating the need to manually add query strings to your URLs or form-encode your `PUT` & `POST` data.
+As one of the most downloaded Python packages, with around **30 million downloads per week**, Requests is trusted by over **1,000,000 repositories** on GitHub. You can certainly put your trust in this code.
 
-Today, Requests is one of the most downloaded Python packages, with around `30M downloads / week`, and is a dependency for over `1,000,000` repositories on GitHub. You can put your trust in this code.
+Here’s a quick example of what it looks like in action:
 
-Here is a simple example of using Requests to perform a `GET` request with basic authentication:
+```python A Simple GET Request icon=logos:python
+import requests
 
-```python Basic GET Request icon=logos:python
->>> import requests
->>> r = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
+r = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
+
+# Check the status code
 >>> r.status_code
 200
+
+# Inspect response headers
 >>> r.headers['content-type']
 'application/json; charset=utf8'
->>> r.encoding
-'utf-8'
+
+# Access the response body as text
 >>> r.text
 '{"authenticated": true, ...'
+
+# Or, decode it as JSON
 >>> r.json()
 {'authenticated': True, ...}
 ```
 
-## Features
+## Key Features
 
-Requests is ready for the demands of building reliable HTTP–speaking applications. It comes with a wide range of features out of the box.
+Requests is ready for the demands of building robust and reliable HTTP applications and comes with a wide range of features out of the box:
 
-<x-cards data-columns="3">
-  <x-card data-title="Connection Management" data-icon="lucide:network">
-    Includes Keep-Alive and connection pooling for efficient network usage.
+*   Keep-Alive & Connection Pooling
+*   International Domains and URLs
+*   Sessions with Cookie Persistence
+*   Browser-style TLS/SSL Verification
+*   Basic & Digest Authentication
+*   Familiar `dict`–like Cookies
+*   Automatic Content Decompression and Decoding
+*   Multi-part File Uploads
+*   SOCKS Proxy Support
+*   Connection Timeouts
+*   Streaming Downloads
+*   Automatic honoring of `.netrc`
+*   Chunked HTTP Requests
+
+## Where to Go Next?
+
+Ready to dive in? Here are the next steps to get you started on your journey with Requests.
+
+<x-cards>
+  <x-card data-title="Getting Started" data-icon="lucide:rocket" data-href="/getting-started">
+    Simple, step-by-step instructions for installing the library and making your first HTTP request.
   </x-card>
-  <x-card data-title="International Support" data-icon="lucide:globe">
-    Natively handles International Domains and URLs.
-  </x-card>
-  <x-card data-title="Session Persistence" data-icon="lucide:cookie">
-    Use Session objects with cookie persistence across requests.
-  </x-card>
-  <x-card data-title="SSL Verification" data-icon="lucide:shield-check">
-    Features browser-style TLS/SSL verification for secure connections.
-  </x-card>
-  <x-card data-title="Authentication" data-icon="lucide:key-round">
-    Built-in support for Basic & Digest Authentication.
-  </x-card>
-  <x-card data-title="Cookie Handling" data-icon="lucide:cookie">
-    Familiar dict-like interface for managing cookies.
-  </x-card>
-  <x-card data-title="Content Decompression" data-icon="lucide:file-archive">
-    Automatic content decompression and decoding.
-  </x-card>
-  <x-card data-title="File Uploads" data-icon="lucide:upload">
-    Easily handle multi-part file uploads.
-  </x-card>
-  <x-card data-title="Proxy Support" data-icon="lucide:server">
-    SOCKS proxy support for routing requests.
-  </x-card>
-  <x-card data-title="Timeouts" data-icon="lucide:timer">
-    Configure connection timeouts to prevent hanging requests.
-  </x-card>
-  <x-card data-title="Streaming Downloads" data-icon="lucide:download">
-    Supports streaming downloads for large files.
-  </x-card>
-  <x-card data-title="Chunked Requests" data-icon="lucide:box-select">
-    Ability to send chunked HTTP requests.
+  <x-card data-title="User Guide" data-icon="lucide:book-open" data-href="/user-guide">
+    Explore the core functionalities of Requests through practical, code-first examples covering common use cases.
   </x-card>
 </x-cards>
-
-## Full Documentation
-
-For a comprehensive guide, including detailed API references and advanced usage patterns, please refer to the official documentation hosted on Read the Docs.
-
-[![Read the Docs](https://raw.githubusercontent.com/psf/requests/main/ext/ss.png)](https://requests.readthedocs.io)
-
-## Next Steps
-
-Ready to get started? Proceed to the [Getting Started](./getting-started.md) guide for installation instructions and to make your first request.

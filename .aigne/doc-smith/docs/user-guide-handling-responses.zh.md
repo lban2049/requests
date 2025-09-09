@@ -1,183 +1,179 @@
 # 处理响应
 
-发出请求后，Requests 会返回一个包含服务器响应的 `Response` 对象。该对象持有您需要的所有信息，从状态码、标头到响应体本身。本指南将向您介绍检查和处理此响应数据的最常用方法。
+发出请求后，Requests 库会返回一个 `Response` 对象。该对象包含服务器的响应，包括内容、状态码、标头等。接下来我们探讨如何高效地使用此对象。
 
-有关发送请求的更多详情，请参阅上一节 [发送请求](./user-guide-making-a-request.md)。
+首先，我们发出一个请求，以便在示例中使用：
 
-## 检查状态码
+```python Making a Request icon=logos:python
+import requests
 
-收到响应后的第一步通常是检查请求是否成功。`status_code` 属性以整数形式提供 HTTP 状态码。
+r = requests.get('https://api.github.com/events')
+```
 
-```python 检查状态码 icon=logos:python
-r = requests.get('https://httpbin.org/status/200')
+## 响应内容
+
+你可以根据内容类型，通过多种方式访问响应正文。
+
+### 二进制响应内容
+
+对于非文本请求，你可以使用 `content` 属性以字节形式访问响应正文。Requests 会自动为你解码 `gzip` 和 `deflate` 传输编码。
+
+这对于处理图像或其他文件等数据非常有用。
+
+```python Getting Binary Content icon=logos:python
+# r.content 返回字节
+print(r.content[:100]) # 打印前 100 个字节
+
+# 示例：保存图像
+# from PIL import Image
+# from io import BytesIO
+# image_response = requests.get('https://via.placeholder.com/150')
+# try:
+#     i = Image.open(BytesIO(image_response.content))
+#     i.save('placeholder.png')
+#     print("图像已保存为 placeholder.png")
+# except Exception as e:
+#     print(f"无法处理图像：{e}")
+```
+
+### 文本响应内容
+
+对于基于文本的响应，`text` 属性以字符串形式提供内容。Requests 会自动根据服务器的响应解码内容。
+
+Requests 会根据 HTTP 标头对编码进行智能猜测。如果在 `Content-Type` 标头中找不到 `charset`，它将尝试使用 `chardet` 库来猜测编码。你可以通过以下方式查看 Requests 正在使用的编码：
+
+```python Checking the Encoding icon=logos:python
+print(f"Detected encoding: {r.encoding}")
+# 输出: Detected encoding: utf-8
+```
+
+如果需要覆盖检测到的编码，可以在访问 `.text` 之前手动设置 `encoding` 属性：
+
+```python Setting the Encoding icon=logos:python
+r.encoding = 'ISO-8859-1'
+print(r.text)
+```
+
+### JSON 响应内容
+
+如果响应包含 JSON 数据，你可以使用内置的 `json()` 方法将其解析为 Python 字典或列表。这在处理 API 时非常方便。
+
+```python Parsing JSON icon=logos:python
+json_response = r.json()
+print(type(json_response)) # <class 'list'>
+print(json_response[0]['type']) # 像普通 Python 对象一样访问数据
+```
+
+如果响应不包含有效的 JSON，调用 `.json()` 将会引发 `requests.exceptions.JSONDecodeError` 异常。
+
+### 流式内容
+
+对于非常大的响应，可以通过使用 `iter_content` 避免一次性将全部内容加载到内存中。这需要通过在初始请求中设置 `stream=True` 来实现。
+
+```python Streaming Large Files icon=logos:python
+with requests.get('https://httpbin.org/stream/20', stream=True) as r:
+    for chunk in r.iter_content(chunk_size=128):
+        if chunk:
+            print(chunk)
+```
+
+你也可以使用 `iter_lines` 逐行遍历响应。
+
+## 检查响应
+
+除了内容之外，`Response` 对象还提供了用于检查的实用属性。
+
+### 状态码
+
+你可以使用 `status_code` 属性检查响应的 HTTP 状态码。
+
+```python Checking the Status Code icon=logos:python
 print(r.status_code)
-# 200
-
-if r.status_code == 200:
-    print('Success!')
-elif r.status_code == 404:
-    print('Not Found.')
+# 输出: 200
 ```
 
-为了方便起见，Requests 提供了一个用于常见状态码的查找对象，这能让您的代码更具可读性。
+为了提高可读性，Requests 为常用状态码提供了一个查找对象：
 
-```python 使用 codes 对象 icon=logos:python
-import requests
-
-r = requests.get('https://httpbin.org/status/200')
-if r.status_code == requests.codes.ok: # .ok 是 200 的别名
-    print('Request was successful.')
+```python Using the Codes Object icon=logos:python
+if r.status_code == requests.codes.ok:
+    print("Request was successful!")
+else:
+    print(f"Request failed with status code: {r.status_code}")
 ```
 
-### 为错误的响应抛出异常
+### 响应标头
 
-您可以使用 `raise_for_status()` 方法来代替手动检查状态码。如果 HTTP 请求返回了不成功的状态码（4xx 客户端错误或 5xx 服务器错误），该方法将抛出 `HTTPError` 异常。
+响应标头以一个不区分大小写的类字典对象的形式提供。
 
-```python 使用 raise_for_status() icon=logos:python
-import requests
-from requests.exceptions import HTTPError
+```python Accessing Headers icon=logos:python
+print(r.headers)
+# 访问特定的标头
+print(f"Content-Type: {r.headers['Content-Type']}")
+# 不区分大小写的实际应用
+print(f"content-type: {r.headers.get('content-type')}")
+```
 
-bad_r = requests.get('https://httpbin.org/status/404')
+### Cookie
+
+如果响应包含任何 Cookie，你可以通过 `cookies` 属性访问它们，该属性会返回一个 `CookieJar` 对象。
+
+```python Working with Cookies icon=logos:python
+cookie_r = requests.get('https://httpbin.org/cookies/set?my_cookie=12345')
+print(cookie_r.cookies['my_cookie'])
+# 输出: 12345
+```
+
+## 错误处理
+
+Requests 可以轻松地检查请求是否成功，或在失败时引发异常。
+
+### `ok` 属性
+
+检查请求是否成功的一个简单方法是使用布尔属性 `ok`。如果 `status_code` 小于 400（即，不是客户端或服务器错误），则该属性返回 `True`。
+
+```python Using the ok Property icon=logos:python
+if r.ok:
+    print("Request is OK")
+else:
+    print("Request failed")
+```
+
+### 针对错误引发异常
+
+要获得更明确的失败信号，可以使用 `raise_for_status()` 方法。如果请求导致客户端错误（4xx 状态码）或服务器错误（5xx 状态码），该方法将引发 `HTTPError`。
+
+```python Raising Exceptions icon=logos:python
+error_r = requests.get('https://httpbin.org/status/404')
+print(f"Status Code: {error_r.status_code}")
 
 try:
-    bad_r.raise_for_status()
-except HTTPError as http_err:
-    print(f'HTTP error occurred: {http_err}')
-except Exception as err:
-    print(f'Other error occurred: {err}')
-else:
-    print('Success!')
-
-# 控制台输出：
-# HTTP error occurred: 404 Client Error: NOT FOUND for url: https://httpbin.org/status/404
+    error_r.raise_for_status()
+except requests.exceptions.HTTPError as err:
+    print(f"HTTP Error Occurred: {err}")
 ```
 
-如果请求成功（状态码在 2xx 范围内），`raise_for_status()` 将不执行任何操作。`ok` 属性也为检查成功与否提供了一个简单的布尔值判断。
+如果请求成功，`raise_for_status()` 不会执行任何操作。
 
-```python 使用 .ok 属性 icon=logos:python
-r = requests.get('https://httpbin.org/status/200')
-if r.ok:
-    print("Request was successful!")
+## 重定向与历史记录
+
+默认情况下，Requests 会自动执行重定向。`Response` 对象的 `history` 属性包含一个 `Response` 对象列表，这些对象是在完成请求过程中创建的。该列表按从最旧到最新的响应顺序排列。
+
+例如，GitHub 会将所有 HTTP 请求重定向到 HTTPS：
+
+```python Inspecting Redirect History icon=logos:python
+redir_r = requests.get('http://github.com')
+
+print(f"Final URL: {redir_r.url}")
+print(f"Final Status Code: {redir_r.status_code}")
+
+# 检查历史记录
+print(f"History: {redir_r.history}")
+
+# 历史记录中的第一个响应是最初的 301 重定向
+if redir_r.history:
+    original_response = redir_r.history[0]
+    print(f"Original Status Code: {original_response.status_code}")
+    print(f"Original URL: {original_response.url}")
 ```
 
-## 访问响应标头
-
-响应标头通过 `headers` 属性以一个类字典对象的形式提供。其一个关键特性是标头键不区分大小写。
-
-```python 访问标头 icon=logos:python
-r = requests.get('https://httpbin.org/get')
-
-# 访问标头
-print(r.headers['Content-Type'])
-# 'application/json'
-
-# 不区分大小写
-print(r.headers.get('content-type'))
-# 'application/json'
-```
-
-## 访问响应体
-
-根据响应的 `Content-Type`，您可以通过多种方式访问响应体。
-
-### 原始二进制内容
-
-对于非文本响应（如图片或 PDF 文件），您可以使用 `content` 属性访问响应体的原始字节。
-
-以下是一个从 URL 保存图片的示例：
-
-```python 保存二进制内容 icon=logos:python
-import requests
-
-# 此 URL 指向 Requests 库的徽标
-r = requests.get('https://raw.githubusercontent.com/psf/requests/main/ext/requests-logo.png')
-
-with open('requests_logo.png', 'wb') as f:
-    f.write(r.content)
-
-# 这会将 'requests_logo.png' 保存在您的当前目录中。
-```
-![Requests 库徽标](../../../ext/requests-logo.png)
-
-### 文本内容
-
-对于文本数据，`text` 属性以字符串形式提供响应体。Requests 会根据响应标头中指定的字符编码自动解码内容。如果未指定编码，它会尽力猜测。
-
-```python 访问文本内容 icon=logos:python
-r = requests.get('https://httpbin.org/html')
-print(r.text)
-```
-
-**响应示例**
-```html
-<!DOCTYPE html>
-<html>
-  <head>
-  </head>
-  <body>
-      <h1>Herman Melville - Moby-Dick</h1>
-  </body>
-</html>
-```
-
-如果您发现编码检测不正确，可以在访问 `.text` 之前手动设置 `encoding` 属性：
-
-```python 手动设置编码 icon=logos:python
-r.encoding = 'utf-8'
-print(r.text)
-```
-
-### JSON 内容
-
-如果响应包含 JSON 数据，您可以使用内置的 `json()` 方法将其解析为 Python 字典或列表。
-
-```python 解析 JSON 内容 icon=logos:python
-r = requests.get('https://httpbin.org/json')
-
-data = r.json()
-
-# 从解析后的 JSON 中访问数据
-slideshow_title = data['slideshow']['title']
-print(f'Slideshow Title: {slideshow_title}')
-
-# 控制台输出：
-# Slideshow Title: Sample Slide Show
-```
-
-如果响应体不包含有效的 JSON，调用 `.json()` 将会抛出 `requests.exceptions.JSONDecodeError` 异常。
-
-## 流式传输内容
-
-对于非常大的响应，您可以在请求中设置 `stream=True`，以避免一次性将全部内容加载到内存中。然后，您可以使用 `iter_content()` 或 `iter_lines()` 来迭代响应内容。
-
-### 分块流式传输
-
-`iter_content()` 允许您按指定大小的块来迭代响应数据。这对于下载大文件非常有效，可以避免消耗过多内存。
-
-```python 分块下载大文件 icon=logos:python
-# 使用 iter_content 下载大文件
-with requests.get('https://httpbin.org/stream/10', stream=True) as r:
-    r.raise_for_status() # 确保请求成功
-    with open('large_file.bin', 'wb') as f:
-        for chunk in r.iter_content(chunk_size=8192):
-            # chunk 将是一个最大为 8192 字节的 bytes 对象
-            f.write(chunk)
-```
-
-### 按行流式传输
-
-`iter_lines()` 对于处理基于文本的流式 API 非常有用，因为它会逐行迭代响应内容。
-
-```python 逐行处理文本流 icon=logos:python
-with requests.get('https://httpbin.org/stream/5', stream=True) as r:
-    for line in r.iter_lines():
-        if line:
-            # line 将是一个 bytes 对象，解码后才能打印
-            decoded_line = line.decode('utf-8')
-            print(decoded_line)
-```
-这种方法可以高效地处理大文件下载或数据流，而不会占用大量内存。
-
----
-
-既然您已经了解了如何处理响应，就可以通过使用 [会话对象](./user-guide-session-objects.md) 来提升请求的效率和状态管理。
+既然你已经熟悉了如何处理响应，下一步就是管理跨多个请求的状态。通过 [Session Objects](./user-guide-session-objects.md) 学习如何持久化 Cookie 和标头。

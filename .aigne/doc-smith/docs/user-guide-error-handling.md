@@ -1,14 +1,16 @@
 # Error Handling
 
-When building applications that rely on external services, it's crucial to anticipate and handle potential issues. Network problems can occur, servers can fail, and responses may not be what you expect. Requests provides a set of exceptions to help you gracefully manage these situations.
+When you use Requests, network connections can fail, servers can be unreachable, or responses might not be what you expected. Requests anticipates these issues and will raise an exception when they occur. This guide will walk you through the common exceptions and how to handle them gracefully.
 
 All exceptions raised by Requests inherit from the base class `requests.exceptions.RequestException`.
 
 ## HTTP Status Code Errors
 
-For unsuccessful HTTP responses (i.e., status codes in the 4xx or 5xx range), you can use the `Response.raise_for_status()` method. This is a convenient way to check if a request was successful and raise an `HTTPError` if it was not.
+By default, Requests does not raise an exception for unsuccessful HTTP status codes (like `404 Not Found` or `500 Internal Server Error`). To make Requests raise an exception for these responses, you can use the `raise_for_status()` method on a `Response` object.
 
-```python Handling HTTP Errors icon=logos:python
+If the status code indicates an error (4xx for client errors, 5xx for server errors), `raise_for_status()` will raise an `HTTPError`.
+
+```python Handling HTTP Errors
 import requests
 from requests.exceptions import HTTPError
 
@@ -26,86 +28,80 @@ else:
     print('Success!')
 ```
 
-When this code is run, the `raise_for_status()` call will raise an `HTTPError` with a message indicating the client error:
-
-```text Expected Output
-HTTP error occurred: 404 Client Error: NOT FOUND for url: https://httpbin.org/status/404
-```
-
 ## Connection Errors
 
-If a network problem occurs (e.g., DNS failure, refused connection), Requests will raise a `ConnectionError`.
-
-For instance, attempting to connect to an invalid or unreachable domain will trigger this exception.
+For network-level problems, such as a DNS failure or a refused connection, Requests will raise a `ConnectionError`.
 
 ```python Handling Connection Errors icon=logos:python
 import requests
 from requests.exceptions import ConnectionError
 
+url = 'https://this-is-a-nonexistent-domain.com'
+
 try:
-    response = requests.get('https://example.invalid-domain')
+    response = requests.get(url)
 except ConnectionError as e:
     print(f"Connection error occurred: {e}")
 ```
 
 ## Timeouts
 
-You can configure requests to stop waiting for a response after a given number of seconds. If the server does not respond in time, a `Timeout` exception is raised.
-
-The `requests.exceptions.Timeout` exception is a parent class for two more specific exceptions: `ConnectTimeout` and `ReadTimeout`. This allows you to catch both types of timeouts with a single `except` block.
+You can configure requests to stop waiting for a response after a specific number of seconds by using the `timeout` parameter. If the server does not respond in time, a `Timeout` exception is raised.
 
 ```python Handling Timeouts icon=logos:python
 import requests
 from requests.exceptions import Timeout
 
+url = 'https://httpbin.org/delay/5' # This endpoint waits 5 seconds to respond
+
 try:
-    # Attempt to connect to a slow endpoint with a very short timeout
-    response = requests.get('https://httpbin.org/delay/5', timeout=1)
+    # Set a timeout of 3 seconds
+    response = requests.get(url, timeout=3)
 except Timeout:
     print('The request timed out')
 ```
 
-For more detailed configuration of timeouts, see the [Timeouts, Retries, and Proxies](./advanced-usage-timeouts-retries-proxies.md) section.
+The `Timeout` exception is a base class that catches both `ConnectTimeout` (for timeouts during connection establishment) and `ReadTimeout` (for timeouts while waiting for data from the server). If you need to handle these cases differently, you can catch them specifically.
+
+## Redirection Errors
+
+Requests automatically follows redirects. However, if a request chain exceeds the maximum number of redirects, it will raise a `TooManyRedirects` exception. This helps prevent infinite redirect loops.
+
+```python Handling Too Many Redirects icon=logos:python
+import requests
+from requests.exceptions import TooManyRedirects
+
+# This endpoint redirects 10 times by default
+url = 'https://httpbin.org/redirect/10'
+
+try:
+    # By default, the redirect limit is 30. Let's imagine a scenario with a lower limit.
+    # For this example, we'll just catch the exception if it were to happen.
+    response = requests.get(url)
+except TooManyRedirects:
+    print('The request exceeded the maximum number of redirects.')
+```
 
 ## Invalid URLs
 
-If you provide a URL that is improperly formatted, Requests will raise an exception indicating the issue. The most common is `MissingSchema`, which occurs if you forget to include `http://` or `https://`.
+If you provide a URL that is improperly formatted, Requests will raise an exception. The most common is `MissingSchema`, which occurs if the URL does not include `http://` or `https://`.
 
 ```python Handling Invalid URLs icon=logos:python
 import requests
 from requests.exceptions import MissingSchema
 
 try:
-    response = requests.get('google.com')
+    response = requests.get('httpbin.org/get')
 except MissingSchema as e:
-    print(f"Invalid URL: {e}")
+    print(f'Invalid URL: {e}')
 ```
 
-This will output a helpful message suggesting the correct format:
-`Invalid URL: Invalid URL 'google.com': No scheme supplied. Perhaps you meant https://google.com?`
+## Content Decoding Errors
 
-## Redirection Errors
+When you attempt to parse a response body that is not valid JSON using the `response.json()` method, a `JSONDecodeError` will be raised.
 
-By default, Requests handles redirects. However, if a request exceeds the default limit of 30 redirects, it will raise a `TooManyRedirects` exception to prevent it from getting stuck in a redirect loop.
-
-```python Handling Too Many Redirects icon=logos:python
+```python Handling JSON Decode Errors icon=logos:python
 import requests
-from requests.exceptions import TooManyRedirects
-
-try:
-    # httpbin.org/redirect/N redirects N times
-    response = requests.get('https://httpbin.org/redirect/35')
-except TooManyRedirects:
-    print('Too many redirects')
-```
-
-## JSON Decoding Errors
-
-When you use `response.json()` to parse a response, you might encounter a `JSONDecodeError` if the response body does not contain valid JSON. This can happen if the server returns an error page (like HTML) instead of the expected JSON.
-
-```python Handling JSON Errors icon=logos:python
-import requests
-from requests.exceptions import JSONDecodeError
 
 url = 'https://httpbin.org/html' # This endpoint returns HTML, not JSON
 
@@ -113,89 +109,29 @@ try:
     response = requests.get(url)
     response.raise_for_status()
     data = response.json()
-except JSONDecodeError:
-    print("Failed to decode JSON from response.")
-except HTTPError as http_err:
-    print(f'HTTP error occurred: {http_err}')
+except requests.exceptions.JSONDecodeError:
+    print("Failed to decode JSON from the response.")
+except requests.exceptions.HTTPError as err:
+    print(f'HTTP error occurred: {err}')
 ```
 
-## Exception Hierarchy
+## Summary of Common Exceptions
 
-Understanding the exception hierarchy can help you write more effective error-handling logic. For example, since `SSLError` inherits from `ConnectionError`, an `except ConnectionError:` block will also catch SSL errors.
+Here is a quick reference table for the most common exceptions you might encounter:
 
-Here is a simplified diagram of the most common exceptions:
-
-```d2
-direction: down
-
-RequestException: {
-  label: "RequestException"
-  shape: rectangle
-}
-
-HTTPError: { 
-  label: "HTTPError"
-  shape: rectangle 
-}
-ConnectionError: { 
-  label: "ConnectionError"
-  shape: rectangle 
-}
-Timeout: { 
-  label: "Timeout"
-  shape: rectangle 
-}
-TooManyRedirects: { 
-  label: "TooManyRedirects"
-  shape: rectangle 
-}
-MissingSchema: { 
-  label: "MissingSchema"
-  shape: rectangle 
-}
-
-RequestException -> HTTPError
-RequestException -> ConnectionError
-RequestException -> Timeout
-RequestException -> TooManyRedirects
-RequestException -> MissingSchema
-
-ConnectTimeout: { 
-  label: "ConnectTimeout"
-  shape: rectangle 
-}
-ReadTimeout: { 
-  label: "ReadTimeout"
-  shape: rectangle 
-}
-ProxyError: { 
-  label: "ProxyError"
-  shape: rectangle 
-}
-SSLError: { 
-  label: "SSLError"
-  shape: rectangle 
-}
-
-ConnectionError -> ConnectTimeout
-ConnectionError -> ProxyError
-ConnectionError -> SSLError
-Timeout -> ConnectTimeout
-Timeout -> ReadTimeout
-```
-
-### Common Exceptions Summary
-
-Here is a quick reference for the most common exceptions you'll encounter:
-
-| Exception | Description |
+| Exception | Reason for Being Raised |
 |---|---|
-| `RequestException` | The base exception class. All other exceptions raised by Requests inherit from it. |
-| `HTTPError` | Raised for unsuccessful responses (4xx or 5xx status codes) via `response.raise_for_status()`. |
-| `ConnectionError` | Raised for network-related problems like DNS failures or refused connections. |
-| `Timeout` | Raised when a request times out. Catches both `ConnectTimeout` and `ReadTimeout`. |
-| `TooManyRedirects` | Raised when a request exceeds the configured number of maximum redirections. |
-| `MissingSchema` | Raised when a URL is provided without a scheme (e.g., `http://` or `https://`). |
-| `JSONDecodeError` | Raised when `response.json()` fails to decode the response content. |
+| `RequestException` | The base exception that all other exceptions inherit from. |
+| `HTTPError` | An HTTP error occurred (4xx or 5xx status code). Raised by `response.raise_for_status()`. |
+| `ConnectionError` | A network problem occurred (e.g., DNS failure, connection refused). |
+| `ProxyError` | A problem with the proxy server occurred. |
+| `SSLError` | An SSL handshake error occurred. |
+| `Timeout` | The request timed out. This includes both `ConnectTimeout` and `ReadTimeout`. |
+| `TooManyRedirects` | The request exceeded the configured number of maximum redirections. |
+| `MissingSchema` | The URL was missing the scheme (e.g., `http://` or `https://`). |
+| `InvalidURL` | The URL was malformed. |
+| `JSONDecodeError` | Failed to decode the response content as JSON using `response.json()`. |
 
-By handling these exceptions, you can make your application more resilient to network failures and unexpected server behavior. For more complex scenarios, you may want to explore [Advanced Usage](./advanced-usage.md).
+By anticipating these potential errors and using `try...except` blocks, you can build resilient applications that handle network issues and unexpected server responses gracefully.
+
+Now that you know how to handle errors, you are ready to explore more complex scenarios. See our [Advanced Usage](./advanced-usage.md) guide to learn about session objects, SSL verification, and more.

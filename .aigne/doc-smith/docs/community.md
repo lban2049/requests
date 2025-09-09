@@ -1,39 +1,71 @@
 # Community
 
-Requests is one of the most downloaded Python packages today, pulling in around 30 million downloads per week. According to GitHub, it is currently depended upon by over 1,000,000 repositories. This success is built on the efforts of a large and active community, from its original creator to the current maintainers and the many developers who have contributed patches and suggestions over the years.
+Requests is a community-driven project, lovingly created by Kenneth Reitz and maintained by a dedicated team of volunteers. It has become one of the most downloaded Python packages, pulling in around 30 million downloads per week, and is a dependency for over one million repositories on GitHub. This success is a testament to the vibrant community that supports and contributes to its development. This section provides insight into the project's history, its contributors, and how you can get involved.
 
-This section provides insight into the project's history and the people who make it possible.
+## Project History and Contributors
 
-## Project History
+The project has a long and rich history of evolution, from its initial conception to its current status as a core part of the Python ecosystem. The development is guided by the "Keepers of the Crystals," and its success is built upon the countless contributions from developers around the world.
 
-The library has a rich history of development, with numerous versions released since its conception in 2011. Each release has introduced new features, crucial improvements, and important bug fixes, evolving Requests into the robust and reliable tool it is today. For a detailed account of every change, from the initial release to the latest updates, you can explore the complete changelog.
+To explore the project's journey and acknowledge the people behind it, please visit the dedicated pages:
 
-<x-card data-title="Explore the Changelog" data-icon="lucide:history" data-href="/community/changelog" data-cta="View Changelog">
-  Dive into the detailed release history of the Requests library to track all new features, bug fixes, and improvements from the very beginning.
-</x-card>
+<x-cards>
+  <x-card data-title="Changelog" data-icon="lucide:history" data-href="/community/changelog">
+    A detailed log of all changes, improvements, and bug fixes for each version of the Requests library.
+  </x-card>
+  <x-card data-title="Contributors" data-icon="lucide:users" data-href="/community/contributors">
+    A list of all the individuals who have contributed to the development and success of the Requests library.
+  </x-card>
+</x-cards>
 
-## Our Contributors
+## How to Get Involved
 
-Requests was created by Kenneth Reitz and is now maintained by a dedicated team. The project thrives thanks to the invaluable contributions from a global community of developers who have submitted patches, provided suggestions, and helped improve the library.
+Contributions are always welcome, whether it's reporting a bug, improving the documentation, or submitting a patch. Here’s how you can get started.
 
-**Current Maintainers (Keepers of the Crystals):**
-- Nate Prewitt
-- Seth M. Larson
+### Reporting Bugs
 
-We also acknowledge the essential work of our previous maintainers, including Kenneth Reitz, Cory Benfield, and Ian Cordasco.
+If you encounter a bug, you can help us by providing a detailed report. Requests includes a helpful utility to generate a summary of your system's configuration, which is invaluable for debugging.
 
-<x-card data-title="Meet the Contributors" data-icon="lucide:users" data-href="/community/contributors" data-cta="See Full List">
-  A comprehensive list of everyone who has helped build and maintain Requests, from the core team to the many developers who have submitted patches and suggestions.
-</x-card>
+Run the following command and include the output in your bug report:
 
-## Get Involved
-
-There are many ways to contribute to the Requests project. Whether you're reporting a bug, suggesting an improvement, or submitting code, your input is welcome. The project is hosted on GitHub, where you can find the source code, open issues, and submit pull requests.
-
-To help with bug reports, Requests includes a utility to gather relevant system information. You can run it from your terminal:
-
-```shell
+```shell title="Generate System Info"
 python -m requests.help
 ```
 
-This command provides a structured summary of your environment, which is valuable for diagnosing issues.
+### Contributing Code and Documentation
+
+If you'd like to contribute directly to the project, you can start by setting up a local development environment.
+
+1.  **Clone the repository**
+
+    Due to a known issue with commit timestamps, it's recommended to use the following command to clone the repository:
+
+    ```shell title="Cloning the repository"
+    git clone -c fetch.fsck.badTimezone=ignore https://github.com/psf/requests.git
+    cd requests
+    ```
+
+2.  **Install development dependencies**
+
+    Use pip to install the necessary packages for testing and development.
+
+    ```shell title="Install dependencies"
+    python -m pip install -r requirements-dev.txt
+    ```
+
+3.  **Run tests**
+
+    Before making any changes, ensure that all existing tests pass.
+
+    ```shell title="Run tests"
+    python -m pytest tests
+    ```
+
+4.  **Build documentation**
+
+    If you are making changes to the documentation, you can build it locally to preview your changes.
+
+    ```shell title="Build docs"
+    make docs
+    ```
+
+After making your changes and adding relevant tests, you can submit a pull request on GitHub for review.

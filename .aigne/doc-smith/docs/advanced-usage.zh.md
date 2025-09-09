@@ -1,21 +1,23 @@
 # 高级用法
 
-掌握基础知识后，您可能需要处理更复杂的网络场景。本节介绍了 Requests 库的高级功能，让您可以微调 HTTP 交互，以提高性能、可靠性和安全性。
+掌握了发送请求的基础知识后，你经常会遇到需要更复杂配置的实际场景。本节将深入探讨 Requests 的高级功能，让你能够自信地处理复杂的网络行为、安全需求和自定义逻辑。
 
-您将学习如何管理网络超时、自动重试失败的请求、通过代理路由流量、自定义 SSL 证书验证，甚至通过自定义适配器和钩子扩展 Requests 的核心功能。
-
-探索以下主题，以更深入地控制您的 HTTP 请求。
+你将学习如何通过超时和重试来微调网络操作，使用 SSL 证书管理安全连接，甚至通过自定义适配器和钩子扩展库的核心功能。
 
 <x-cards data-columns="3">
-  <x-card data-title="超时、重试和代理" data-icon="lucide:network" data-href="/advanced-usage/timeouts-retries-proxies">
-    通过设置超时以防止请求挂起、为暂时性网络故障配置自动重试，以及通过 HTTP 或 SOCKS 代理路由请求，来控制网络行为。
+  <x-card data-title="超时、重试和代理" data-icon="lucide:timer" data-href="/advanced-usage/timeouts-retries-proxies">
+    实现对网络操作的精细控制。学习如何设置超时以防止请求无限期挂起，如何自动重试失败的请求以构建弹性应用程序，以及如何出于安全或访问目的通过代理路由流量。
   </x-card>
-  <x-card data-title="SSL 证书验证" data-icon="lucide:lock" data-href="/advanced-usage/ssl-cert-verification">
-    管理 Requests 处理 SSL/TLS 证书的方式。学习使用自定义证书颁发机构 (CA) 包、为双向 TLS 身份验证提供客户端证书，或在必要时禁用验证。
+  <x-card data-title="SSL 证书验证" data-icon="lucide:shield-check" data-href="/advanced-usage/ssl-cert-verification">
+    管理 HTTPS 连接的安全性。本指南涵盖如何使用自定义 CA 证书包，为双向 TLS 身份验证提供客户端证书，以及在何种情况下（需谨慎）可以禁用 SSL 验证。
   </x-card>
-  <x-card data-title="自定义适配器和钩子" data-icon="lucide:puzzle" data-href="/advanced-usage/adapters-and-hooks">
-    扩展 Requests 以满足特殊需求。创建自定义传输适配器以处理不同的传输协议或修改连接逻辑，并使用内置的钩子系统来检查和修改响应对象。
+  <x-card data-title="自定义适配器和钩子" data-icon="lucide:plug-zap" data-href="/advanced-usage/adapters-and-hooks">
+    扩展 Requests 以满足你的独特需求。了解如何创建自定义传输适配器以实现不同的传输协议或连接逻辑，以及如何使用钩子系统注册回调来修改请求或检查响应。
   </x-card>
 </x-cards>
 
-这些高级功能提供了构建稳健可靠的应用程序所需的灵活性。探索这些主题后，您可以查阅详细的 [API 参考](./api-reference.md)，以全面了解所有可用的类和方法。
+掌握这些高级功能后，你就可以构建稳健、安全且高度定制的 HTTP 客户端。当你准备好详细探索每个类和方法时，完整的 API 参考将是你的下一站。
+
+---
+
+**下一步**：[深入了解 API 参考](./api-reference.md)

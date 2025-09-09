@@ -1,71 +1,54 @@
 # 快速入门
 
-本指南提供了安装 Requests 库及发起首次 HTTP 请求的基本步骤，旨在帮助您快速上手，以便开始构建应用。
+本指南提供了安装 Requests 库和发起首次 HTTP 请求的基本步骤。跟随本指南，只需几分钟即可完成所有设置并开始使用。
 
 ## 安装
 
-在开始之前，请确保您已安装受支持的 Python 版本（3.9+）。Requests 已发布在 Python 包索引（PyPI）上，可使用 `pip` 进行安装。
+首先，你需要安装该库。Requests 已发布在 Python Package Index (PyPI) 上，可通过 pip 进行安装。
 
-```console 安装 Requests icon=logos:python
+```console Install with pip icon=logos:python
 $ python -m pip install requests
 ```
 
-这一条命令将下载并安装 Requests 及其所有必需的依赖项，包括 `urllib3`、`certifi`、`charset_normalizer` 和 `idna`。
+Requests 官方支持 Python 3.9 及更高版本。在继续操作前，请确保你的环境满足此要求。
 
 ## 发起首次请求
 
-安装 Requests 后，您就可以开始发起 HTTP 请求。该过程非常简单，体现了 Web 的简洁性。以下是向测试端点发送 `GET` 请求的方法。
+安装 Requests 后，发起 HTTP 请求就非常简单。我们先从 GitHub Events API 获取一些数据作为开始。
 
-```python 发起 GET 请求 icon=logos:python
+```python Making a GET request icon=logos:python
 import requests
 
 r = requests.get('https://httpbin.org/get')
 ```
 
-执行此代码后，您将得到一个名为 `r` 的 `Response` 对象。该对象包含了服务器返回的所有信息，例如内容、状态码和响应头。
+现在，你得到了一个名为 `r` 的 `Response` 对象。该对象包含了服务器响应的所有信息。
 
-## 检查响应
+你可以通过检查状态码轻松判断请求是否成功：
 
-通过 `Response` 对象，可以轻松访问服务器响应的详细信息。以下是您会用到的一些最常见的属性。
-
-### 状态码
-
-您可以检查 HTTP 状态码，以验证请求是否成功。状态码 `200` 表示成功。
-
-```python 检查状态码
+```python Check the status code
 >>> r.status_code
 200
 ```
 
-### 响应头
+状态码 `200` 表示请求成功。其他状态码，如 `404`，则表示未找到相应资源。
 
-服务器的响应头可通过一个类字典对象获取。您可以通过键来访问任何响应头。
+Requests 也让访问响应内容变得很简单。对于文本类型的响应，你可以使用 `.text` 属性：
 
-```python 访问响应头
->>> r.headers['content-type']
-'application/json; charset=utf8'
-```
-
-### 响应体
-
-对于文本类型的响应，您可以使用 `.text` 属性以字符串的形式访问其内容。
-
-```python 以文本形式获取响应体
+```python Access response content as text
 >>> r.text
-'{"authenticated": true, ...'
+'{\n  "args": {}, \n  "headers": {\n    "Accept": "*/*", \n    "Accept-Encoding": "gzip, deflate", \n    "Host": "httpbin.org", \n    "User-Agent": "python-requests/2.32.3", \n    "X-Amzn-Trace-Id": "Root=1-66a93555-0123456789abcdef01234567"\n  }, \n  "origin": "127.0.0.1", \n  "url": "https://httpbin.org/get"\n}'
 ```
 
-如果端点返回的是 JSON（许多 API 都是如此），Requests 提供了一个便捷的内置 JSON 解码器，可将内容解析为 Python 字典。
+对于返回 JSON 的 API（这种情况非常普遍），你可以使用内置的 `.json()` 方法将其内容直接解析为 Python 字典：
 
-```python 解码 JSON 响应
+```python Decode JSON response
 >>> r.json()
-{'authenticated': True, ...}
+{'args': {}, 'headers': {'Accept': '*/*', 'Accept-Encoding': 'gzip, deflate', 'Host': 'httpbin.org', 'User-Agent': 'python-requests/2.32.3', 'X-Amzn-Trace-Id': 'Root=1-66a93555-0123456789abcdef01234567'}, 'origin': '127.0.0.1', 'url': 'https://httpbin.org/get'}
 ```
 
 ## 后续步骤
 
-现在，您已成功安装 Requests 并完成了一次基本的 `GET` 请求。要深入了解该库的功能，下一步应探索构建请求和处理不同类型数据的各种方法。
+恭喜！你已成功安装 Requests 并完成了首次 API 调用。现在你可以开始探索该库提供的更多功能了。
 
-<x-card data-title="发起请求" data-icon="lucide:arrow-right-circle" data-href="/user-guide/making-a-request" data-cta="继续阅读用户指南">
-  了解如何使用 GET、POST 和 PUT 等多种 HTTP 方法，以及如何传递 URL 参数、请求头和请求体。
-</x-card>
+如需深入了解使用 POST 请求发送数据、利用 Session 对象提升性能以及处理身份验证等功能，请继续阅读[用户指南](./user-guide.md)。

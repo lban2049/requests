@@ -1,107 +1,115 @@
 # SSL 证书验证
 
-默认情况下，Requests 会为 HTTPS 请求验证 SSL 证书以确保安全通信，就像网页浏览器一样。如果无法验证证书，Requests 将引发 `SSLError`。这是一项重要的安全功能，可以保护您的应用程序免受中间人攻击。
+默认情况下，Requests 会像网页浏览器一样为 HTTPS 请求验证 SSL 证书。这是一项关键的安全功能，可确保您连接到正确的服务器，并确保您的数据在传输过程中是加密的。默认情况下，Requests 使用 `certifi` 包提供的 CA 证书包。
 
-默认情况下，Requests 使用 `certifi` 包中的一组受信任的根证书。本节详细介绍如何自定义此行为，例如使用私有证书颁发机构 (CA) 或提供客户端证书进行身份验证。
+本指南介绍了如何针对不同场景管理 SSL/TLS 验证，从使用自定义 CA 到提供客户端证书。
 
-## 自定义 CA 证书
+## 默认验证
 
-您可以通过向 `verify` 参数传递您自己的 CA 包文件路径或证书目录路径来覆盖默认的可信 CA 包。
+默认情况下，Requests 会对所有 HTTPS 请求执行 SSL 验证。如果服务器的证书无法验证，将引发 `requests.exceptions.SSLError`。
 
-当与使用自签名或私有颁发证书的内部服务交互时，这特别有用。
-
-```python 使用自定义 CA 包文件 icon=logos:python
+```python 使用默认验证的请求
 import requests
 
-response = requests.get('https://some-internal-site.com', verify='/path/to/your/ca.pem')
+try:
+    response = requests.get('https://httpbin.org/get')
+    print('已通过 SSL 验证成功连接。')
+except requests.exceptions.SSLError as e:
+    print(f'SSL 错误：{e}')
 ```
 
-如果您有一个证书目录，您可以传递该目录的路径：
+在上面的代码中，`verify` 参数隐式地为 `True`。
 
-```python 使用 CA 证书目录 icon=logos:python
+## 自定义 CA 证书包
+
+在企业环境中或与使用私有证书颁发机构 (CA) 的服务交互时，您可能需要使用自定义 CA 证书包。您可以为 `verify` 参数指定 CA 证书包文件（`.pem`）的路径。
+
+```python 使用自定义 CA 证书包
 import requests
 
-response = requests.get('https://some-internal-site.com', verify='/path/to/certs/')
+ca_bundle_path = '/path/to/your/ca.pem'
+
+try:
+    response = requests.get('https://your-internal-service.com', verify=ca_bundle_path)
+    print('已使用自定义 CA 证书包成功连接。')
+except requests.exceptions.RequestException as e:
+    print(f'发生错误：{e}')
 ```
 
-### 使用环境变量
-
-若要进行更持久的配置，您可以设置 `REQUESTS_CA_BUNDLE` 或 `CURL_CA_BUNDLE` 环境变量。Requests 将自动为所有请求使用指定的 CA 包，因此您无需在代码中传递 `verify` 参数。
-
-```bash 设置环境变量 icon=mdi:bash
-export REQUESTS_CA_BUNDLE=/path/to/your/ca.pem
-```
+此外，也可以通过设置环境变量 `REQUESTS_CA_BUNDLE` 或 `CURL_CA_BUNDLE` 为证书文件的路径，来配置 Requests 使用自定义 CA 证书包。
 
 ## 客户端证书
 
-某些服务器要求客户端提供证书进行身份验证，这一过程称为双向 TLS (mTLS)。您可以使用 `cert` 参数提供客户端证书。
+一些服务器要求客户端提供自己的证书进行身份验证，这个过程称为双向 TLS (mTLS)。您可以使用 `cert` 参数提供客户端证书。
 
-`cert` 参数可以是一个同时包含私钥和证书的单个文件的路径，也可以是一个分别包含证书文件和密钥文件路径的元组。
+如果您的证书和私钥在同一个文件中，您可以将文件路径作为字符串传递：
 
-```python 证书和密钥在同一个文件中 icon=logos:python
+```python 单文件中的客户端证书
 import requests
 
-# 如果您的私钥包含在证书文件中
-cert_file_path = '/path/to/client.pem'
-response = requests.get('https://api.some-secure-service.com', cert=cert_file_path)
+cert_file_path = '/path/to/your/client.pem'
+
+response = requests.get(
+    'https://api.secure-service.com/data',
+    cert=cert_file_path
+)
+
+print(response.status_code)
 ```
 
-```python 证书和密钥在不同文件中 icon=logos:python
+如果您的证书和私钥在不同的文件中，请将它们作为元组传递：
+
+```python 作为元组的客户端证书和密钥
 import requests
 
-# 如果您的证书和私钥在不同的文件中
-cert_file_path = '/path/to/client.crt'
-key_file_path = '/path/to/client.key'
-response = requests.get('https://api.some-secure-service.com', cert=(cert_file_path, key_file_path))
+cert_and_key = ('/path/to/your/client.crt', '/path/to/your/client.key')
+
+response = requests.get(
+    'https://api.secure-service.com/data',
+    cert=cert_and_key
+)
+
+print(response.status_code)
 ```
 
-如果指定的证书或密钥文件在给定路径下不存在，Requests 将引发 `OSError`。
+## 禁用 SSL 验证
 
-## 禁用验证
+尽管在生产环境中非常不推荐，但在本地开发或针对使用自签名证书的服务器进行测试时，您可能需要禁用 SSL 验证。要禁用 SSL 验证，请将 `verify` 参数设置为 `False`。
 
-在某些情况下，例如在本地开发或针对使用临时自签名证书的服务器进行测试时，您可能需要禁用 SSL 验证。您可以通过设置 `verify=False` 来实现这一点。
+**警告：** 禁用 SSL 验证会使您的应用程序面临中间人 (MitM) 攻击的风险。请仅在受控、可信的环境中使用此选项。
 
-> **警告：**禁用 SSL 证书验证会使您的应用程序面临严重的安全风险，包括中间人 (MitM) 攻击。它会绕过对服务器身份的验证，这意味着您发送的任何数据都可能被截获。此功能只应在受控的非生产环境中使用。
-
-```python 禁用 SSL 验证 icon=logos:python
+```python 禁用 SSL 验证（不安全）
 import requests
-from urllib3.exceptions import InsecureRequestWarning
 
-# 仅抑制 urllib3 发出的关于不安全请求的单个警告。
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-
-# 这将禁用证书验证。
+# 注意：这可能会产生一个 InsecureRequestWarning
 response = requests.get('https://self-signed.badssl.com/', verify=False)
+
+print(f'已连接，状态码：{response.status_code}')
 ```
 
-当 `verify=False` 时，Requests 将接受服务器提供的任何 TLS 证书，并忽略主机名不匹配或证书过期的情况。
+## 使用会话持久化验证设置
 
-## 会话中的 SSL 验证
+对于向同一主机发出多个请求的应用程序，使用 `Session` 对象会更高效。您可以在会话上配置 SSL 验证设置，这些设置将应用于该会话发出的所有后续请求。
 
-如果您需要在多个请求中应用相同的 SSL 配置，可以在 `Session` 对象上设置 `verify` 和 `cert` 属性。这种方法避免了为每个请求调用传递相同的参数，并可以通过连接复用提高性能。
-
-```python 使用 SSL 设置配置会话 icon=logos:python
+```python 在会话对象上配置 SSL
 import requests
 
 s = requests.Session()
 
-# 为此会话中的所有请求设置自定义 CA 包
-s.verify = '/path/to/ca.pem'
+# 为此会话中的所有请求设置 CA 证书包
+s.verify = '/path/to/your/ca.pem'
 
 # 为此会话中的所有请求设置客户端证书
 s.cert = ('/path/to/client.crt', '/path/to/client.key')
 
-# 这些请求将使用会话的 SSL 配置
-response1 = s.get('https://api.example.com/endpoint1')
-response2 = s.get('https://api.example.com/endpoint2')
+# 此请求将使用已配置的 SSL 设置
+response = s.get('https://api.your-internal-service.com/status')
+
+print(response.json())
 ```
 
-直接传递给请求方法的任何参数（例如 `s.get(url, verify=False)`）将覆盖该特定请求的会话设置。
+这种方法避免了为每个请求进行重复设置，并利用连接池来提高性能。
 
 ---
 
-有关更高级的网络行为自定义，例如创建自定义连接逻辑或处理特定身份验证方案，请继续阅读下一节。
-
-<x-card data-title="自定义适配器和钩子" data-icon="lucide:git-merge" data-href="/advanced-usage/adapters-and-hooks" data-cta="阅读更多">
-  了解如何通过创建自定义传输适配器和使用事件钩子系统来扩展 Requests 的功能。
-</x-card>
+现在您已经了解了如何管理 SSL 证书验证，接下来可以探索如何通过创建[自定义适配器和钩子](./advanced-usage-adapters-and-hooks.md)来进一步扩展 Requests 的功能。

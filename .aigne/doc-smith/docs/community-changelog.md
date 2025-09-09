@@ -1,6 +1,6 @@
 # Changelog
 
-This page provides a detailed log of all changes, improvements, and bug fixes for each version of the Requests library, straight from the official release history.
+This page provides a detailed log of all changes, improvements, and bug fixes for each version of the Requests library.
 
 ## dev
 
@@ -22,6 +22,7 @@ This page provides a detailed log of all changes, improvements, and bug fixes fo
 - Added support for pypy 3.11 for Linux and macOS.
 - Dropped support for pypy 3.9 following its end of support.
 
+
 ## 2.32.3 (2024-05-29)
 
 ### Bugfixes
@@ -40,6 +41,7 @@ This page provides a detailed log of all changes, improvements, and bug fixes fo
 ### Bugfixes
 - Add missing test certs to the sdist distributed on PyPI.
 
+
 ## 2.32.0 (2024-05-20)
 
 ### Security
@@ -55,6 +57,7 @@ This page provides a detailed log of all changes, improvements, and bug fixes fo
 - Fixed bug where an extra leading `/` (path separator) could lead urllib3 to unnecessarily reparse the request URI. (#6644)
 
 ### Deprecations
+
 - Requests has officially added support for CPython 3.12 (#6503)
 - Requests has officially added support for PyPy 3.9 and 3.10 (#6641)
 - Requests has officially dropped support for CPython 3.7 (#6642)
@@ -66,6 +69,7 @@ This page provides a detailed log of all changes, improvements, and bug fixes fo
 ### Packaging
 - Requests has started adopting some modern packaging practices. The source files for the projects (formerly `requests`) is now located in `src/requests` in the Requests sdist. (#6506)
 - Starting in Requests 2.33.0, Requests will migrate to a PEP 517 build system using `hatchling`. This should not impact the average user, but extremely old versions of packaging utilities may have issues with the new packaging format.
+
 
 ## 2.31.0 (2023-05-22)
 
@@ -79,6 +83,7 @@ This page provides a detailed log of all changes, improvements, and bug fixes fo
   Users who do not use a proxy or do not supply their proxy credentials through the user information portion of their proxy URL are not subject to this vulnerability.
 
   Full details can be read in our [Github Security Advisory](https://github.com/psf/requests/security/advisories/GHSA-j8r2-6x86-q33q) and [CVE-2023-32681](https://nvd.nist.gov/vuln/detail/CVE-2023-32681).
+
 
 ## 2.30.0 (2023-05-03)
 
@@ -306,7 +311,7 @@ This page provides a detailed log of all changes, improvements, and bug fixes fo
 
 ### Improvements
 
--   Warn user about possible slowdown when using cryptography version &lt; 1.3.4
+-   Warn user about possible slowdown when using cryptography version < 1.3.4
 -   Check for invalid host in proxy URL, before forwarding request to adapter.
 -   Fragments are now properly maintained across redirects. (RFC7231 7.1.2)
 -   Removed use of cgi module to expedite library load time.
@@ -428,22 +433,16 @@ No code modification (noted below) should be necessary any longer.
 
 For example:
 
-```
-from requests.packages.urllib3.poolmanager import PoolManager
-```
+    from requests.packages.urllib3.poolmanager import PoolManager
 
 Will need to be re-written to be:
 
-```
-from requests.packages import urllib3
-urllib3.poolmanager.PoolManager
-```
+    from requests.packages import urllib3
+    urllib3.poolmanager.PoolManager
 
 Or, even better:
 
-```
-from urllib3.poolmanager import PoolManager
-```
+    from urllib3.poolmanager import PoolManager
 
 ## 2.16.0 (2017-05-26)
 
@@ -734,7 +733,7 @@ This is the first release that follows our new release process. For more, see [o
 
 ### Bugfixes
 
--   Revert changes to our vendored certificate bundle. For more context see (#2455, #2456, and <https://bugs.python.org/issue23476>)
+-   Revert changes to our vendored certificate bundle. For more context see (#2455, #2456, and https://bugs.python.org/issue23476)
 
 ## 2.5.2 (2015-02-23)
 

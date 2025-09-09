@@ -1,107 +1,115 @@
 # SSL Certificate Verification
 
-Requests validates SSL certificates for HTTPS requests by default to ensure secure communication, much like a web browser. If a certificate cannot be verified, Requests will raise an `SSLError`. This is a critical security feature that protects your application from man-in-the-middle attacks.
+Requests verifies SSL certificates for HTTPS requests by default, just like a web browser. This is a critical security feature that ensures you are connecting to the correct server and that your data is encrypted during transit. By default, Requests uses the CA bundle provided by the `certifi` package.
 
-By default, Requests uses a set of trusted root certificates from the `certifi` package. This section details how you can customize this behavior, such as by using a private Certificate Authority (CA) or providing a client-side certificate for authentication.
+This guide covers how to manage SSL/TLS verification for different scenarios, from using custom CAs to providing client-side certificates.
 
-## Custom CA Certificates
+## Default Verification
 
-You can override the default trusted CA bundle by passing the path to your own CA bundle file or a directory of certificates to the `verify` parameter.
+By default, Requests will perform SSL verification for all HTTPS requests. If the server's certificate cannot be verified, a `requests.exceptions.SSLError` will be raised.
 
-This is particularly useful when interacting with internal services that use self-signed or privately issued certificates.
-
-```python Using a custom CA bundle file icon=logos:python
+```python Request with Default Verification
 import requests
 
-response = requests.get('https://some-internal-site.com', verify='/path/to/your/ca.pem')
+try:
+    response = requests.get('https://httpbin.org/get')
+    print('Successfully connected with SSL verification.')
+except requests.exceptions.SSLError as e:
+    print(f'SSL Error: {e}')
 ```
 
-If you have a directory of certificates, you can pass the path to that directory instead:
+In the code above, the `verify` parameter is implicitly `True`.
 
-```python Using a directory of CA certificates icon=logos:python
+## Custom CA Bundle
+
+In enterprise environments or when interacting with services that use a private Certificate Authority (CA), you may need to use a custom CA bundle. You can specify the path to a CA bundle file (`.pem`) for the `verify` parameter.
+
+```python Using a Custom CA Bundle
 import requests
 
-response = requests.get('https://some-internal-site.com', verify='/path/to/certs/')
+ca_bundle_path = '/path/to/your/ca.pem'
+
+try:
+    response = requests.get('https://your-internal-service.com', verify=ca_bundle_path)
+    print('Successfully connected using a custom CA bundle.')
+except requests.exceptions.RequestException as e:
+    print(f'An error occurred: {e}')
 ```
 
-### Using Environment Variables
-
-For a more persistent configuration, you can set the `REQUESTS_CA_BUNDLE` or `CURL_CA_BUNDLE` environment variables. Requests will automatically use the specified CA bundle for all requests, so you don't need to pass the `verify` parameter in your code.
-
-```bash Setting the environment variable icon=mdi:bash
-export REQUESTS_CA_BUNDLE=/path/to/your/ca.pem
-```
+Alternatively, Requests can be configured to use a custom CA bundle via environment variables by setting `REQUESTS_CA_BUNDLE` or `CURL_CA_BUNDLE` to the path of the certificate file.
 
 ## Client-Side Certificates
 
-Some servers require clients to present a certificate for authentication, a process known as mutual TLS (mTLS). You can provide a client-side certificate using the `cert` parameter.
+Some servers require clients to present their own certificate for authentication, a process known as mutual TLS (mTLS). You can provide a client-side certificate using the `cert` parameter.
 
-The `cert` parameter can be a path to a single file containing both the private key and the certificate, or a tuple containing the paths to the certificate file and the key file respectively.
+If your certificate and private key are in the same file, you can pass the file path as a string:
 
-```python Certificate and key in one file icon=logos:python
+```python Client Certificate in a Single File
 import requests
 
-# If your private key is included in the certificate file
-cert_file_path = '/path/to/client.pem'
-response = requests.get('https://api.some-secure-service.com', cert=cert_file_path)
+cert_file_path = '/path/to/your/client.pem'
+
+response = requests.get(
+    'https://api.secure-service.com/data',
+    cert=cert_file_path
+)
+
+print(response.status_code)
 ```
 
-```python Certificate and key in separate files icon=logos:python
+If your certificate and private key are in separate files, pass them as a tuple:
+
+```python Client Certificate and Key as a Tuple
 import requests
 
-# If your certificate and private key are in separate files
-cert_file_path = '/path/to/client.crt'
-key_file_path = '/path/to/client.key'
-response = requests.get('https://api.some-secure-service.com', cert=(cert_file_path, key_file_path))
+cert_and_key = ('/path/to/your/client.crt', '/path/to/your/client.key')
+
+response = requests.get(
+    'https://api.secure-service.com/data',
+    cert=cert_and_key
+)
+
+print(response.status_code)
 ```
 
-If the specified certificate or key files do not exist at the given path, Requests will raise an `OSError`.
+## Disabling SSL Verification
 
-## Disable Verification
+While highly discouraged for production use, you may need to disable SSL verification for local development or when testing against a server with a self-signed certificate. To do this, set the `verify` parameter to `False`.
 
-In certain scenarios, like local development or testing against a server with a temporary self-signed certificate, you might need to disable SSL verification. You can achieve this by setting `verify=False`.
+**Warning:** Disabling SSL verification exposes your application to man-in-the-middle (MitM) attacks. Only use this option in controlled, trusted environments.
 
-> **Warning:** Disabling SSL certificate verification exposes your application to severe security risks, including man-in-the-middle (MitM) attacks. It bypasses the validation of the server's identity, meaning any data you send could be intercepted. This should only be used in controlled, non-production environments.
-
-```python Disabling SSL verification icon=logos:python
+```python Disabling SSL Verification (Insecure)
 import requests
-from urllib3.exceptions import InsecureRequestWarning
 
-# Suppress only the single warning from urllib3 about insecure requests.
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-
-# This will disable certificate verification.
+# Note: This will likely produce an InsecureRequestWarning
 response = requests.get('https://self-signed.badssl.com/', verify=False)
+
+print(f'Connected with status code: {response.status_code}')
 ```
 
-When `verify=False`, Requests will accept any TLS certificate presented by the server and will ignore hostname mismatches or expired certificates.
+## Persisting Verification Settings with Sessions
 
-## SSL Verification in Sessions
+For applications making multiple requests to the same host, it is more efficient to use a `Session` object. You can configure the SSL verification settings on the session, and they will be applied to all subsequent requests made with that session.
 
-If you need to apply the same SSL configuration across multiple requests, you can set the `verify` and `cert` properties on a `Session` object. This approach avoids passing the same parameters to every request call and can improve performance through connection reuse.
-
-```python Configuring a Session with SSL settings icon=logos:python
+```python Configuring SSL on a Session Object
 import requests
 
 s = requests.Session()
 
-# Set a custom CA bundle for all requests in this session
-s.verify = '/path/to/ca.pem'
+# Set the CA bundle for all requests in this session
+s.verify = '/path/to/your/ca.pem'
 
-# Set a client-side certificate for all requests in this session
+# Set the client certificate for all requests in this session
 s.cert = ('/path/to/client.crt', '/path/to/client.key')
 
-# These requests will use the session's SSL configuration
-response1 = s.get('https://api.example.com/endpoint1')
-response2 = s.get('https://api.example.com/endpoint2')
+# This request will use the configured SSL settings
+response = s.get('https://api.your-internal-service.com/status')
+
+print(response.json())
 ```
 
-Any parameters passed directly to a request method (e.g., `s.get(url, verify=False)`) will override the session's settings for that specific request.
+This approach avoids redundant setup for each request and leverages connection pooling for better performance.
 
 ---
 
-For more advanced customization of network behavior, such as creating custom connection logic or handling specific authentication schemes, proceed to the next section.
-
-<x-card data-title="Custom Adapters and Hooks" data-icon="lucide:git-merge" data-href="/advanced-usage/adapters-and-hooks" data-cta="Read More">
-  Learn how to extend the functionality of Requests by creating custom Transport Adapters and using the event hook system.
-</x-card>
+Now that you understand how to manage SSL certificate verification, you can explore how to further extend Requests' functionality by creating [Custom Adapters and Hooks](./advanced-usage-adapters-and-hooks.md).

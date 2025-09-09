@@ -1,39 +1,71 @@
 # 社区
 
-Requests 是当今下载量最大的 Python 软件包之一，每周下载量约为 3000 万次。根据 GitHub 的数据，目前有超过 1,000,000 个代码库依赖于它。这一成功建立在一个庞大而活跃的社区的努力之上，从最初的创建者到现任的维护者，以及多年来贡献了补丁和建议的众多开发者。
+Requests 是一个社区驱动的项目，由 Kenneth Reitz 精心创建，并由一个专注的志愿者团队进行维护。它已成为下载量最大的 Python 包之一，每周下载量约为 3000 万次，并且是 GitHub 上超过一百万个仓库的依赖项。这一成功证明了支持并为其发展做出贡献的充满活力的社区。本节将深入介绍该项目的历史、贡献者以及如何参与其中。
 
-本节将深入介绍该项目的历史以及成就它的贡献者们。
+## 项目历史与贡献者
 
-## 项目历史
+该项目有着悠久而丰富的演变历史，从最初的构想到如今成为 Python 生态系统的核心部分。其开发由“Keepers of the Crystals”指导，其成功建立在世界各地开发者的无数贡献之上。
 
-该库拥有丰富的开发历史，自 2011 年诞生以来已发布了众多版本。每个版本都带来了新功能、关键改进和重要的错误修复，使 Requests 演变为今天这样一个强大而可靠的工具。如需了解从最初版本到最新更新的每一次变更的详细记录，您可以查阅完整的更新日志。
+要了解该项目的历程并向其背后的人们致敬，请访问以下专属页面：
 
-<x-card data-title="浏览更新日志" data-icon="lucide:history" data-href="/community/changelog" data-cta="查看更新日志">
-  深入了解 Requests 库的详细发布历史，追踪从最初版本开始的所有新功能、错误修复和改进。
-</x-card>
+<x-cards>
+  <x-card data-title="更新日志" data-icon="lucide:history" data-href="/community/changelog">
+    Requests 库每个版本的所有变更、改进和错误修复的详细日志。
+  </x-card>
+  <x-card data-title="贡献者" data-icon="lucide:users" data-href="/community/contributors">
+    为 Requests 库的开发和成功做出贡献的所有人员的列表。
+  </x-card>
+</x-cards>
 
-## 我们的贡献者
+## 如何参与
 
-Requests 由 Kenneth Reitz 创建，目前由一个专门的团队进行维护。该项目的蓬勃发展得益于全球开发者社区的宝贵贡献，他们提交了补丁、提供了建议并帮助改进了该库。
+我们随时欢迎各种贡献，无论是报告错误、改进文档还是提交补丁。以下是您的入门方法。
 
-**现任维护者 (Keepers of the Crystals):**
-- Nate Prewitt
-- Seth M. Larson
+### 报告错误
 
-我们同样感谢我们前任维护者的重要工作，包括 Kenneth Reitz、Cory Benfield 和 Ian Cordasco。
+如果您遇到错误，可以通过提供详细报告来帮助我们。Requests 包含一个有用的工具，可以生成系统配置摘要，这对于调试非常有价值。
 
-<x-card data-title="认识贡献者" data-icon="lucide:users" data-href="/community/contributors" data-cta="查看完整列表">
-  这里有一份完整的列表，包含了所有帮助构建和维护 Requests 的人员，从核心团队到提交补丁和建议的众多开发者。
-</x-card>
+请运行以下命令，并将输出包含在您的错误报告中：
 
-## 参与贡献
-
-为 Requests 项目做贡献的方式有很多。无论是报告错误、提出改进建议还是提交代码，我们都欢迎您的参与。该项目托管在 GitHub 上，您可以在那里找到源代码、提交问题和拉取请求。
-
-为了帮助处理错误报告，Requests 提供了一个用于收集相关系统信息的实用工具。您可以通过终端运行它：
-
-```shell
+```shell title="生成系统信息"
 python -m requests.help
 ```
 
-该命令会提供一份关于您所处环境的结构化摘要，这对于诊断问题非常有价值。
+### 贡献代码和文档
+
+如果您想直接为项目做出贡献，可以从设置本地开发环境开始。
+
+1.  **克隆仓库**
+
+    由于提交时间戳存在已知问题，建议使用以下命令克隆仓库：
+
+    ```shell title="克隆仓库"
+    git clone -c fetch.fsck.badTimezone=ignore https://github.com/psf/requests.git
+    cd requests
+    ```
+
+2.  **安装开发依赖项**
+
+    使用 pip 安装测试和开发所需的包。
+
+    ```shell title="安装依赖项"
+    python -m pip install -r requirements-dev.txt
+    ```
+
+3.  **运行测试**
+
+    在进行任何更改之前，请确保所有现有测试都能通过。
+
+    ```shell title="运行测试"
+    python -m pytest tests
+    ```
+
+4.  **构建文档**
+
+    如果您要对文档进行更改，可以在本地构建它以预览您的更改。
+
+    ```shell title="构建文档"
+    make docs
+    ```
+
+在完成更改并添加相关测试后，您可以在 GitHub 上提交拉取请求以供审核。

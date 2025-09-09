@@ -1,172 +1,111 @@
 # 自定义适配器和钩子
 
-Requests 的设计是可扩展的，允许您在高级场景下改变其核心行为。实现这一点的两种主要机制是传输适配器，它控制请求如何通过网络发送；以及钩子，它让您能够拦截和修改请求-响应周期的各个部分。
-
-本指南将探讨如何创建和使用自定义适配器与钩子，以根据您的特定需求定制 Requests。
+Requests 被设计为高度可扩展，允许你修改其核心行为以适应特定的使用场景。实现这一点的两个主要机制是传输适配器和事件钩子。传输适配器让你能够定义 Requests 如何进行 HTTP 和 HTTPS 调用，而钩子则提供了一种在请求-响应周期的特定节点触发自定义操作的方法。
 
 ## 传输适配器
 
-传输适配器是一个类，它接收一个 `PreparedRequest` 对象并处理将其发送到服务器的逻辑。它负责管理连接池、重试逻辑和特定于协议的行为。默认情况下，Requests 对所有 `http://` 和 `https://` 请求都使用同一个 `HTTPAdapter`。
+每当 `Session` 处理一个请求时，它会根据 URL 的协议（例如 `http://` 或 `https://`）查找已注册的传输适配器。该适配器负责整个传输逻辑，包括连接管理、发送请求和返回响应。
 
-通过创建自定义适配器，您可以实现独特的传输行为，例如添加自定义身份验证标头、以特定格式记录请求，甚至使用不同的传输协议。
+默认情况下，Requests 对 `http://` 和 `https://` 都使用 `HTTPAdapter`。你可以创建自己的适配器来实现自定义的传输行为。
 
 ### 创建自定义适配器
 
-创建自定义适配器最直接的方法是继承 `requests.adapters.HTTPAdapter` 并重写其方法。`send()` 方法是适配器的核心，因为它负责整个请求发送过程。
+自定义适配器应继承自 `requests.adapters.BaseAdapter`，或者更常见地，继承自 `requests.adapters.HTTPAdapter`（如果你只想修改现有的 HTTP/HTTPS 逻辑）。最重要的需要重写的方法是 `send()`。
 
-下面是一个自定义适配器的示例，它会为发送的每个请求添加一个 `X-Request-ID` 标头。
+下面是一个自定义适配器的简单示例，它为每个请求和响应添加了基本的日志记录功能。
 
-```python Add Custom Header Adapter icon=logos:python
+```python Transport Adapter Example icon=logos:python
 import requests
-import uuid
 from requests.adapters import HTTPAdapter
 
-class RequestIdAdapter(HTTPAdapter):
+class LoggingAdapter(HTTPAdapter):
     def send(self, request, stream=False, timeout=None, verify=True, cert=None, proxies=None):
-        # Generate a unique ID for the request
-        request_id = str(uuid.uuid4())
-        request.headers['X-Request-ID'] = request_id
-
-        print(f"Sending request with ID: {request_id}")
+        print(f'-> Sending request to {request.method} {request.url}')
         
-        # Call the parent class's send method to execute the request
-        return super().send(request, stream, timeout, verify, cert, proxies)
-
+        # 调用父类的 send 方法来执行实际的请求
+        response = super().send(request, stream, timeout, verify, cert, proxies)
+        
+        print(f'<- Received response {response.status_code} {response.reason}')
+        return response
 ```
 
-### 挂载自定义适配器
+### 使用自定义适配器
 
-定义好适配器后，您必须指示 `Session` 对象为特定的 URL 前缀使用该适配器。这可以通过 `session.mount()` 方法来完成。
+要使用自定义适配器，你必须将其挂载（mount）到一个 `Session` 对象上，并指定一个 URL 前缀。之后，该会话将对所有 URL 以该前缀开头的请求使用你的适配器。
 
-```python Mount and Use Custom Adapter icon=logos:python
-# Create a session object
-s = requests.Session()
+```python Mounting a Custom Adapter icon=logos:python
+# 创建一个 session 和我们自定义适配器的实例
+session = requests.Session()
+adapter = LoggingAdapter()
 
-# Create an instance of our custom adapter
-adapter = RequestIdAdapter()
+# 挂载适配器以处理所有 HTTPS 流量
+session.mount('https://', adapter)
 
-# Mount the adapter to handle all HTTP and HTTPS requests
-s.mount('http://', adapter)
-s.mount('https://', adapter)
-
-# Make a request using the session
+# 所有对 https://... 的请求现在都将通过我们的 LoggingAdapter
 try:
-    response = s.get('https://httpbin.org/headers')
-    response.raise_for_status()
-    print("\nResponse Headers:")
-    # The response will contain the X-Request-ID header
-    print(response.json()['headers'])
+    session.get('https://httpbin.org/get')
 except requests.exceptions.RequestException as e:
-    print(f"An error occurred: {e}")
+    print(f'An error occurred: {e}')
 
+# 输出:
+# -> Sending request to GET https://httpbin.org/get
+# <- Received response 200 OK
 ```
 
-当执行此代码时，httpbin.org 的输出将包含 `X-Request-ID` 标头，这证明您的自定义适配器已用于该请求。
+通过对 `HTTPAdapter` 进行子类化，你还可以重写其他方法，从而对连接池（`init_poolmanager`）、代理管理（`proxy_manager_for`）和响应构建（`build_response`）等方面进行细粒度控制。
 
 ## 事件钩子
 
-Requests 还提供了一个钩子系统，允许您注册在请求生命周期的特定时间点执行的回调函数。这对于实现事件处理、自定义日志记录或动态修改响应非常有用。
+Requests 提供了一个钩子系统，允许你将可调用操作附加到请求生命周期的不同阶段。当你注册一个钩子时，Requests 会用特定数据调用你的函数，从而允许你检查或修改这些数据。
 
-主要可用的钩子是 `response`，它在从服务器收到响应后、返回给您的代码前触发。
+最主要的可用钩子是 `response`，它在从服务器接收到响应之后、返回给调用者之前被触发。
 
-### 使用 `response` 钩子
+### 钩子如何工作
 
-钩子是一个函数，它接收 `response` 对象作为其第一个参数。传递给原始请求方法（例如 `timeout`）的任何附加参数也会作为关键字参数传递给钩子。
+钩子是一个函数，它接收其作用的对象作为第一个参数。对于 `response` 钩子，这个对象就是 `Response` 对象。你的函数可以根据响应执行操作，甚至可以修改响应本身。如果钩子函数返回值，该返回值将替换原始对象。
 
-钩子函数可以检查或修改响应。如果它返回值，该值将替换原始响应。如果它返回 `None`，则使用原始响应。
+下面是一个钩子的示例，它会自动检查 HTTP 错误：
 
-#### 示例：记录响应
-
-下面是一个简单的钩子，用于记录每个响应的状态码和 URL。
-
-```python Response Logging Hook icon=logos:python
+```python Hook Example icon=logos:python
 import requests
 
-def log_response(response, *args, **kwargs):
-    print(f"Request to {response.url} completed with status {response.status_code}")
-    # This hook does not modify the response, so it returns None implicitly.
+def raise_for_status_hook(response, *args, **kwargs):
+    """一个在每个响应上调用 raise_for_status() 的钩子函数。"""
+    print(f'Hook is checking response for URL: {response.url}')
+    response.raise_for_status()
+    # 如果我们不修改响应，则不需要返回值
 
-# Attach the hook to a session
+# 创建一个 session 并附加钩子
 session = requests.Session()
-session.hooks['response'] = log_response
+session.hooks['response'] = [raise_for_status_hook]
 
-session.get('https://httpbin.org/get')
-session.get('https://httpbin.org/status/404')
+# 这个请求将会成功，钩子也会运行
+print('--- Making a successful request ---')
+response = session.get('https://httpbin.org/get')
+print(f'Request successful with status code: {response.status_code}')
 
+print('\n--- Making a failing request ---')
+try:
+    session.get('https://httpbin.org/status/404')
+except requests.exceptions.HTTPError as e:
+    print(f'Caught expected error via hook: {e}')
+
+# 输出:
+# --- Making a successful request ---
+# Hook is checking response for URL: https://httpbin.org/get
+# Request successful with status code: 200
+#
+# --- Making a failing request ---
+# Hook is checking response for URL: https://httpbin.org/status/404
+# Caught expected error via hook: 404 Client Error: NOT FOUND for url: https://httpbin.org/status/404
 ```
 
-#### 示例：集中式错误检查
+你也可以通过向请求方法传递一个 `hooks` 字典，在单个请求的粒度上附加钩子：
 
-此示例展示了一个自动调用 `response.raise_for_status()` 的钩子，从而为所有通过该会话发出的请求实现集中的 HTTP 错误处理。
-
-```python Automatic Error Checking Hook icon=logos:python
-import requests
-
-def check_for_error(response, *args, **kwargs):
-    try:
-        response.raise_for_status()
-        print(f"Request to {response.url} was successful.")
-    except requests.exceptions.HTTPError as e:
-        # You could add more robust error handling here, like logging to a file
-        print(f"HTTP Error for {response.url}: {e}")
-    # No need to return anything, we are just performing an action.
-
-session = requests.Session()
-session.hooks['response'] = check_for_error
-
-print("Making a request that will succeed...")
-session.get('https://httpbin.org/status/200')
-
-print("\nMaking a request that will fail...")
-session.get('https://httpbin.org/status/500')
-
+```python Per-Request Hook icon=logos:python
+requests.get('https://httpbin.org/status/500', hooks={'response': raise_for_status_hook})
 ```
 
-### 适配器和钩子的交互流程
+通过利用自定义适配器和钩子，你可以扩展 Requests 来处理复杂的身份验证方案、自定义的日志记录需求和独特的网络传输，使其成为处理任何 HTTP 相关任务的强大工具。
 
-下图说明了在使用同时注册了自定义适配器和响应钩子的 `Session` 发出请求时的数据流。
-
-```d2
-direction: down
-
-UserCode: {
-  label: "用户代码"
-  shape: rectangle
-}
-
-Session: {
-  label: "requests.Session"
-  shape: class
-}
-
-Adapter: {
-  label: "自定义适配器"
-  shape: class
-}
-
-Network: {
-  label: "网络 / 服务器"
-  shape: cylinder
-}
-
-HookFunction: {
-  label: "响应钩子函数"
-  shape: rectangle
-}
-
-UserCode -> Session: "1. session.get(url)"
-Session -> Adapter: "2. 选择并调用 adapter.send(request)"
-Adapter -> Network: "3. 发送 HTTP 请求"
-Network -> Adapter: "4. 接收 HTTP 响应"
-Adapter -> Session: "5. 返回 requests.Response 对象"
-Session -> HookFunction: "6. 调度 'response' 钩子"
-HookFunction -> Session: "7. 钩子执行，可能返回修改后的响应"
-Session -> UserCode: "8. 返回最终响应"
-
-```
-
-通过结合使用自定义适配器和钩子，您可以构建出能够完美满足应用程序需求的、复杂且具有弹性的 HTTP 客户端。
-
----
-
-如需了解所讨论的类和方法的更多详细信息，请浏览 [API 参考](./api-reference.md)。
+要详细了解可用于扩展的类和方法，请查阅完整的 [API 参考](./api-reference.md)。
