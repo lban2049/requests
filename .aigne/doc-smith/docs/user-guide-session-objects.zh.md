@@ -1,84 +1,85 @@
-# 会话对象
+# Session 对象
 
-Session 对象允许你在多个请求之间保持某些参数。它还会在所有从 Session 实例发出的请求中保持 cookie，并利用 `urllib3` 的连接池。因此，如果你向同一主机发出多个请求，底层的 TCP 连接将被重用，这可以显著提升性能。
+Session 对象是 Requests 最强大的功能之一。它允许你在多个请求之间保持某些参数。它还会在通过 Session 实例发出的所有请求中保持 cookie，并会使用 `urllib3` 的连接池。这意味着，如果你向同一主机发出多个请求，底层的 TCP 连接将被重用，这可以显著提升性能。
 
-A Session 对象拥有 Requests 主 API 的所有方法。
+Session 对象拥有主 Requests API 的所有方法。
 
-让我们在多个请求之间保持某些 cookie：
+让我们在多个请求之间保持一些 cookie：
 
-```python Session Cookie Persistence icon=logos:python
+```python Session Cookie 持久化 icon=logos:python
 import requests
 
 s = requests.Session()
 
+# 第一个设置 cookie 的请求
 s.get('https://httpbin.org/cookies/set/sessioncookie/123456789')
+
+# 对同一域名的第二个请求将自动包含该 cookie
 r = s.get('https://httpbin.org/cookies')
 
 print(r.text)
-# 预期输出：
 # {
-#   "cookies": {
+#   "cookies": { 
 #     "sessioncookie": "123456789"
 #   }
 # }
 ```
 
-Session 也可以用来为请求方法提供默认数据。这可以通过为 Session 对象的属性提供数据来实现：
+## 持久化参数
 
-```python Session with Default Headers icon=logos:python
+Session 也可以用来为请求方法提供默认数据。这可以通过向 Session 对象的属性提供数据来实现：
+
+```python 持久化会话级请求头 icon=logos:python
 import requests
 
 s = requests.Session()
-s.headers.update({'x-test-header': 'true'})
+s.headers.update({'x-test': 'true'})
 
-# 'x-test-header' 在两个请求中都会被发送
-r_one = s.get('https://httpbin.org/headers')
-print(r_one.json())
+# 'x-test' 和 'x-test2' 都会被发送
+r_with_both = s.get('https://httpbin.org/headers', headers={'x-test2': 'true'})
+print(r_with_both.json()['headers'])
 
-r_two = s.get('https://httpbin.org/headers', headers={'x-another-header': 'true'})
-print(r_two.json())
+# 在后续请求中，会话级的请求头依然存在
+r_with_session_header = s.get('https://httpbin.org/headers')
+print(r_with_session_header.json()['headers'])
 ```
 
-### 参数优先级
+你传递给请求方法的任何字典都将与设置的会话级别的值合并。方法级别的参数会覆盖会话参数。
 
-任何传递给请求方法的字典都将与会话级别的值合并。但是，对于该单个请求，方法级别的参数将覆盖会话参数中的任何重复键。
+让我们看看传递 `None` 值会发生什么。这对于在特定请求中从会话中移除某个请求头很有用：
 
-例如：
-
-```python Overriding Session Headers icon=logos:python
+```python 覆盖会话参数 icon=logos:python
 import requests
 
 s = requests.Session()
+s.headers.update({'x-test': 'true'})
 
-# 为会话设置一个默认的头信息
-s.headers.update({'Accept': 'application/json'})
+# 此请求将不包含 'x-test' 请求头
+r = s.get('https://httpbin.org/headers', headers={'x-test': None})
 
-# 此请求将使用会话的 'Accept' 头信息
-res_json = s.get('https://httpbin.org/headers')
-print(f"Request 1 Accept header: {res_json.json()['headers']['Accept']}")
-
-# 此请求将仅在本次调用中覆盖会话的 'Accept' 头信息
-res_html = s.get('https://httpbin.org/headers', headers={'Accept': 'text/html'})
-print(f"Request 2 Accept header: {res_html.json()['headers']['Accept']}")
-
-# 第三个请求将恢复使用会话的默认头信息
-res_json_again = s.get('https://httpbin.org/headers')
-print(f"Request 3 Accept header: {res_json_again.json()['headers']['Accept']}")
+print(r.json()['headers'])
+# {
+#   "Accept": "*/*", 
+#   "Accept-Encoding": "gzip, deflate", 
+#   "Host": "httpbin.org", 
+#   "User-Agent": "python-requests/2.28.1", 
+#   "X-Amzn-Trace-Id": "..."
+# }
 ```
 
-这也适用于其他会话级别的设置，例如 auth、params、proxies、verify 和 cert。
+## 使用 Session 作为上下文管理器
 
-### 作为上下文管理器的 Session
+所有会话也都可以用作上下文管理器。这将确保即使引发异常，会话也会被自动关闭。这是使用 Session 的推荐方式。
 
-所有会话都可以用作上下文管理器。这能确保即使在引发异常的情况下，会话也会被自动关闭。这对于清理连接非常有用。
+```python Session 作为上下文管理器 icon=logos:python
+import requests
 
-```python Session as Context Manager icon=logos:python
 with requests.Session() as s:
-    response = s.get('https://httpbin.org/get')
-    print(f"Status Code: {response.status_code}")
-# 会话在此处自动关闭
+    s.get('https://httpbin.org/cookies/set/sessioncookie/123456789')
+    r = s.get('https://httpbin.org/cookies')
+    print(r.json())
 ```
 
-使用 Session 对象是提高请求效率和代码整洁度的绝佳方式，尤其是在与同一 API 端点进行多次交互时。
+对于发出高效且有状态的 HTTP 请求而言，使用会话至关重要。既然你已经了解了如何在多个请求之间保持数据，就可以探索如何处理不同类型的身份验证。
 
-要了解如何在多个请求中管理凭据，请继续阅读 [身份验证](./user-guide-authentication.md) 指南。
+接下来，让我们深入了解[身份验证](./user-guide-authentication.md)。

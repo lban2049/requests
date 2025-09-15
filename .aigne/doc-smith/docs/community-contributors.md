@@ -1,29 +1,31 @@
 # Contributors
 
-Requests was lovingly created by Kenneth Reitz and has since been nurtured by a vibrant community of developers. This page honors all the individuals who have contributed to its success. The project's strength lies in the collective effort of its maintainers and contributors.
+Requests was lovingly created by Kenneth Reitz and is now maintained by a dedicated team of community members. The project thrives thanks to the countless hours and invaluable contributions from developers all over the world. We are incredibly grateful to everyone who has submitted patches, offered suggestions, and helped make Requests the library it is today.
 
-## Maintainers
+## Creator
 
-The project is guided by a team of dedicated maintainers who oversee its development and direction.
+- **Kenneth Reitz** ([@kennethreitz](https://github.com/kennethreitz)), reluctant Keeper of the Master Crystal.
 
-### Keepers of the Crystals
+## Keepers of the Crystals
 
-- Nate Prewitt [[@nateprewitt](https://github.com/nateprewitt)]
-- Seth M. Larson [[@sethmlarson](https://github.com/sethmlarson)]
+The current maintainers of the project:
 
-### Previous Keepers of Crystals
+- **Nate Prewitt** ([@nateprewitt](https://github.com/nateprewitt))
+- **Seth M. Larson** ([@sethmlarson](https://github.com/sethmlarson))
 
-We are grateful for the invaluable contributions of our past maintainers:
+## Previous Keepers of Crystals
 
-- Kenneth Reitz [[@kennethreitz](https://github.com/kennethreitz)]
-- Cory Benfield [[@lukasa](https://github.com/lukasa)]
-- Ian Cordasco [[@sigmavirus24](https://github.com/sigmavirus24)]
+We extend our sincere thanks to the past maintainers for their dedicated service:
+
+- **Cory Benfield** ([@lukasa](https://github.com/lukasa))
+- **Ian Cordasco** ([@sigmavirus24](https://github.com/sigmavirus24))
+
 
 ## Patches and Suggestions
 
-A heartfelt thanks to the numerous individuals who have contributed patches, suggestions, and support over the years. Your contributions are invaluable.
+A huge thank you to the following individuals for their contributions:
 
-| | | | |
+| Contributor | Contributor | Contributor | Contributor |
 |---|---|---|---|
 | Various Pocoo Members | Chris Adams | Flavio Percoco Premoli | Dj Gilcrease |
 | Justin Murphy | Rob Madole | Aram Dulyan | Johannes Gorset |
@@ -63,10 +65,10 @@ A heartfelt thanks to the numerous individuals who have contributed patches, sug
 | [Smiley Barry (@smiley)](https://github.com/smiley) | [Shagun Sodhani (@shagunsodhani)](https://github.com/shagunsodhani) | [Robin Linderborg (@vienno)](https://github.com/vienno) | [Brian Samek (@bsamek)](https://github.com/bsamek) |
 | [Dmitry Dygalo (@Stranger6667)](https://github.com/Stranger6667) | piotrjurkiewicz | [Jesse Shapiro (@haikuginger)](https://github.com/haikuginger) | [Nate Prewitt (@nateprewitt)](https://github.com/nateprewitt) |
 | Maik Himstedt | Michael Hunsinger | [Brian Bamsch (@bbamsch)](https://github.com/bbamsch) | [Om Prakash Kumar (@iamprakashom)](https://github.com/iamprakashom) |
-| [Philipp Konrad (@gardiac2002)](https://github.com/gardiac2002) | [Hussain Tamboli (@hussaintamboli)](https://github.com/hussaintamboli) | [Casey Davidson (@davidsoncasey)](https://github.com/davidsoncasey) | [Andrii Soldatenko (@andriisoldatenko)](https://github.com/andriisoldatenko) |
+| [Philipp Konrad (@gardiac2002)](https://github.com/gardiac2002) | [Hussain Tamboli (@hussaintamboli)](https://github.com/hussaintamboli) | [Casey Davidson (@davidsoncasey)](https://github.com/davidsoncasey) | [Andrii Soldatenko (@a_soldatenko)](https://github.com/andriisoldatenko) |
 | [Moinuddin Quadri (@moin18)](https://github.com/moin18) | [Matt Kohl (@mattkohl)](https://github.com/mattkohl) | [Jonathan Vanasco (@jvanasco)](https://github.com/jvanasco) | [David Fontenot (@davidfontenot)](https://github.com/davidfontenot) |
 | [Shmuel Amar (@shmuelamar)](https://github.com/shmuelamar) | [Gary Wu (@garywu)](https://github.com/garywu) | [Ryan Pineo (@ryanpineo)](https://github.com/ryanpineo) | [Ed Morley (@edmorley)](https://github.com/edmorley) |
 | [Matt Liu (@mlcrazy)](https://github.com/mlcrazy) | [Taylor Hoff (@PrimordialHelios)](https://github.com/PrimordialHelios) | [Arthur Vigil (@ahvigil)](https://github.com/ahvigil) | [Nehal J Wani (@nehaljwani)](https://github.com/nehaljwani) |
-| [Demetrios Bairaktaris (@demetriosbairaktaris)](https://github.com/demetriosbairaktaris) | [Darren Dormer (@ddormer)](https://github.com/ddormer) | [Rajiv Mayani (@mayani)](https://github.com/mayani) | [Antti Kaihola (@akaihola)](https://github.com/akaihola) |
+| [Demetrios Bairaktaris (@DemetriosBairaktaris)](https://github.com/demetriosbairaktaris) | [Darren Dormer (@ddormer)](https://github.com/ddormer) | [Rajiv Mayani (@mayani)](https://github.com/mayani) | [Antti Kaihola (@akaihola)](https://github.com/akaihola) |
 | ["Dull Bananas" (@dullbananas)](https://github.com/dullbananas) | [Alessio Izzo (@aless10)](https://github.com/aless10) | [Sylvain Marié (@smarie)](https://github.com/smarie) | [Hod Bin Noon (@hodbn)](https://github.com/hodbn) |
 | [Mike Fiedler (@miketheman)](https://github.com/miketheman) | | | |

@@ -1,107 +1,111 @@
 # Authentication
 
-Many web services require authentication to grant access to their resources. Requests provides a straightforward way to handle this using the `auth` parameter, supporting several common authentication schemes out of the box and allowing for custom implementations.
+Many web services require authentication to access their resources. Requests provides several built-in methods for handling authentication, making it simple to secure your HTTP requests. This guide covers the most common authentication schemes, including Basic, Digest, and custom authentication mechanisms.
 
 ## Basic Authentication
 
-Basic Authentication is a widely used, simple authentication method. It sends a username and password with your request. Requests provides a convenient shorthand for this using a `(username, password)` tuple.
+Basic Authentication is a widely used and straightforward method. To use it, you can provide the `auth` parameter with a tuple containing your username and password.
 
-```python Basic Auth with a Tuple icon=logos:python
+```python Basic Authentication with a Tuple icon=logos:python
 import requests
 
-response = requests.get(
-    'https://httpbin.org/basic-auth/user/pass',
-    auth=('user', 'pass')
-)
+response = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
 
 print(f'Status Code: {response.status_code}')
-print(f'Response Text: {response.text}')
+print(response.json())
 ```
 
-This tuple is a shortcut for the `HTTPBasicAuth` class. You can also use the class directly for more explicit code.
+This is a convenient shorthand. Internally, Requests creates an `HTTPBasicAuth` object. You can also construct this object yourself, which can be useful if you need to reuse the same authentication across multiple requests or in a `Session` object.
 
-```python Basic Auth with HTTPBasicAuth Class icon=logos:python
+```python Using the HTTPBasicAuth Class icon=logos:python
 import requests
 from requests.auth import HTTPBasicAuth
 
-response = requests.get(
-    'https://httpbin.org/basic-auth/user/pass',
-    auth=HTTPBasicAuth('user', 'pass')
-)
+auth = HTTPBasicAuth('user', 'pass')
+response = requests.get('https://httpbin.org/basic-auth/user/pass', auth=auth)
 
 print(f'Status Code: {response.status_code}')
 ```
 
+When basic authentication credentials are provided, Requests automatically constructs and adds the `Authorization` header to your request with the properly encoded value.
+
 ## Digest Authentication
 
-Digest Authentication is a more secure method than Basic Authentication because it doesn't send the password over the network in cleartext. Requests handles the complexity of this scheme seamlessly. To use it, you can pass an instance of the `HTTPDigestAuth` class to the `auth` parameter.
+Digest Authentication offers a more secure alternative to Basic Authentication by using a challenge-response mechanism that avoids sending the password in cleartext. Requests handles the complexity of this flow for you. To use it, simply pass an instance of `HTTPDigestAuth` to the `auth` parameter.
 
 ```python Digest Authentication icon=logos:python
 import requests
 from requests.auth import HTTPDigestAuth
 
 url = 'https://httpbin.org/digest-auth/auth/user/pass'
+auth = HTTPDigestAuth('user', 'pass')
 
-response = requests.get(url, auth=HTTPDigestAuth('user', 'pass'))
+response = requests.get(url, auth=auth)
 
 print(f'Status Code: {response.status_code}')
-print(f'Response Text: {response.text}')
+print(response.json())
 ```
 
-Requests will automatically handle the challenge-response handshake required for Digest Authentication.
+Requests will first send the request without authentication, receive a `401 Unauthorized` response with a `WWW-Authenticate` header from the server, and then automatically retry the request with the correct Digest authentication headers.
 
 ## Proxy Authentication
 
-If you are routing your requests through a proxy that requires authentication, you can use the `HTTPProxyAuth` class. This works similarly to `HTTPBasicAuth` but sets the `Proxy-Authorization` header.
+If you need to authenticate with an HTTP proxy server, you can use the `HTTPProxyAuth` class. It works similarly to `HTTPBasicAuth` but sets the `Proxy-Authorization` header instead.
 
 ```python Proxy Authentication icon=logos:python
 import requests
 from requests.auth import HTTPProxyAuth
 
-# Note: This is a placeholder URL for the proxy.
-# Replace with your actual proxy address.
+# Note: This is a conceptual example. You need a running proxy that requires authentication.
 proxies = {
-   'http': 'http://10.10.1.10:3128',
+   'http': 'http://proxy.example.com:8080',
+   'https': 'http://proxy.example.com:8080',
 }
 
-auth = HTTPProxyAuth('user', 'pass')
+proxy_auth = HTTPProxyAuth('proxy_user', 'proxy_password')
 
-# This request will be sent through the proxy with authentication.
-response = requests.get('https://httpbin.org/get', proxies=proxies, auth=auth)
+# The 'auth' parameter is used for proxy auth here because we've provided a 'proxies' dict.
+# If the target server also required auth, you'd need a more advanced setup.
+response = requests.get('https://httpbin.org/get', proxies=proxies, auth=proxy_auth)
 
 print(f'Status Code: {response.status_code}')
 ```
 
-For more details on configuring proxies, see the [Timeouts, Retries, and Proxies](./advanced-usage-timeouts-retries-proxies.md) section.
-
 ## Custom Authentication
 
-If you have an authentication scheme that isn't covered by the built-in methods, Requests allows you to create your own. Simply create a class that inherits from `requests.auth.AuthBase` and implement the `__call__` method. This method should take a request object and return the modified request object.
+The authentication system in Requests is designed to be extensible. If you need to implement an authentication scheme that isn't built-in (like OAuth1, Hawk, or a custom token-based system), you can create your own authentication handler.
 
-Here is an example of a custom authentication class that adds a custom header:
+An authentication handler is simply a callable that takes a `requests.Request` object and returns the modified object. The easiest way to create one is to subclass `requests.auth.AuthBase`.
 
-```python Custom Authentication Class icon=logos:python
+Here is an example of a simple custom authentication handler that adds a token to a custom request header.
+
+```python Custom Authentication Handler icon=logos:python
 import requests
 
-class TokenAuth(requests.auth.AuthBase):
-    """Attaches a custom token to the given Request object."""
+class ApiTokenAuth(requests.auth.AuthBase):
+    """Attaches API Token Authentication to the given Request object."""
     def __init__(self, token):
-        # setup any auth-related data here
         self.token = token
 
     def __call__(self, r):
-        # modify and return the request
-        r.headers['X-TokenAuth'] = f'{self.token}'
+        # Add the custom header to the request
+        r.headers['X-API-Token'] = self.token
         return r
 
-# Usage
-response = requests.get('https://httpbin.org/get', auth=TokenAuth('my-secret-token'))
 
-print(response.json()['headers']['X-Tokenauth'])
+# Use the custom auth handler with a request
+response = requests.get('https://httpbin.org/headers', auth=ApiTokenAuth('my-secret-api-token'))
+
+print(f'Status Code: {response.status_code}')
+print(response.json()['headers']['X-Api-Token'])
+
+# Expected Output:
+# Status Code: 200
+# my-secret-api-token
 ```
 
-This powerful feature allows you to integrate any authentication mechanism, including popular schemes like OAuth, which often have dedicated libraries that provide a Requests-compatible `AuthBase` implementation.
+This modular approach allows you to encapsulate complex authentication logic into a reusable class, keeping your request-making code clean and simple.
 
 ---
 
-Now that you understand how to secure your requests, the next step is to learn how to handle situations when things go wrong. Continue to the [Error Handling](./user-guide-error-handling.md) section to learn about managing exceptions and bad responses.
+Now that you've mastered authenticating your requests, the next step is to learn how to gracefully manage network problems and bad responses. Proceed to the [Error Handling](./user-guide-error-handling.md) guide to learn more.

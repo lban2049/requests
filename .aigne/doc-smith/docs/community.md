@@ -1,71 +1,68 @@
 # Community
 
-Requests is a community-driven project, lovingly created by Kenneth Reitz and maintained by a dedicated team of volunteers. It has become one of the most downloaded Python packages, pulling in around 30 million downloads per week, and is a dependency for over one million repositories on GitHub. This success is a testament to the vibrant community that supports and contributes to its development. This section provides insight into the project's history, its contributors, and how you can get involved.
+Requests is one of the most downloaded Python packages today, pulling in around **30 million downloads per week**. According to GitHub, it is currently depended upon by over **1,000,000 repositories**. This incredible success is a testament to its simple, elegant design and the vibrant community that supports it.
 
-## Project History and Contributors
-
-The project has a long and rich history of evolution, from its initial conception to its current status as a core part of the Python ecosystem. The development is guided by the "Keepers of the Crystals," and its success is built upon the countless contributions from developers around the world.
-
-To explore the project's journey and acknowledge the people behind it, please visit the dedicated pages:
+The project was lovingly created by Kenneth Reitz and is now maintained by a dedicated team of "Keepers of the Crystals," ensuring its stability and continued development.
 
 <x-cards>
-  <x-card data-title="Changelog" data-icon="lucide:history" data-href="/community/changelog">
-    A detailed log of all changes, improvements, and bug fixes for each version of the Requests library.
+  <x-card data-title="Changelog" data-icon="lucide:list-ordered" data-href="/community/changelog" >
+    Explore the complete history of changes, including new features, bug fixes, and deprecations for every version of Requests.
   </x-card>
-  <x-card data-title="Contributors" data-icon="lucide:users" data-href="/community/contributors">
-    A list of all the individuals who have contributed to the development and success of the Requests library.
+  <x-card data-title="Contributors" data-icon="lucide:users" data-href="/community/contributors" >
+    See the full list of individuals who have contributed their time and expertise to making Requests the powerful tool it is today.
   </x-card>
 </x-cards>
 
-## How to Get Involved
+## How to Contribute
 
-Contributions are always welcome, whether it's reporting a bug, improving the documentation, or submitting a patch. Here’s how you can get started.
+We welcome and appreciate contributions of all kinds, from bug reports and documentation improvements to new feature suggestions. Here’s how you can get started.
+
+### Setting Up Your Environment
+
+First, you'll need to clone the repository. Due to a historical commit, you may need to add a special configuration flag to avoid an error:
+
+```shell Cloning the Repository icon=lucide:git-branch
+# Clone with the necessary config flag
+git clone -c fetch.fsck.badTimezone=ignore https://github.com/psf/requests.git
+
+# Or, apply the setting to your global Git config
+git config --global fetch.fsck.badTimezone ignore
+```
+
+Once you have the code, you can install the development dependencies and run the test suite to ensure everything is working correctly.
+
+```shell Running Tests icon=lucide:beaker
+# Navigate into the cloned directory
+cd requests
+
+# Install development dependencies
+python -m pip install -r requirements-dev.txt
+
+# Run the test suite
+python -m pytest tests
+```
 
 ### Reporting Bugs
 
-If you encounter a bug, you can help us by providing a detailed report. Requests includes a helpful utility to generate a summary of your system's configuration, which is invaluable for debugging.
+A great bug report is a huge help to the maintainers. To ensure we have all the necessary information about your environment, Requests includes a built-in helper module.
 
-Run the following command and include the output in your bug report:
+Before creating an issue, please run the following command and include its output in your report:
 
-```shell title="Generate System Info"
+```shell Generating a Bug Report icon=lucide:bug
 python -m requests.help
 ```
 
-### Contributing Code and Documentation
+This command will print a JSON object containing details about your Python version, system, and the versions of key dependencies like `urllib3`, `idna`, and `OpenSSL`, which is invaluable for debugging.
 
-If you'd like to contribute directly to the project, you can start by setting up a local development environment.
+## Next Steps
 
-1.  **Clone the repository**
+After exploring our community resources, you might want to dive deeper into the library's features.
 
-    Due to a known issue with commit timestamps, it's recommended to use the following command to clone the repository:
-
-    ```shell title="Cloning the repository"
-    git clone -c fetch.fsck.badTimezone=ignore https://github.com/psf/requests.git
-    cd requests
-    ```
-
-2.  **Install development dependencies**
-
-    Use pip to install the necessary packages for testing and development.
-
-    ```shell title="Install dependencies"
-    python -m pip install -r requirements-dev.txt
-    ```
-
-3.  **Run tests**
-
-    Before making any changes, ensure that all existing tests pass.
-
-    ```shell title="Run tests"
-    python -m pytest tests
-    ```
-
-4.  **Build documentation**
-
-    If you are making changes to the documentation, you can build it locally to preview your changes.
-
-    ```shell title="Build docs"
-    make docs
-    ```
-
-After making your changes and adding relevant tests, you can submit a pull request on GitHub for review.
+<x-cards>
+  <x-card data-title="User Guide" data-icon="lucide:book-open" data-href="/user-guide" >
+    Learn the core functionalities of Requests through practical, code-first examples.
+  </x-card>
+  <x-card data-title="Advanced Usage" data-icon="lucide:rocket" data-href="/advanced-usage" >
+    Explore advanced features like custom adapters, SSL verification, and proxies.
+  </x-card>
+</x-cards>

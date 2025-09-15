@@ -1,54 +1,64 @@
 # 快速入门
 
-本指南提供了安装 Requests 库和发起首次 HTTP 请求的基本步骤。跟随本指南，只需几分钟即可完成所有设置并开始使用。
+本指南提供了一条简单的途径，用于安装 Requests 库并发出你的第一个 HTTP 请求。只需几分钟，你就可以从网络上获取数据。
 
 ## 安装
 
-首先，你需要安装该库。Requests 已发布在 Python Package Index (PyPI) 上，可通过 pip 进行安装。
+在开始之前，请确保你已安装受支持的 Python 版本。Requests 官方支持 Python 3.9 及更高版本。
 
-```console Install with pip icon=logos:python
+要安装 Requests，请打开你的终端或命令提示符，并使用 Python 包安装程序 `pip`：
+
+```console Installing Requests icon=logos:python
 $ python -m pip install requests
 ```
 
-Requests 官方支持 Python 3.9 及更高版本。在继续操作前，请确保你的环境满足此要求。
+该命令将下载并安装最新版本的 Requests 及其基本依赖项，如 `urllib3`、`idna`、`charset_normalizer` 和 `certifi`，以便你拥有开始所需的一切。
 
-## 发起首次请求
+## 发出你的第一个请求
 
-安装 Requests 后，发起 HTTP 请求就非常简单。我们先从 GitHub Events API 获取一些数据作为开始。
+安装 Requests 后，发出 Web 请求变得非常简单。让我们从一个基本的 `GET` 请求开始，从一个测试服务中检索一些数据。
 
-```python Making a GET request icon=logos:python
+以下示例演示了如何发出请求、检查响应并访问其内容。
+
+```python Your First Request icon=logos:python
 import requests
 
-r = requests.get('https://httpbin.org/get')
+# 向一个简单的测试端点发出 GET 请求
+r = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
+
+# 1. 检查 HTTP 状态码
+# 状态码 200 OK 表示请求成功
+print(f"Status Code: {r.status_code}")
+
+# 2. 访问响应头
+# 响应头以一个类字典对象的形式返回
+print(f"Content-Type: {r.headers['content-type']}")
+
+# 3. 以文本形式访问响应体
+# .text 属性包含原始字符串内容
+print(f"Response Text: {r.text}")
+
+# 4. 以 JSON 格式访问响应体
+# .json() 方法将 JSON 响应解码为 Python 字典
+json_data = r.json()
+print(f"JSON Data: {json_data}")
 ```
 
-现在，你得到了一个名为 `r` 的 `Response` 对象。该对象包含了服务器响应的所有信息。
+我们来分解一下这里发生了什么：
 
-你可以通过检查状态码轻松判断请求是否成功：
+1.  **`import requests`**：我们首先导入该库。
+2.  **`requests.get(...)`**：这是该库的核心。它会构建并向指定 URL 发送一个 HTTP `GET` 请求。在本例中，我们还传递了一个 `auth` 元组来轻松处理基本身份验证。
+3.  **`r.status_code`**：`r` 对象是 `Response` 类的一个实例，包含了服务器的响应。`status_code` 属性可以让你检查请求是否成功。值为 `200` 表示成功。
+4.  **`r.headers`**：这个类字典对象让你能够访问所有的 HTTP 响应头。
+5.  **`r.text`**：此属性以纯字符串形式提供响应的有效负载。
+6.  **`r.json()`**：当你使用返回 JSON 的 API 时，这个内置方法非常有用。它会自动将响应文本解码为 Python 字典或列表，使数据立即可用。
 
-```python Check the status code
->>> r.status_code
-200
-```
+## 接下来做什么？
 
-状态码 `200` 表示请求成功。其他状态码，如 `404`，则表示未找到相应资源。
+恭喜！你已经成功安装了 Requests 并从 Web 获取了数据。现在你已经了解了发出请求和处理响应的基础知识。
 
-Requests 也让访问响应内容变得很简单。对于文本类型的响应，你可以使用 `.text` 属性：
+要深入了解该库的功能，用户指南是完美的下一步。学习如何发送数据、自定义请求头、管理会话等。
 
-```python Access response content as text
->>> r.text
-'{\n  "args": {}, \n  "headers": {\n    "Accept": "*/*", \n    "Accept-Encoding": "gzip, deflate", \n    "Host": "httpbin.org", \n    "User-Agent": "python-requests/2.32.3", \n    "X-Amzn-Trace-Id": "Root=1-66a93555-0123456789abcdef01234567"\n  }, \n  "origin": "127.0.0.1", \n  "url": "https://httpbin.org/get"\n}'
-```
-
-对于返回 JSON 的 API（这种情况非常普遍），你可以使用内置的 `.json()` 方法将其内容直接解析为 Python 字典：
-
-```python Decode JSON response
->>> r.json()
-{'args': {}, 'headers': {'Accept': '*/*', 'Accept-Encoding': 'gzip, deflate', 'Host': 'httpbin.org', 'User-Agent': 'python-requests/2.32.3', 'X-Amzn-Trace-Id': 'Root=1-66a93555-0123456789abcdef01234567'}, 'origin': '127.0.0.1', 'url': 'https://httpbin.org/get'}
-```
-
-## 后续步骤
-
-恭喜！你已成功安装 Requests 并完成了首次 API 调用。现在你可以开始探索该库提供的更多功能了。
-
-如需深入了解使用 POST 请求发送数据、利用 Session 对象提升性能以及处理身份验证等功能，请继续阅读[用户指南](./user-guide.md)。
+<x-card data-title="用户指南：发出请求" data-icon="lucide:arrow-right-circle" data-href="/user-guide/making-a-request">
+探索不同的 HTTP 方法，如 POST 和 PUT，传递 URL 参数，并处理各种类型的请求体。
+</x-card>

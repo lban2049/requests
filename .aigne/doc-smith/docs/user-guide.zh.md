@@ -1,27 +1,27 @@
 # 用户指南
 
-欢迎阅读 Requests 用户指南！本指南将深入介绍该库的核心功能，帮助你掌握常见的工作流，并处理各种 Web 交互场景。我们假设你已经按照 [入门指南](./getting-started.md) 的说明完成了安装和首次请求。
+欢迎阅读 Requests 用户指南！本指南旨在帮助您熟悉该库的核心功能。我们将通过实用的、代码优先的示例，涵盖从发送您的第一个请求到处理复杂身份验证方案等最常见的用例。阅读完本指南后，您将能够自信地将 Requests 集成到您的项目中。
 
-本指南的结构旨在引导你逐步了解 HTTP 请求的生命周期，从创建到响应处理等。每个章节都聚焦于该库的特定方面，并提供以代码为先的实用示例。
+浏览以下各节，掌握在 Python 中使用 HTTP 的基础知识。
 
-<x-cards>
-  <x-card data-title="发起请求" data-icon="lucide:send" data-href="/user-guide/making-a-request" data-cta="Learn More">
-    学习如何使用 GET、POST 和 PUT 等多种 HTTP 方法，以及如何传递 URL 参数、标头和请求正文。
+<x-cards data-columns="2">
+  <x-card data-title="发起请求" data-href="/user-guide/making-a-request" data-icon="lucide:send">
+    学习如何使用 GET、POST、PUT 等各种 HTTP 方法，以及如何传递 URL 参数、请求头和请求体。
   </x-card>
-  <x-card data-title="处理响应" data-icon="lucide:download" data-href="/user-guide/handling-responses" data-cta="Learn More">
-    了解如何以不同格式（文本、JSON、二进制）访问响应内容、检查状态码以及读取响应标头。
+  <x-card data-title="处理响应" data-href="/user-guide/handling-responses" data-icon="lucide:arrow-down-left-square">
+    了解如何访问响应内容（文本、JSON、二进制）、检查状态码以及读取响应头。
   </x-card>
-  <x-card data-title="会话对象" data-icon="lucide:orbit" data-href="/user-guide/session-objects" data-cta="Learn More">
-    利用会话对象在多个请求之间持久化参数、Cookie 和标头，以提高性能和进行状态管理。
+  <x-card data-title="会话对象" data-href="/user-guide/session-objects" data-icon="lucide:repeat">
+    利用会话对象在多个请求之间保持参数、Cookie 和请求头，以提升性能和进行状态管理。
   </x-card>
-  <x-card data-title="身份验证" data-icon="lucide:key-round" data-href="/user-guide/authentication" data-cta="Learn More">
-    实现包括基本和摘要身份验证在内的多种身份验证方案，以保护你的请求并访问受保护的资源。
+  <x-card data-title="身份验证" data-href="/user-guide/authentication" data-icon="lucide:key-round">
+    实施包括基本认证和摘要认证在内的各种身份验证方案，以确保请求安全。
   </x-card>
-  <x-card data-title="错误处理" data-icon="lucide:shield-alert" data-href="/user-guide/error-handling" data-cta="Learn More">
-    学习预测和处理潜在的请求错误，例如连接问题、超时和不成功的 HTTP 状态。
+  <x-card data-title="错误处理" data-href="/user-guide/error-handling" data-icon="lucide:shield-alert">
+    学习预测和处理潜在的请求错误，例如连接问题、超时和错误的 HTTP 状态码。
   </x-card>
 </x-cards>
 
 ## 后续步骤
 
-学习完这些章节后，你将为在项目中使用 Requests 打下坚实的基础。当你准备好应对更复杂的场景时，可以深入阅读我们的 [高级用法](./advanced-usage.md) 指南，探索自定义超时、代理和 SSL 证书验证等功能。
+本指南内容按顺序组织。我们建议从[发起请求](./user-guide-making-a-request.md)开始，以打下坚实的基础。在您熟悉此处涵盖的主题后，可以在我们的[高级用法](./advanced-usage.md)部分探索更复杂的场景。

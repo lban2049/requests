@@ -1,31 +1,33 @@
 # 贡献者
 
-Requests 由 Kenneth Reitz 精心创建，此后在一个充满活力的开发者社区的培育下不断发展。本页面旨在向所有为其成功做出贡献的个人致敬。该项目的优势在于其维护者和贡献者的集体努力。
+Requests 由 Kenneth Reitz 倾心创建，现在由一个专门的社区成员团队维护。这个项目的发展离不开世界各地开发者的无数小时的投入和宝贵贡献。我们非常感谢每一位提交补丁、提出建议，并帮助 Requests 成为今天这个样子的开发者。
 
-## 维护者
+## 创建者
 
-该项目由一个专门的维护者团队指导，他们负责监督其开发和方向。
+- **Kenneth Reitz** ([@kennethreitz](https://github.com/kennethreitz))，不情愿的大师水晶守护者。
 
-### 水晶守护者
+## 水晶守护者
 
-- Nate Prewitt [[@nateprewitt](https://github.com/nateprewitt)]
-- Seth M. Larson [[@sethmlarson](https://github.com/sethmlarson)]
+项目目前的维护者：
 
-### 前任水晶守护者
+- **Nate Prewitt** ([@nateprewitt](https://github.com/nateprewitt))
+- **Seth M. Larson** ([@sethmlarson](https://github.com/sethmlarson))
 
-我们对过去维护者做出的宝贵贡献表示感谢：
+## 前任水晶守护者
 
-- Kenneth Reitz [[@kennethreitz](https://github.com/kennethreitz)]
-- Cory Benfield [[@lukasa](https://github.com/lukasa)]
-- Ian Cordasco [[@sigmavirus24](https://github.com/sigmavirus24)]
+我们向过去的维护者致以诚挚的感谢，感谢他们的无私奉献：
 
-## 补丁与建议
+- **Cory Benfield** ([@lukasa](https://github.com/lukasa))
+- **Ian Cordasco** ([@sigmavirus24](https://github.com/sigmavirus24))
 
-衷心感谢多年来贡献了补丁、建议和支持的众多个人。你们的贡献非常宝贵。
 
-| | | | |
+## 补丁和建议
+
+非常感谢以下人员的贡献：
+
+| 贡献者 | 贡献者 | 贡献者 | 贡献者 |
 |---|---|---|---|
-| Various Pocoo Members | Chris Adams | Flavio Percoco Premoli | Dj Gilcrease |
+| 多位 Pocoo 成员 | Chris Adams | Flavio Percoco Premoli | Dj Gilcrease |
 | Justin Murphy | Rob Madole | Aram Dulyan | Johannes Gorset |
 | 村山めがね (Megane Murayama) | James Rowe | Daniel Schauenberg | Zbigniew Siciarz |
 | Daniele Tricoli 'Eriol' | Richard Boulton | Miguel Olivares | Alberto Paro |
@@ -63,10 +65,10 @@ Requests 由 Kenneth Reitz 精心创建，此后在一个充满活力的开发�
 | [Smiley Barry (@smiley)](https://github.com/smiley) | [Shagun Sodhani (@shagunsodhani)](https://github.com/shagunsodhani) | [Robin Linderborg (@vienno)](https://github.com/vienno) | [Brian Samek (@bsamek)](https://github.com/bsamek) |
 | [Dmitry Dygalo (@Stranger6667)](https://github.com/Stranger6667) | piotrjurkiewicz | [Jesse Shapiro (@haikuginger)](https://github.com/haikuginger) | [Nate Prewitt (@nateprewitt)](https://github.com/nateprewitt) |
 | Maik Himstedt | Michael Hunsinger | [Brian Bamsch (@bbamsch)](https://github.com/bbamsch) | [Om Prakash Kumar (@iamprakashom)](https://github.com/iamprakashom) |
-| [Philipp Konrad (@gardiac2002)](https://github.com/gardiac2002) | [Hussain Tamboli (@hussaintamboli)](https://github.com/hussaintamboli) | [Casey Davidson (@davidsoncasey)](https://github.com/davidsoncasey) | [Andrii Soldatenko (@andriisoldatenko)](https://github.com/andriisoldatenko) |
+| [Philipp Konrad (@gardiac2002)](https://github.com/gardiac2002) | [Hussain Tamboli (@hussaintamboli)](https://github.com/hussaintamboli) | [Casey Davidson (@davidsoncasey)](https://github.com/davidsoncasey) | [Andrii Soldatenko (@a_soldatenko)](https://github.com/andriisoldatenko) |
 | [Moinuddin Quadri (@moin18)](https://github.com/moin18) | [Matt Kohl (@mattkohl)](https://github.com/mattkohl) | [Jonathan Vanasco (@jvanasco)](https://github.com/jvanasco) | [David Fontenot (@davidfontenot)](https://github.com/davidfontenot) |
 | [Shmuel Amar (@shmuelamar)](https://github.com/shmuelamar) | [Gary Wu (@garywu)](https://github.com/garywu) | [Ryan Pineo (@ryanpineo)](https://github.com/ryanpineo) | [Ed Morley (@edmorley)](https://github.com/edmorley) |
 | [Matt Liu (@mlcrazy)](https://github.com/mlcrazy) | [Taylor Hoff (@PrimordialHelios)](https://github.com/PrimordialHelios) | [Arthur Vigil (@ahvigil)](https://github.com/ahvigil) | [Nehal J Wani (@nehaljwani)](https://github.com/nehaljwani) |
-| [Demetrios Bairaktaris (@demetriosbairaktaris)](https://github.com/demetriosbairaktaris) | [Darren Dormer (@ddormer)](https://github.com/ddormer) | [Rajiv Mayani (@mayani)](https://github.com/mayani) | [Antti Kaihola (@akaihola)](https://github.com/akaihola) |
+| [Demetrios Bairaktaris (@DemetriosBairaktaris)](https://github.com/demetriosbairaktaris) | [Darren Dormer (@ddormer)](https://github.com/ddormer) | [Rajiv Mayani (@mayani)](https://github.com/mayani) | [Antti Kaihola (@akaihola)](https://github.com/akaihola) |
 | ["Dull Bananas" (@dullbananas)](https://github.com/dullbananas) | [Alessio Izzo (@aless10)](https://github.com/aless10) | [Sylvain Marié (@smarie)](https://github.com/smarie) | [Hod Bin Noon (@hodbn)](https://github.com/hodbn) |
 | [Mike Fiedler (@miketheman)](https://github.com/miketheman) | | | |

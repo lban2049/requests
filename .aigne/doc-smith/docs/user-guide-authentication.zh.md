@@ -1,107 +1,111 @@
 # 身份验证
 
-许多 Web 服务需要身份验证才能授予对其资源的访问权限。Requests 提供了一种使用 `auth` 参数处理此问题的直接方法，它原生支持几种常见的身份验证方案，并允许自定义实现。
+许多 Web 服务需要身份验证才能访问其资源。Requests 提供了几种内置方法来处理身份验证，从而可以轻松保护您的 HTTP 请求。本指南涵盖了最常见的身份验证方案，包括基本 (Basic)、摘要 (Digest) 和自定义身份验证机制。
 
 ## 基本身份验证
 
-基本身份验证是一种广泛使用的简单身份验证方法。它会在你的请求中发送用户名和密码。Requests 提供了一种使用 `(username, password)` 元组的便捷简写方式。
+基本身份验证是一种广泛使用且简单直接的方法。要使用它，您可以通过 `auth` 参数提供一个包含用户名和密码的元组。
 
-```python Basic Auth with a Tuple icon=logos:python
+```python Basic Authentication with a Tuple icon=logos:python
 import requests
 
-response = requests.get(
-    'https://httpbin.org/basic-auth/user/pass',
-    auth=('user', 'pass')
-)
+response = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
 
-print(f'状态码: {response.status_code}')
-print(f'响应文本: {response.text}')
+print(f'Status Code: {response.status_code}')
+print(response.json())
 ```
 
-这个元组是 `HTTPBasicAuth` 类的一个快捷方式。你也可以直接使用这个类来编写更明确的代码。
+这是一种方便的简写方式。在内部，Requests 会创建一个 `HTTPBasicAuth` 对象。您也可以自己构造这个对象，如果您需要在多个请求中或在 `Session` 对象中重用相同的身份验证，这将非常有用。
 
-```python Basic Auth with HTTPBasicAuth Class icon=logos:python
+```python Using the HTTPBasicAuth Class icon=logos:python
 import requests
 from requests.auth import HTTPBasicAuth
 
-response = requests.get(
-    'https://httpbin.org/basic-auth/user/pass',
-    auth=HTTPBasicAuth('user', 'pass')
-)
+auth = HTTPBasicAuth('user', 'pass')
+response = requests.get('https://httpbin.org/basic-auth/user/pass', auth=auth)
 
-print(f'状态码: {response.status_code}')
+print(f'Status Code: {response.status_code}')
 ```
+
+当提供基本身份验证凭据时，Requests 会自动构造 `Authorization` 标头，并使用正确编码的值将其添加到您的请求中。
 
 ## 摘要式身份验证
 
-摘要式身份验证是一种比基本身份验证更安全的方法，因为它不会以明文形式通过网络发送密码。Requests 无缝地处理了这种方案的复杂性。要使用它，你可以将 `HTTPDigestAuth` 类的一个实例传递给 `auth` 参数。
+摘要式身份验证通过使用质询-响应机制，避免了以明文形式发送密码，为基本身份验证提供了一种更安全的替代方案。Requests 为您处理了这一流程的复杂性。要使用它，只需将 `HTTPDigestAuth` 的一个实例传递给 `auth` 参数即可。
 
 ```python Digest Authentication icon=logos:python
 import requests
 from requests.auth import HTTPDigestAuth
 
 url = 'https://httpbin.org/digest-auth/auth/user/pass'
+auth = HTTPDigestAuth('user', 'pass')
 
-response = requests.get(url, auth=HTTPDigestAuth('user', 'pass'))
+response = requests.get(url, auth=auth)
 
-print(f'状态码: {response.status_code}')
-print(f'响应文本: {response.text}')
+print(f'Status Code: {response.status_code}')
+print(response.json())
 ```
 
-Requests 会自动处理摘要式身份验证所需的挑战-响应握手。
+Requests 会首先发送未经身份验证的请求，从服务器接收到带有 `WWW-Authenticate` 标头的 `401 Unauthorized` 响应，然后使用正确的摘要式身份验证标头自动重试该请求。
 
 ## 代理身份验证
 
-如果你的请求需要通过需要身份验证的代理路由，你可以使用 `HTTPProxyAuth` 类。它的工作方式与 `HTTPBasicAuth` 类似，但设置的是 `Proxy-Authorization` 标头。
+如果您需要通过 HTTP 代理服务器进行身份验证，可以使用 `HTTPProxyAuth` 类。它的工作方式与 `HTTPBasicAuth` 类似，但设置的是 `Proxy-Authorization` 标头。
 
 ```python Proxy Authentication icon=logos:python
 import requests
 from requests.auth import HTTPProxyAuth
 
-# 注意：这是一个代理的占位符 URL。
-# 请替换为你的实际代理地址。
+# 注意：这是一个概念性示例。您需要一个正在运行且需要身份验证的代理。
 proxies = {
-   'http': 'http://10.10.1.10:3128',
+   'http': 'http://proxy.example.com:8080',
+   'https': 'http://proxy.example.com:8080',
 }
 
-auth = HTTPProxyAuth('user', 'pass')
+proxy_auth = HTTPProxyAuth('proxy_user', 'proxy_password')
 
-# 此请求将通过带身份验证的代理发送。
-response = requests.get('https://httpbin.org/get', proxies=proxies, auth=auth)
+# 此处的 'auth' 参数用于代理身份验证，因为我们提供了一个 'proxies' 字典。
+# 如果目标服务器也需要身份验证，您将需要更高级的设置。
+response = requests.get('https://httpbin.org/get', proxies=proxies, auth=proxy_auth)
 
-print(f'状态码: {response.status_code}')
+print(f'Status Code: {response.status_code}')
 ```
-
-有关配置代理的更多详细信息，请参阅 [超时、重试和代理](./advanced-usage-timeouts-retries-proxies.md) 部分。
 
 ## 自定义身份验证
 
-如果你的身份验证方案未被内置方法涵盖，Requests 允许你创建自己的方案。只需创建一个继承自 `requests.auth.AuthBase` 的类并实现 `__call__` 方法。该方法应接受一个请求对象并返回修改后的请求对象。
+Requests 中的身份验证系统被设计为可扩展的。如果您需要实现一个未内置的身份验证方案（如 OAuth1、Hawk 或自定义的基于令牌的系统），您可以创建自己的身份验证处理器。
 
-以下是一个添加自定义标头的自定义身份验证类的示例：
+身份验证处理器只是一个可调用对象，它接收一个 `requests.Request` 对象并返回修改后的对象。创建它的最简单方法是子类化 `requests.auth.AuthBase`。
 
-```python Custom Authentication Class icon=logos:python
+以下是一个简单的自定义身份验证处理器的示例，它将令牌添加到一个自定义请求标头中。
+
+```python Custom Authentication Handler icon=logos:python
 import requests
 
-class TokenAuth(requests.auth.AuthBase):
-    """将自定义令牌附加到给定的 Request 对象。"""
+class ApiTokenAuth(requests.auth.AuthBase):
+    """将 API 令牌身份验证附加到给定的 Request 对象。"""
     def __init__(self, token):
-        # 在此处设置任何与身份验证相关的数据
         self.token = token
 
     def __call__(self, r):
-        # 修改并返回请求
-        r.headers['X-TokenAuth'] = f'{self.token}'
+        # 将自定义标头添加到请求中
+        r.headers['X-API-Token'] = self.token
         return r
 
-# 用法
-response = requests.get('https://httpbin.org/get', auth=TokenAuth('my-secret-token'))
 
-print(response.json()['headers']['X-Tokenauth'])
+# 在请求中使用自定义身份验证处理器
+response = requests.get('https://httpbin.org/headers', auth=ApiTokenAuth('my-secret-api-token'))
+
+print(f'Status Code: {response.status_code}')
+print(response.json()['headers']['X-Api-Token'])
+
+# 预期输出：
+# Status Code: 200
+# my-secret-api-token
 ```
 
-这一强大功能允许你集成任何身份验证机制，包括像 OAuth 这样的流行方案，这些方案通常有专门的库提供与 Requests 兼容的 `AuthBase` 实现。
+这种模块化的方法允许您将复杂的身份验证逻辑封装到一个可重用的类中，使您的请求代码保持整洁和简单。
 
 ---
 
-现在你已经了解了如何保护你的请求，下一步是学习如何处理出现问题时的情况。请继续阅读 [错误处理](./user-guide-error-handling.md) 部分，了解如何管理异常和错误响应。
+现在您已经掌握了如何对请求进行身份验证，下一步是学习如何妥善管理网络问题和错误响应。请继续阅读[错误处理](./user-guide-error-handling.md)指南以了解更多信息。

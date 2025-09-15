@@ -1,137 +1,115 @@
 # 错误处理
 
-当你使用 Requests 时，网络连接可能会失败，服务器可能无法访问，或者响应可能不是你所期望的。Requests 预料到这些问题，并会在它们发生时引发异常。本指南将引导你了解常见的异常以及如何优雅地处理它们。
+在构建与 Web 服务交互的应用程序时，稳健的错误处理至关重要。网络连接可能不可靠，服务器可能宕机，响应也可能不总是符合预期。Requests 旨在通过针对各种错误情况抛出异常来优雅地处理这些状况。本指南将带你了解可能遇到的常见异常以及如何有效处理它们。
 
-所有由 Requests 引发的异常都继承自基类 `requests.exceptions.RequestException`。
+Requests 抛出的几乎所有异常都继承自基类异常 `requests.exceptions.RequestException`。这样，如果需要，就可以很方便地使用单个 `try...except` 块来捕获该库中所有潜在的错误。
 
 ## HTTP 状态码错误
 
-默认情况下，对于失败的 HTTP 状态码（例如 `404 Not Found` 或 `500 Internal Server Error`），Requests 不会引发异常。要让 Requests 对这些响应引发异常，你可以使用 `Response` 对象的 `raise_for_status()` 方法。
+最常见的任务之一是检查请求是否成功。成功的响应通常由 2xx 范围内的状态码表示。任何 4xx 或 5xx 的状态码分别表示客户端或服务器错误。
 
-如果状态码指示错误（4xx 为客户端错误，5xx 为服务器错误），`raise_for_status()` 将引发 `HTTPError`。
+你可以使用 `Response.raise_for_status()` 方法，而无需手动检查 `response.status_code`。如果请求返回了不成功的状态码，该方法将抛出一个 `HTTPError`。
 
-```python Handling HTTP Errors
+```python http_error_example.py icon=logos:python
 import requests
-from requests.exceptions import HTTPError
-
-url = 'https://httpbin.org/status/404'
 
 try:
-    response = requests.get(url)
-    # 如果响应成功，则不会引发异常
+    response = requests.get('https://httpbin.org/status/404')
+    print(f"请求成功，状态码： {response.status_code}")
+
+    # 如果状态是 4xx 或 5xx，此行将抛出 HTTPError
     response.raise_for_status()
-except HTTPError as http_err:
-    print(f'发生 HTTP 错误: {http_err}')
+
+except requests.exceptions.HTTPError as http_err:
+    print(f'发生 HTTP 错误： {http_err}')
+    # 原始响应对象附加在异常上
+    print(f'状态码： {http_err.response.status_code}')
+    print(f'原因： {http_err.response.reason}')
 except Exception as err:
-    print(f'发生其他错误: {err}')
-else:
-    print('成功！')
+    print(f'发生意外错误： {err}')
 ```
 
-## 连接错误
+运行此代码将尝试获取一个返回 404 Not Found 状态的 URL，这将触发 `HTTPError` 异常。
 
-对于网络层面的问题，例如 DNS 故障或连接被拒绝，Requests 将引发 `ConnectionError`。
+## 连接和超时错误
 
-```python Handling Connection Errors icon=logos:python
+网络问题随时可能发生。域名可能不存在，服务器可能宕机，或者连接可能超时。对于这些类型的网络问题，Requests 会抛出 `ConnectionError`。
+
+```python connection_error_example.py icon=logos:python
 import requests
-from requests.exceptions import ConnectionError
-
-url = 'https://this-is-a-nonexistent-domain.com'
 
 try:
-    response = requests.get(url)
-except ConnectionError as e:
-    print(f"发生连接错误: {e}")
+    response = requests.get('https://this-is-not-a-real-domain.com')
+except requests.exceptions.ConnectionError as conn_err:
+    print(f'发生连接错误： {conn_err}')
 ```
 
-## 超时
+超时是另一个常见的网络问题。你可以使用请求中的 `timeout` 参数来配置超时。如果服务器在指定时间内没有响应，Requests 将抛出 `Timeout` 异常。`Timeout` 异常是 `ConnectTimeout`（初始连接超时）和 `ReadTimeout`（服务器在响应中途停止发送数据）的父类。
 
-你可以使用 `timeout` 参数配置 requests，使其在等待指定秒数后停止等待响应。如果服务器没有及时响应，则会引发 `Timeout` 异常。
-
-```python Handling Timeouts icon=logos:python
+```python timeout_example.py icon=logos:python
 import requests
-from requests.exceptions import Timeout
-
-url = 'https://httpbin.org/delay/5' # 此端点会等待 5 秒后响应
 
 try:
-    # 设置 3 秒的超时时间
-    response = requests.get(url, timeout=3)
-except Timeout:
-    print('请求超时')
+    # httpbin.org 的 /delay 端点会等待指定的秒数
+    # 我们将超时时间设置得比延迟时间短。
+    response = requests.get('https://httpbin.org/delay/5', timeout=2)
+except requests.exceptions.Timeout as timeout_err:
+    print(f'请求超时： {timeout_err}')
 ```
-
-`Timeout` 异常是一个基类，它同时捕获 `ConnectTimeout`（用于连接建立期间的超时）和 `ReadTimeout`（用于等待服务器数据时的超时）。如果你需要对这些情况进行不同处理，可以分别捕获它们。
 
 ## 重定向错误
 
-Requests 会自动跟踪重定向。但是，如果请求链超过了最大重定向次数，它将引发 `TooManyRedirects` 异常。这有助于防止无限重定向循环。
+默认情况下，Requests 会自动跟随重定向。但是，如果服务器配置错误并创建了重定向循环，你的应用程序可能会陷入困境。为了防止这种情况发生，Requests 在默认 30 次重定向后会抛出 `TooManyRedirects` 异常。
 
-```python Handling Too Many Redirects icon=logos:python
-import requests
-from requests.exceptions import TooManyRedirects
-
-# 此端点默认重定向 10 次
-url = 'https://httpbin.org/redirect/10'
-
-try:
-    # 默认情况下，重定向限制为 30 次。我们假设一个限制更低的场景。
-    # 在本例中，我们只捕获可能发生的异常。
-    response = requests.get(url)
-except TooManyRedirects:
-    print('请求超出了最大重定向次数。')
-```
-
-## 无效 URL
-
-如果你提供格式不正确的 URL，Requests 将会引发异常。最常见的是 `MissingSchema`，当 URL 不包含 `http://` 或 `https://` 时会发生。
-
-```python Handling Invalid URLs icon=logos:python
-import requests
-from requests.exceptions import MissingSchema
-
-try:
-    response = requests.get('httpbin.org/get')
-except MissingSchema as e:
-    print(f'无效的 URL: {e}')
-```
-
-## 内容解码错误
-
-当你尝试使用 `response.json()` 方法解析非有效 JSON 的响应体时，将会引发 `JSONDecodeError`。
-
-```python Handling JSON Decode Errors icon=logos:python
+```python redirect_error_example.py icon=logos:python
 import requests
 
-url = 'https://httpbin.org/html' # 此端点返回 HTML，而非 JSON
-
 try:
-    response = requests.get(url)
-    response.raise_for_status()
-    data = response.json()
-except requests.exceptions.JSONDecodeError:
-    print("未能从响应中解码 JSON。")
-except requests.exceptions.HTTPError as err:
-    print(f'发生 HTTP 错误: {err}')
+    # 此端点重定向 10 次。
+    # 如果你将限制设置得更低，它会抛出错误。
+    # 在此示例中，我们假设已达到默认限制。
+    response = requests.get('https://httpbin.org/absolute-redirect/35')
+except requests.exceptions.TooManyRedirects as redirect_err:
+    print(f'重定向次数过多： {redirect_err}')
 ```
 
-## 常见异常摘要
+## 无效 URL 错误
 
-以下是你可能遇到的最常见异常的快速参考表：
+如果你提供的 URL 格式不正确或缺少必要的组成部分（如协议方案 `http://` 或 `https://`），Requests 将抛出异常，通常是 `MissingSchema` 或 `InvalidURL`。
 
-| 异常 | 引发原因 |
-|---|---|
-| `RequestException` | 所有其他异常都继承自该基础异常。 |
-| `HTTPError` | 发生 HTTP 错误（4xx 或 5xx 状态码）。由 `response.raise_for_status()` 引发。 |
-| `ConnectionError` | 发生网络问题（例如，DNS 故障、连接被拒绝）。 |
-| `ProxyError` | 代理服务器出现问题。 |
-| `SSLError` | 发生 SSL 握手错误。 |
-| `Timeout` | 请求超时。这包括 `ConnectTimeout` 和 `ReadTimeout`。 |
-| `TooManyRedirects` | 请求超出了配置的最大重定向次数。 |
-| `MissingSchema` | URL 缺少协议方案（例如 `http://` 或 `https://`）。 |
-| `InvalidURL` | URL 格式错误。 |
-| `JSONDecodeError` | 使用 `response.json()` 将响应内容解码为 JSON 时失败。 |
+```python url_error_example.py icon=logos:python
+import requests
 
-通过预料这些潜在的错误并使用 `try...except` 块，你可以构建能够优雅地处理网络问题和意外服务器响应的弹性应用程序。
+try:
+    response = requests.get('httpbin.org/get') # 缺少 'https://'
+except requests.exceptions.MissingSchema as schema_err:
+    print(f'无效的 URL： {schema_err}')
+```
 
-现在你已经了解了如何处理错误，可以开始探索更复杂的场景了。请参阅我们的[高级用法](./advanced-usage.md)指南，了解有关会话对象、SSL 验证等更多内容。
+## 异常层次结构
+
+理解异常的层次结构有助于你编写更精确的错误处理逻辑。例如，由于 `ProxyError` 和 `SSLError` 是 `ConnectionError` 的子类，因此捕获 `ConnectionError` 也会捕获这两个异常。
+
+下表列出了最常见的异常及其关系：
+
+| Exception                  | Inherits From            | Description                                                        |
+| -------------------------- | ------------------------ | ------------------------------------------------------------------ |
+| `RequestException`         | `IOError`                | 任何与 Requests 相关问题的基类异常。                                 |
+| `HTTPError`                | `RequestException`       | 因状态码不成功（4xx 或 5xx）而抛出。                                 |
+| `ConnectionError`          | `RequestException`       | 封装了像 DNS 解析失败等常见的网络层错误。                           |
+| `ProxyError`               | `ConnectionError`        | 表示配置的代理服务器存在问题。                                     |
+| `SSLError`                 | `ConnectionError`        | 发生 SSL 握手错误。                                                |
+| `Timeout`                  | `RequestException`       | 请求超时。这是更具体超时异常的基类。                               |
+| `ConnectTimeout`           | `Timeout`, `ConnectionError` | 尝试建立连接时发生超时。                                           |
+| `ReadTimeout`              | `Timeout`                | 服务器在规定时间内未发送任何数据。                                 |
+| `URLRequired`              | `RequestException`       | 未提供有效的 URL 来发起请求。                                      |
+| `TooManyRedirects`         | `RequestException`       | 请求超出了配置的重定向限制。                                       |
+| `InvalidURL`               | `RequestException`       | 提供的 URL 格式不正确。                                            |
+| `MissingSchema`            | `InvalidURL`             | URL 缺少协议方案（例如 `http://`）。                               |
+| `JSONDecodeError`          | `RequestException`       | 当 `response.json()` 解码响应体失败时抛出。                        |
+
+通过利用此层次结构，你可以决定错误处理的精细程度。例如，你可以捕获特定的 `ConnectTimeout` 来实现重试机制，同时捕获通用的 `RequestException` 来记录所有其他未预见的问题。
+
+---
+
+掌握了这些知识，你就可以构建出更具弹性的应用程序，从而优雅地处理网络故障和意外的服务器响应。要更详细地控制网络行为，请参阅[超时、重试和代理](./advanced-usage-timeouts-retries-proxies.md)部分。

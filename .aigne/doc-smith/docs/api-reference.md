@@ -1,188 +1,239 @@
 # API Reference
 
-This section provides a detailed and comprehensive reference for all public classes, methods, and functions in the Requests library. It is intended for developers who need to understand the specifics of the library's API.
+This document provides a detailed reference to the public classes, methods, and functions in the Requests library. It is intended for developers who need a comprehensive understanding of the library's capabilities.
 
-For practical examples and common use cases, please refer to the [User Guide](./user-guide.md).
+For practical examples and use-case-driven guides, please see the [User Guide](./user-guide.md).
 
-## Top-Level Interface
+## Main Interface
 
-The `requests` module provides a set of top-level functions that mirror the most common HTTP request methods. These functions are simple wrappers around the `requests.request` function.
+The easiest way to use Requests is through the methods provided directly by the top-level `requests` package.
 
 ### `requests.request()`
 
-This is the central function from which all other HTTP method functions are derived. It constructs and sends a `Request`.
+This is the foundational function that all other request methods (`get`, `post`, etc.) are built upon. It allows you to construct and send any type of HTTP request.
 
-```python
-requests.request(method, url, **kwargs)
+```python Request function icon=logos:python
+import requests
+
+req = requests.request('GET', 'https://httpbin.org/get')
+print(req)
+# <Response [200]>
 ```
 
 **Parameters**
 
-| Parameter | Description |
-|---|---|
-| `method` | The HTTP method for the new `Request` object: `GET`, `OPTIONS`, `HEAD`, `POST`, `PUT`, `PATCH`, or `DELETE`. |
-| `url` | URL for the new `Request` object. |
-| `params` | (optional) A dictionary, list of tuples, or bytes to send in the query string for the `Request`. |
-| `data` | (optional) A dictionary, list of tuples, bytes, or a file-like object to send in the body of the `Request`. |
-| `json` | (optional) A JSON-serializable Python object to send in the body of the `Request`. |
-| `headers` | (optional) A dictionary of HTTP Headers to send with the `Request`. |
-| `cookies` | (optional) A dictionary or `CookieJar` object to send with the `Request`. |
-| `files` | (optional) A dictionary for multipart encoding uploads. E.g., `{'name': file-like-object}`. |
-| `auth` | (optional) An authentication tuple or object to enable Basic/Digest/Custom HTTP Auth. |
-| `timeout` | (optional) The number of seconds to wait for the server to send data before giving up. Can be a float, or a `(connect_timeout, read_timeout)` tuple. |
-| `allow_redirects` | (optional) A boolean. Set to `True` to enable GET/OPTIONS/POST/PUT/PATCH/DELETE/HEAD redirection. Defaults to `True`. |
-| `proxies` | (optional) A dictionary mapping protocol to the URL of the proxy. |
-| `verify` | (optional) Either a boolean (controls TLS certificate verification) or a string (path to a CA bundle). Defaults to `True`. |
-| `stream` | (optional) If `False` (default), the response content will be immediately downloaded. |
-| `cert` | (optional) If a string, the path to an SSL client cert file (.pem). If a tuple, `('cert', 'key')`. |
+<x-field data-name="method" data-type="string" data-required="true" data-desc="HTTP method for the new Request object: GET, OPTIONS, HEAD, POST, PUT, PATCH, or DELETE."></x-field>
+<x-field data-name="url" data-type="string" data-required="true" data-desc="URL for the new Request object."></x-field>
+<x-field data-name="params" data-type="dict, list, or bytes" data-required="false" data-desc="Data to be sent in the query string of the Request."></x-field>
+<x-field data-name="data" data-type="dict, list, bytes, or file-like object" data-required="false" data-desc="Data to send in the body of the Request."></x-field>
+<x-field data-name="json" data-type="object" data-required="false" data-desc="A JSON-serializable Python object to send in the body of the Request."></x-field>
+<x-field data-name="headers" data-type="dict" data-required="false" data-desc="Dictionary of HTTP Headers to send with the Request."></x-field>
+<x-field data-name="cookies" data-type="dict or CookieJar" data-required="false" data-desc="Cookies to send with the Request."></x-field>
+<x-field data-name="files" data-type="dict" data-required="false" data-desc="Dictionary for multipart encoding upload, e.g., {'name': file-like-object}."></x-field>
+<x-field data-name="auth" data-type="tuple or AuthBase" data-required="false" data-desc="Authentication object to enable Basic/Digest/Custom HTTP Auth."></x-field>
+<x-field data-name="timeout" data-type="float or tuple" data-required="false" data-desc="Seconds to wait for the server to send data before giving up. Can be a single float or a (connect, read) tuple."></x-field>
+<x-field data-name="allow_redirects" data-type="bool" data-default="true" data-required="false" data-desc="Enable or disable redirection. Defaults to True."></x-field>
+<x-field data-name="proxies" data-type="dict" data-required="false" data-desc="Dictionary mapping protocol to the URL of the proxy."></x-field>
+<x-field data-name="verify" data-type="bool or string" data-default="true" data-required="false" data-desc="Controls TLS certificate verification. Can be a boolean or a path to a CA bundle."></x-field>
+<x-field data-name="stream" data-type="bool" data-default="false" data-required="false" data-desc="If False, the response content will be immediately downloaded."></x-field>
+<x-field data-name="cert" data-type="string or tuple" data-required="false" data-desc="Path to an SSL client cert file (.pem) or a ('cert', 'key') tuple."></x-field>
 
 **Returns**
 
-- A `requests.Response` object.
-
-**Usage**
-
-```python
-import requests
-
-req = requests.request('GET', 'https://httpbin.org/get')
-print(req.status_code)
-# 200
-```
+<x-field data-name="response" data-type="requests.Response" data-desc="A Response object containing the server's response."></x-field>
 
 ### Convenience Methods
 
-For convenience, Requests provides functions for each HTTP method:
+Requests provides shorthand methods for all common HTTP verbs.
 
-- **`requests.get(url, params=None, **kwargs)`**: Sends a GET request.
-- **`requests.post(url, data=None, json=None, **kwargs)`**: Sends a POST request.
-- **`requests.put(url, data=None, **kwargs)`**: Sends a PUT request.
-- **`requests.patch(url, data=None, **kwargs)`**: Sends a PATCH request.
-- **`requests.delete(url, **kwargs)`**: Sends a DELETE request.
-- **`requests.head(url, **kwargs)`**: Sends a HEAD request.
-- **`requests.options(url, **kwargs)`**: Sends an OPTIONS request.
+- `requests.get(url, params=None, **kwargs)`: Sends a GET request.
+- `requests.post(url, data=None, json=None, **kwargs)`: Sends a POST request.
+- `requests.put(url, data=None, **kwargs)`: Sends a PUT request.
+- `requests.patch(url, data=None, **kwargs)`: Sends a PATCH request.
+- `requests.delete(url, **kwargs)`: Sends a DELETE request.
+- `requests.head(url, **kwargs)`: Sends a HEAD request.
+- `requests.options(url, **kwargs)`: Sends an OPTIONS request.
+
+These methods accept the same arguments as `requests.request()`, with the `method` parameter pre-filled.
+
+```python Convenience Methods icon=logos:python
+import requests
+
+# GET request with URL parameters
+response = requests.get('https://httpbin.org/get', params={'key': 'value'})
+
+# POST request with a JSON body
+response = requests.post('https://httpbin.org/post', json={'user': 'kenneth'})
+
+print(response.status_code)
+# 200
+```
 
 ## Session Object
 
-The `Session` object allows you to persist certain parameters across requests. It also persists cookies over all requests made from the Session instance and uses `urllib3`'s connection pooling. If you are making several requests to the same host, the underlying TCP connection will be reused, which can result in a significant performance increase.
+For making multiple requests to the same host, the `Session` object allows you to persist certain parameters, such as cookies and headers, across requests. It also uses a connection pool, which can result in a significant performance increase.
 
-```python
-requests.Session()
-```
-
-**Usage**
-
-```python
+```python Session Object icon=logos:python
 import requests
 
 s = requests.Session()
-s.get('https://httpbin.org/cookies/set/sessioncookie/123456789')
-r = s.get('https://httpbin.org/cookies')
+s.headers.update({'x-test': 'true'})
 
-print(r.text)
-# '{\n  "cookies": {\n    "sessioncookie": "123456789"\n  }\n}'
+# Both requests will have the 'x-test' header
+s.get('https://httpbin.org/headers')
+s.get('https://httpbin.org/headers')
 ```
 
-### Session Methods
+### `requests.Session`
 
-The `Session` object has the same method interface as the top-level `requests` module:
+A Requests session that provides cookie persistence, connection-pooling, and configuration.
 
-- `session.request(method, url, **kwargs)`
-- `session.get(url, **kwargs)`
-- `session.post(url, **kwargs)`
-- `session.put(url, **kwargs)`
-- `session.patch(url, **kwargs)`
-- `session.delete(url, **kwargs)`
-- `session.head(url, **kwargs)`
-- `session.options(url, **kwargs)`
+#### Session Attributes
 
-Other useful methods include:
+<x-field data-name="headers" data-type="CaseInsensitiveDict" data-desc="A case-insensitive dictionary of headers sent with every request from this session."></x-field>
+<x-field data-name="cookies" data-type="RequestsCookieJar" data-desc="A CookieJar containing all cookies set on this session."></x-field>
+<x-field data-name="auth" data-type="tuple or AuthBase" data-desc="Default authentication object to attach to every request."></x-field>
+<x-field data-name="proxies" data-type="dict" data-desc="Dictionary of proxies to use for each request."></x-field>
+<x-field data-name="params" data-type="dict" data-desc="Dictionary of query string data to attach to each request."></x-field>
+<x-field data-name="verify" data-type="bool or string" data-desc="Default SSL verification setting."></x-field>
+<x-field data-name="cert" data-type="string or tuple" data-desc="Default SSL client certificate."></x-field>
+<x-field data-name="max_redirects" data-type="int" data-default="30" data-desc="Maximum number of redirects allowed."></x-field>
 
-- **`session.mount(prefix, adapter)`**: Registers a connection adapter to a prefix. This allows you to define special transport behavior for specific services.
-- **`session.close()`**: Closes all adapters and the session.
+#### Session Methods
 
-## Response Object
+The `Session` object has the same request methods as the top-level API (`get`, `post`, `request`, etc.). Additionally, it provides the following methods:
 
-Every time you make a call with Requests, you receive a `Response` object. This object contains the server's response to your HTTP request.
+- `prepare_request(request)`: Prepares a `Request` object with the session's settings (cookies, headers, etc.), returning a `PreparedRequest`.
+- `send(request, **kwargs)`: Sends a `PreparedRequest` object.
+- `mount(prefix, adapter)`: Registers a Transport Adapter to a URL prefix.
+- `close()`: Closes all adapters and the session.
 
-### Response Attributes
+## Core Objects
 
-| Attribute | Description |
-|---|---|
-| `status_code` | Integer representation of the HTTP status code (e.g., `200`, `404`). |
-| `headers` | A case-insensitive dictionary of the response headers. |
-| `encoding` | The encoding used to decode `r.text`. |
-| `text` | The content of the response, in Unicode. |
-| `content` | The content of the response, in bytes. |
-| `json()` | A method that returns the JSON-decoded content of the response, if any. |
-| `url` | The final URL location of the response (after any redirects). |
-| `ok` | A boolean that is `True` if `status_code` is less than 400, `False` otherwise. |
-| `reason` | The textual reason of the HTTP status (e.g., "OK", "Not Found"). |
-| `cookies` | A `RequestsCookieJar` of cookies the server sent back. |
-| `elapsed` | A `timedelta` object representing the time elapsed between sending the request and the arrival of the response. |
-| `request` | The `PreparedRequest` object to which this is a response. |
-| `history` | A list of `Response` objects from the history of the request (redirects). |
+These are the primary objects that power Requests.
 
-### Response Methods
+### `requests.Request`
 
-| Method | Description |
-|---|---|
-| `json(**kwargs)` | Decodes the response body as a Python object. Raises `requests.exceptions.JSONDecodeError` if the response body does not contain valid JSON. |
-| `raise_for_status()` | Raises an `HTTPError` if the HTTP request returned an unsuccessful status code (4xx or 5xx). |
-| `iter_content(chunk_size=1, decode_unicode=False)` | Iterates over the response data, useful for streaming large responses. |
-| `iter_lines(chunk_size=512, decode_unicode=False, delimiter=None)` | Iterates over the response data, one line at a time. |
-| `close()` | Releases the connection back to the pool. |
+Represents a user-created HTTP request. It is typically created and then passed to `Session.prepare_request()`.
 
-## Exceptions
+**Constructor Parameters**
 
-Requests raises exceptions for various errors. All exceptions are subclasses of `requests.exceptions.RequestException`.
+<x-field data-name="method" data-type="string" data-desc="HTTP method."></x-field>
+<x-field data-name="url" data-type="string" data-desc="URL for the request."></x-field>
+<x-field data-name="headers" data-type="dict" data-desc="Dictionary of headers."></x-field>
+<x-field data-name="files" data-type="dict" data-desc="Dictionary of files for multipart upload."></x-field>
+<x-field data-name="data" data-type="dict, list, bytes, or file-like" data-desc="Request body."></x-field>
+<x-field data-name="json" data-type="object" data-desc="JSON data for the request body."></x-field>
+<x-field data-name="params" data-type="dict" data-desc="URL parameters."></x-field>
+<x-field data-name="auth" data-type="tuple or AuthBase" data-desc="Auth handler."></x-field>
+<x-field data-name="cookies" data-type="dict or CookieJar" data-desc="Cookies to attach to the request."></x-field>
 
-| Exception | Description |
-|---|---|
-| `RequestException` | The base exception for any ambiguous issue that occurred. |
-| `ConnectionError` | Raised for network-related problems (e.g., DNS failure, refused connection). |
-| `HTTPError` | Raised by `response.raise_for_status()` for unsuccessful status codes (4xx or 5xx). |
-| `Timeout` | The request timed out. This is a parent for `ConnectTimeout` and `ReadTimeout`. |
-| `ConnectTimeout` | The request timed out while trying to connect to the remote server. |
-| `ReadTimeout` | The server did not send any data in the allotted amount of time. |
-| `TooManyRedirects` | The request exceeded the configured number of maximum redirections. |
-| `MissingSchema` | The URL scheme (e.g., `http` or `https`) is missing. |
-| `InvalidURL` | The URL provided was somehow invalid. |
-| `JSONDecodeError` | Raised when `response.json()` fails to decode the response content. |
+### `requests.PreparedRequest`
+
+Represents a fully prepared request, containing the exact bytes that will be sent to the server. You should not instantiate this class manually.
+
+**Attributes**
+
+<x-field data-name="method" data-type="string" data-desc="The HTTP verb."></x-field>
+<x-field data-name="url" data-type="string" data-desc="The full URL."></x-field>
+<x-field data-name="headers" data-type="CaseInsensitiveDict" data-desc="The request headers."></x-field>
+<x-field data-name="body" data-type="bytes or file-like" data-desc="The request body."></x-field>
+
+### `requests.Response`
+
+Contains the server's response to an HTTP request.
+
+**Attributes**
+
+<x-field data-name="status_code" data-type="int" data-desc="The integer representation of the HTTP status code (e.g., 200, 404)."></x-field>
+<x-field data-name="headers" data-type="CaseInsensitiveDict" data-desc="A case-insensitive dictionary of the response headers."></x-field>
+<x-field data-name="encoding" data-type="string" data-desc="The encoding used to decode `response.text`."></x-field>
+<x-field data-name="url" data-type="string" data-desc="The final URL location of the response, after any redirects."></x-field>
+<x-field data-name="history" data-type="list[Response]" data-desc="A list of Response objects from the history of the request (redirects)."></x-field>
+<x-field data-name="reason" data-type="string" data-desc="The textual reason of the HTTP status (e.g., 'OK', 'Not Found')."></x-field>
+<x-field data-name="cookies" data-type="RequestsCookieJar" data-desc="A CookieJar of cookies the server sent back."></x-field>
+<x-field data-name="elapsed" data-type="timedelta" data-desc="The time elapsed between sending the request and the arrival of the response."></x-field>
+<x-field data-name="request" data-type="PreparedRequest" data-desc="The PreparedRequest object to which this is a response."></x-field>
+<x-field data-name="ok" data-type="bool" data-desc="Returns True if `status_code` is less than 400, False if not."></x-field>
+<x-field data-name="is_redirect" data-type="bool" data-desc="True if this response is a well-formed HTTP redirect."></x-field>
+<x-field data-name="content" data-type="bytes" data-desc="The content of the response, in bytes."></x-field>
+<x-field data-name="text" data-type="string" data-desc="The content of the response, in Unicode."></x-field>
+<x-field data-name="links" data-type="dict" data-desc="Returns the parsed header links of the response, if any."></x-field>
+
+**Methods**
+
+<x-field data-name="json(**kwargs)" data-type="method" data-desc="Decodes the JSON response body into a Python object."></x-field>
+<x-field data-name="iter_content(chunk_size=1, decode_unicode=False)" data-type="method" data-desc="Iterates over the response data. Avoids reading the content at once into memory."></x-field>
+<x-field data-name="iter_lines(chunk_size=512, decode_unicode=False)" data-type="method" data-desc="Iterates over the response data, one line at a time."></x-field>
+<x-field data-name="raise_for_status()" data-type="method" data-desc="Raises an HTTPError if the HTTP request returned an unsuccessful status code."></x-field>
+<x-field data-name="close()" data-type="method" data-desc="Releases the connection back to the pool."></x-field>
 
 ## Authentication
 
 Requests provides several built-in authentication handlers.
 
-### `HTTPBasicAuth`
+- `requests.auth.HTTPBasicAuth(username, password)`: Attaches HTTP Basic Authentication to a request.
+- `requests.auth.HTTPProxyAuth(username, password)`: Attaches HTTP Proxy Authentication to a request.
+- `requests.auth.HTTPDigestAuth(username, password)`: Attaches HTTP Digest Authentication to a request.
 
-Attaches HTTP Basic Authentication to a request.
+## Exceptions
 
-```python
-from requests.auth import HTTPBasicAuth
-requests.get('https://httpbin.org/basic-auth/user/pass', auth=HTTPBasicAuth('user', 'pass'))
+Requests raises exceptions for various errors. All exceptions are available in the `requests.exceptions` module and inherit from `requests.exceptions.RequestException`.
+
+| Exception | Description |
+|---|---|
+| `RequestException` | The base class for all Requests exceptions. |
+| `ConnectionError` | Raised for network-related problems (e.g., DNS failure, refused connection). |
+| `HTTPError` | Raised by `response.raise_for_status()` for unsuccessful status codes (4xx or 5xx). |
+| `ProxyError` | Raised for issues with the proxy server. |
+| `SSLError` | Raised for SSL-related errors. |
+| `Timeout` | The base class for timeout exceptions. |
+| `ConnectTimeout` | Raised when a connection times out. |
+| `ReadTimeout` | Raised when the server does not send any data in the allotted time. |
+| `URLRequired` | Raised when a valid URL is not provided. |
+| `TooManyRedirects` | Raised when a request exceeds the configured number of maximum redirections. |
+| `MissingSchema` | Raised if the URL is missing a scheme (e.g., `http://`). |
+| `InvalidURL` | Raised if the URL is malformed. |
+| `JSONDecodeError` | Raised when `response.json()` fails to decode the response body. |
+
+## Transport Adapters
+
+Transport Adapters provide the mechanism for defining how Requests interacts with a transport protocol. The most common one is `HTTPAdapter`.
+
+### `requests.adapters.HTTPAdapter`
+
+The built-in HTTP Adapter for `urllib3`.
+
+**Constructor Parameters**
+
+<x-field data-name="pool_connections" data-type="int" data-default="10" data-desc="The number of urllib3 connection pools to cache."></x-field>
+<x-field data-name="pool_maxsize" data-type="int" data-default="10" data-desc="The maximum number of connections to save in the pool."></x-field>
+<x-field data-name="max_retries" data-type="int or Retry" data-default="0" data-desc="The maximum number of retries each connection should attempt."></x-field>
+<x-field data-name="pool_block" data-type="bool" data-default="false" data-desc="Whether the connection pool should block for connections."></x-field>
+
+## Other Utilities
+
+### `requests.status_codes`
+
+A lookup object that provides access to HTTP status codes by their common names.
+
+```python Status Codes icon=logos:python
+import requests
+
+print(requests.codes.ok) # 200
+print(requests.codes.not_found) # 404
+print(requests.codes['im_a_teapot']) # 418
 ```
 
-A shortcut is to pass a tuple `(username, password)` to the `auth` parameter:
+### `requests.structures.CaseInsensitiveDict`
 
-```python
-requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
+A dictionary-like object that is case-insensitive for key lookups. This is used for headers.
+
+```python CaseInsensitiveDict icon=logos:python
+from requests.structures import CaseInsensitiveDict
+
+headers = CaseInsensitiveDict()
+headers['Accept'] = 'application/json'
+
+print(headers['accept']) # 'application/json'
 ```
-
-### `HTTPDigestAuth`
-
-Attaches HTTP Digest Authentication to a request.
-
-```python
-from requests.auth import HTTPDigestAuth
-url = 'https://httpbin.org/digest-auth/qop/user/pass'
-requests.get(url, auth=HTTPDigestAuth('user', 'pass'))
-```
-
-## Other Classes & Objects
-
-- **`requests.Request`**: A user-created object used to prepare a `PreparedRequest` which is then sent to the server.
-- **`requests.PreparedRequest`**: A fully prepared request object, containing the exact bytes that will be sent to the server. You typically don't create this manually.
-- **`requests.structures.CaseInsensitiveDict`**: A case-insensitive dictionary-like object, used for headers.
-- **`requests.cookies.RequestsCookieJar`**: A `CookieJar` that also acts like a dictionary, used for `session.cookies` and `response.cookies`.
-- **`requests.status_codes.codes`**: A special lookup object that provides access to HTTP status codes by name (e.g., `requests.codes.ok` is `200`).

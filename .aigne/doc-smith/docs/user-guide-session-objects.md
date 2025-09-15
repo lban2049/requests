@@ -1,6 +1,6 @@
 # Session Objects
 
-The Session object allows you to persist certain parameters across requests. It also persists cookies across all requests made from the Session instance and leverages `urllib3`'s connection pooling. So if you're making several requests to the same host, the underlying TCP connection will be reused, which can result in a significant performance increase.
+The Session object is one of the most powerful features of Requests. It allows you to persist certain parameters across requests. It also persists cookies over all requests made from the Session instance, and will use `urllib3`'s connection pooling. This means that if you're making several requests to the same host, the underlying TCP connection will be reused, which can result in a significant performance increase.
 
 A Session object has all the methods of the main Requests API.
 
@@ -11,74 +11,75 @@ import requests
 
 s = requests.Session()
 
+# The first request to set a cookie
 s.get('https://httpbin.org/cookies/set/sessioncookie/123456789')
+
+# A second request to the same domain will automatically include the cookie
 r = s.get('https://httpbin.org/cookies')
 
 print(r.text)
-# Expected output:
 # {
-#   "cookies": {
+#   "cookies": { 
 #     "sessioncookie": "123456789"
 #   }
 # }
 ```
 
+## Persisting Parameters
+
 Sessions can also be used to provide default data to the request methods. This is done by providing data to the properties on a Session object:
 
-```python Session with Default Headers icon=logos:python
+```python Persisting Session-Level Headers icon=logos:python
 import requests
 
 s = requests.Session()
-s.headers.update({'x-test-header': 'true'})
+s.headers.update({'x-test': 'true'})
 
-# The 'x-test-header' is sent on both requests
-r_one = s.get('https://httpbin.org/headers')
-print(r_one.json())
+# Both 'x-test' and 'x-test2' are sent
+r_with_both = s.get('https://httpbin.org/headers', headers={'x-test2': 'true'})
+print(r_with_both.json()['headers'])
 
-r_two = s.get('https://httpbin.org/headers', headers={'x-another-header': 'true'})
-print(r_two.json())
+# The session-level header is still present in a subsequent request
+r_with_session_header = s.get('https://httpbin.org/headers')
+print(r_with_session_header.json()['headers'])
 ```
 
-### Parameter Precedence
+Any dictionaries that you pass to a request method will be merged with the session-level values that are set. The method-level parameters override session parameters.
 
-Any dictionaries that you pass to a request method will be merged with the session-level values. However, the method-level parameters will override any duplicate keys in the session parameters for that single request. 
+Let's see what happens when a `None` value is passed. This is useful for removing a header from the session for a specific request:
 
-For example:
-
-```python Overriding Session Headers icon=logos:python
+```python Overriding Session Parameters icon=logos:python
 import requests
 
 s = requests.Session()
+s.headers.update({'x-test': 'true'})
 
-# Set a default header for the session
-s.headers.update({'Accept': 'application/json'})
+# This request will not have the 'x-test' header
+r = s.get('https://httpbin.org/headers', headers={'x-test': None})
 
-# This request will use the session's 'Accept' header
-res_json = s.get('https://httpbin.org/headers')
-print(f"Request 1 Accept header: {res_json.json()['headers']['Accept']}")
-
-# This request will override the session's 'Accept' header for this call only
-res_html = s.get('https://httpbin.org/headers', headers={'Accept': 'text/html'})
-print(f"Request 2 Accept header: {res_html.json()['headers']['Accept']}")
-
-# A third request will revert to using the session's default header
-res_json_again = s.get('https://httpbin.org/headers')
-print(f"Request 3 Accept header: {res_json_again.json()['headers']['Accept']}")
+print(r.json()['headers'])
+# {
+#   "Accept": "*/*", 
+#   "Accept-Encoding": "gzip, deflate", 
+#   "Host": "httpbin.org", 
+#   "User-Agent": "python-requests/2.28.1", 
+#   "X-Amzn-Trace-Id": "..."
+# }
 ```
 
-This applies to other session-level settings as well, such as `auth`, `params`, `proxies`, `verify`, and `cert`.
+## Using a Session as a Context Manager
 
-### Session as a Context Manager
+All sessions can also be used as a context manager. This will ensure the session is closed automatically, even if an exception is raised. This is the recommended way to use a Session.
 
-All sessions can be used as a context manager. This will ensure the session is closed automatically, even if an exception is raised. This is useful for cleaning up connections.
+```python Session as a Context Manager icon=logos:python
+import requests
 
-```python Session as Context Manager icon=logos:python
 with requests.Session() as s:
-    response = s.get('https://httpbin.org/get')
-    print(f"Status Code: {response.status_code}")
-# The session is automatically closed here
+    s.get('https://httpbin.org/cookies/set/sessioncookie/123456789')
+    r = s.get('https://httpbin.org/cookies')
+    print(r.json())
 ```
 
-Using a Session object is a great way to make your requests more efficient and your code cleaner, especially when interacting with the same API endpoint multiple times.
+Using a session is essential for making efficient and stateful HTTP requests. Now that you understand how to persist data across multiple requests, you can explore how to handle different types of authentication.
 
-To learn how to manage credentials across requests, continue to the [Authentication](./user-guide-authentication.md) guide.
+Next, let's dive into [Authentication](./user-guide-authentication.md).
