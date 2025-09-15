@@ -1,188 +1,230 @@
 # 处理响应
 
-发出请求后，Requests 会返回一个 `Response` 对象，其中包含服务器的响应。该对象包含你需要的所有信息，从页面内容到状态码和标头等元数据。
+使用 Requests 发出请求后，服务器的响应会存储在一个 `Response` 对象中。该对象包含了丰富的信息，从响应体到标头、Cookie 和状态码。本指南将引导你如何访问和使用这些数据。
 
-```python 发出一个简单的请求 icon=logos:python
-import requests
+如果你还没有发出过请求，建议先查阅 [发出请求](./user-guide-making-a-request.md) 指南。
 
-r = requests.get('https://api.github.com/events')
-```
+## 读取响应内容
 
-现在我们有了 `r` 对象，接下来我们来研究如何检查其内容。
-
-## 响应内容
-
-Requests 提供了多种访问响应正文的方式，具体取决于内容类型。
+Requests 可以处理服务器返回的各种类型的内容。让我们来探讨最常见的几种。
 
 ### 文本内容
 
-对于基于文本的响应（例如 HTML 或纯文本），你可以使用 `text` 属性。Requests 会自动解码来自服务器响应的内容。
+对于基于文本的响应，例如 HTML 或纯文本，你可以使用 `.text` 属性。Requests 会自动将响应内容解码为 Unicode 字符串。
 
-```python 查看文本响应 icon=logos:python
+```python example.py icon=logos:python
+import requests
+
 r = requests.get('https://api.github.com/events')
 print(r.text)
-# '[{"id":"34343116709","type":"PushEvent","actor":{"id":...'
 ```
 
-Requests 会根据 HTTP 标头对编码进行智能猜测。如果需要覆盖此设置，可以在访问 `.text` 之前手动设置 `encoding` 属性：
+Requests 会根据 HTTP 标头对响应的编码进行智能猜测。如果你发现编码不正确，可以在访问 `.text` 之前手动设置它。
 
-```python 手动设置编码 icon=logos:python
-r.encoding = 'utf-8'
+```python set_encoding.py icon=logos:python
+import requests
+
+r = requests.get('https://api.github.com/events')
+r.encoding = 'utf-8' # Manually set the encoding
 print(r.text)
 ```
 
-### 二进制响应内容
+### 二进制内容
 
-对于非文本内容（例如图片或 PDF 文件），你可以使用 `content` 属性访问响应的原始字节。这是下载文件的最佳方法，因为它可以避免任何解码问题。
+对于非文本内容，如图像、PDF 或其他文件，你应该使用 `.content` 属性。它提供响应体的原始字节。
 
-```python 获取图片 icon=logos:python
-r = requests.get('https://httpbin.org/image/png')
-print(r.content)
-# b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR...'
+下面是一个如何下载图像并将其保存到文件的示例：
 
-# 你可以将其保存到文件中
-with open('image.png', 'wb') as f:
+```python download_image.py icon=logos:python
+import requests
+
+r = requests.get('https://raw.githubusercontent.com/psf/requests/main/ext/requests-logo.png')
+
+with open('requests-logo.png', 'wb') as f:
     f.write(r.content)
 ```
+这段代码将在你当前的工作目录下保存一个名为 `requests-logo.png` 的文件。
+
+![requests-logo.png](../../../ext/requests-logo.png)
 
 ### JSON 响应内容
 
-如果你正在使用的 API 返回 JSON，Requests 有一个内置的 JSON 解码器。只需调用 `json()` 方法即可将响应内容解析为 Python 字典或列表。
+许多现代 API 以 JSON 格式返回数据。Requests 内置了 JSON 解码器 `r.json()`，它会解析响应内容并返回一个 Python 字典或列表。
 
-```python 解码 JSON icon=logos:python
-r = requests.get('https://api.github.com/events')
-data = r.json()
+```python json_response.py icon=logos:python
+import requests
 
-# 像访问普通 Python 对象一样访问数据
-first_event_type = data[0]['type']
-print(first_event_type)
-# 'PushEvent'
+r = requests.get('https://httpbin.org/json')
+json_data = r.json()
+
+print(json_data['slideshow']['title'])
 ```
 
-如果响应不包含有效的 JSON，调用 `.json()` 将会引发 `requests.exceptions.JSONDecodeError`。
+**响应示例**
+```json
+{
+  "slideshow": {
+    "author": "Yours Truly", 
+    "date": "date of publication", 
+    "slides": [
+      {
+        "title": "Wake up to WonderWidgets!", 
+        "type": "all"
+      }, 
+      {
+        "items": [
+          "Why <em>WonderWidgets</em> are great", 
+          "Who <em>buys</em> WonderWidgets"
+        ], 
+        "title": "Overview", 
+        "type": "all"
+      }
+    ], 
+    "title": "Sample Slide Show"
+  }
+}
+```
 
-### 流式内容
+如果响应不包含有效的 JSON，调用 `r.json()` 将会引发 `requests.exceptions.JSONDecodeError` 异常。在尝试将其解析为 JSON 之前，最好检查响应状态或标头。
 
-对于非常大的响应，你可以避免一次性将全部内容加载到内存中。通过在请求中设置 `stream=True`，你可以迭代处理到达的响应数据。
+### 流式传输大响应
 
-使用 `iter_content()` 方法来控制块大小。这对于下载大文件非常理想。
+对于大文件下载，一次性将整个响应加载到内存中效率很低。你可以通过在请求中设置 `stream=True` 来处理这种情况。这允许你按块迭代内容。
 
-```python 保存大文件 icon=logos:python
-# 以 8KB 的块大小下载一个 100KB 的文件
-with requests.get('https://httpbin.org/stream-bytes/102400', stream=True) as r:
-    r.raise_for_status() # 确保请求成功
+`iter_content()` 允许你遍历响应数据。你可以指定一个以字节为单位的 `chunk_size`。
+
+```python stream_download.py icon=logos:python
+import requests
+
+# A large file example URL
+url = 'https://speed.hetzner.de/100MB.bin'
+
+with requests.get(url, stream=True) as r:
+    r.raise_for_status() # Ensure the request was successful
     with open('large_file.bin', 'wb') as f:
         for chunk in r.iter_content(chunk_size=8192):
+            # The chunk_size is the number of bytes it should read into memory.
+            # This is not necessarily the length of each item returned as decoding can take place.
             f.write(chunk)
 ```
 
-你还可以使用 `iter_lines()` 逐行迭代响应。
+你也可以使用 `iter_lines()` 逐行遍历响应。
 
-## 响应状态码
+```python stream_lines.py icon=logos:python
+import requests
 
-检查响应的状态码以验证请求是否成功至关重要。
+url = 'https://httpbin.org/stream/20' # An endpoint that streams lines
 
-<x-field data-name="status_code" data-type="integer" data-desc="响应的 HTTP 状态码（例如，200、404）。"></x-field>
-<x-field data-name="reason" data-type="string" data-desc="状态的文本原因（例如，'OK'、'Not Found'）。"></x-field>
-<x-field data-name="ok" data-type="boolean" data-desc="如果状态码小于 400 则返回 True，否则返回 False。这是检查成功与否的简单方法。"></x-field>
+with requests.get(url, stream=True) as r:
+    for line in r.iter_lines():
+        if line:
+            # filter out keep-alive new lines
+            decoded_line = line.decode('utf-8')
+            print(decoded_line)
+```
 
-```python 状态码示例 icon=logos:python
+## 响应状态和标头
+
+除了响应体，状态码和标头也提供了关于响应的关键信息。
+
+### 状态码
+
+你可以使用 `status_code` 属性来检查响应的 HTTP 状态码。
+
+<x-field data-name="status_code" data-type="number" data-desc="HTTP 状态码的整数表示形式（例如，200, 404）。"></x-field>
+
+Requests 还提供了一个方便的查找对象 `requests.codes`，用于通过名称访问状态码。
+
+```python status_check.py icon=logos:python
+import requests
+
 r = requests.get('https://httpbin.org/status/404')
-print(r.status_code)
-# 404
 
-print(r.reason)
-# 'NOT FOUND'
-
-if not r.ok:
-    print("Request failed!")
+if r.status_code == 200:
+    print('Success!')
+elif r.status_code == requests.codes.not_found: # Same as 404
+    print('Resource not found.')
+else:
+    print(f'Request failed with status code: {r.status_code}')
 ```
 
-Requests 还提供了一个方便的查找对象 `requests.codes`，用于将状态码与人类可读的名称进行比较。
+### 检查错误
 
-| 代码 | `requests.codes` 属性 |
-|---|---|
-| 200 | `ok`, `okay`, `all_ok` |
-| 301 | `moved_permanently`, `moved` |
-| 302 | `found` |
-| 400 | `bad_request`, `bad` |
-| 401 | `unauthorized` |
-| 403 | `forbidden` |
-| 404 | `not_found` |
-| 500 | `internal_server_error` |
+除了手动检查状态码，你还可以使用 `raise_for_status()` 方法。如果请求返回了不成功的状态码（4xx 客户端错误或 5xx 服务器错误），它将引发一个 `HTTPError`。
 
-### 对错误的响应抛出异常
+```python raise_for_status.py icon=logos:python
+import requests
+from requests.exceptions import HTTPError
 
-除了手动检查 `r.ok`，你还可以使用 `raise_for_status()` 方法。如果请求返回不成功的状态码（4xx 客户端错误或 5xx 服务器错误），该方法将引发 `HTTPError`。
+urls = ['https://httpbin.org/get', 'https://httpbin.org/status/500']
 
-```python 使用 raise_for_status icon=logos:python
-try:
-    r = requests.get('https://httpbin.org/status/404')
-    r.raise_for_status()
-except requests.exceptions.HTTPError as err:
-    print(f"HTTP error occurred: {err}")
-
-# 成功的请求不会引发异常
-r = requests.get('https://httpbin.org/status/200')
-r.raise_for_status()
-print("Request was successful!")
+for url in urls:
+    try:
+        r = requests.get(url)
+        r.raise_for_status() # Raises an exception for bad status codes
+        print(f'{url}: Success!')
+    except HTTPError as http_err:
+        print(f'HTTP error occurred: {http_err}')
+    except Exception as err:
+        print(f'Other error occurred: {err}')
 ```
 
-## 响应标头
+### 响应标头
 
-响应标头可通过 `r.headers` 以类字典对象的形式获取。该标头字典很特殊：它是大小写不敏感的。
+`headers` 属性提供了一个包含响应标头的类字典对象。其键名不区分大小写。
 
-```python 访问标头 icon=logos:python
+<x-field data-name="headers" data-type="CaseInsensitiveDict" data-desc="一个不区分大小写的响应标头字典。"></x-field>
+
+```python get_headers.py icon=logos:python
+import requests
+
 r = requests.get('https://httpbin.org/get')
 
-# 访问时大小写不敏感
-content_type_1 = r.headers['Content-Type']
-content_type_2 = r.headers.get('content-type')
-
-print(content_type_1)
-# 'application/json'
-print(content_type_2)
-# 'application/json'
+print(r.headers)
+# Access a specific header
+print(f"Content-Type: {r.headers['Content-Type']}")
+# Case-insensitive access
+print(f"content-type: {r.headers['content-type']}")
 ```
 
-## Cookies
+## Cookie
 
-如果服务器发送了任何 cookie，你可以通过 `r.cookies` 属性访问它们，该属性是一个行为类似字典的 `CookieJar` 对象。
+如果响应包含任何 Cookie，你可以通过 `cookies` 属性访问它们，该属性返回一个 `RequestsCookieJar` 对象。
 
-```python 使用 Cookies icon=logos:python
-r = requests.get('https://httpbin.org/cookies/set/flavor/chocolatechip')
-cookie_value = r.cookies['flavor']
+```python get_cookies.py icon=logos:python
+import requests
 
-print(cookie_value)
-# 'chocolatechip'
+# This endpoint sets a cookie
+r = requests.get('https://httpbin.org/cookies/set/sessioncookie/123456789')
+
+# Access the cookie
+cookie_value = r.cookies['sessioncookie']
+print(f'Session Cookie Value: {cookie_value}')
 ```
 
-## 重定向和历史
+## 重定向与历史记录
 
-Requests 会自动处理 HTTP 重定向。`Response` 对象的 `history` 属性包含一个旧的 `Response` 对象列表，这些对象是重定向链的一部分。该列表按从最旧到最新的响应排序。
+默认情况下，Requests 会自动对 301 和 302 等状态码执行重定向。`Response` 对象的 `history` 属性存储了重定向链中较早的 `Response` 对象的列表。该列表按从最早到最近的响应排序。
 
-```python 重定向历史 icon=logos:python
+<x-field data-name="history" data-type="list[Response]" data-desc="一个包含请求历史记录中 Response 对象的列表，用于处理重定向。"></x-field>
+<x-field data-name="url" data-type="string" data-desc="响应的最终 URL 位置。"></x-field>
+
+```python check_history.py icon=logos:python
+import requests
+
 r = requests.get('https://github.com')
 
-print(f"Final URL: {r.url}")
-# 最终 URL: https://github.com/
+print(f'Final URL: {r.url}')
+print(f'Status Code: {r.status_code}')
 
-print(f"Status Code: {r.status_code}")
-# 状态码: 200
-
-# 让我们尝试一个会重定向的 URL
-r_redirect = requests.get('http://github.com') # 注意：是 http，不是 https
-
-print(f"Final URL after redirect: {r_redirect.url}")
-# 重定向后的最终 URL: https://github.com/
-
-print("Redirect History:")
-for resp in r_redirect.history:
-    print(f"- {resp.status_code}: {resp.url}")
-# 重定向历史：
-# - 301: http://github.com/
+if r.history:
+    print('Request was redirected.')
+    for resp in r.history:
+        print(f'  - Redirect from {resp.url} (Status: {resp.status_code})')
+else:
+    print('Request was not redirected.')
 ```
 
----
+## 后续步骤
 
-现在你已经可以自信地处理响应了，接下来我们来探讨如何使用 [Session 对象](./user-guide-session-objects.md) 来管理状态并提高跨多个请求的性能。
+现在你已经对如何检查和处理从服务器返回的数据有了扎实的了解。要了解如何在多个请求之间持久化 Cookie 和标头等信息，请继续阅读下一节 [会话对象](./user-guide-session-objects.md)。

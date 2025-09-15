@@ -1,64 +1,69 @@
 # 概述
 
-![Requests Logo](../../../ext/requests-logo.png)
+**Requests** 是一个简洁而优雅的 Python HTTP 库，旨在使 HTTP 请求变得人性化和简单。它通过一个美观、简洁的 API 抽象了发出请求的复杂性，因此你可以专注于与服务交互和在应用程序中消费数据。
 
-**Requests** 是一个简单而优雅的 Python HTTP 库，旨在使 HTTP 请求变得人性化和直接。它将发出请求的复杂性抽象在一个美观、简单的 API 背后，让你能专注于与服务交互和在应用程序中消费数据。
+> 为人类设计的 Python HTTP 库。
 
-Requests 是世界上下载量最大的 Python 包之一，每周下载量超过 `3000 万`次。它受到超过 `1,000,000` 个代码仓库的信赖，是构建健壮可靠的 HTTP 应用程序的坚实基础。
+Requests 是世界上下载量最大的 Python 包之一，每周下载量超过 `3000 万次`。它受到 GitHub 上超过 `1,000,000` 个代码仓库的信赖，是您项目的可靠且稳健的选择。
 
-### 快速示例
+## 为什么使用 Requests？
 
-了解如何轻松地发出带有身份验证的 `GET` 请求并访问响应数据。
+使用 Requests 发送 HTTP/1.1 请求非常简单。你不再需要手动向 URL 添加查询字符串或对 `POST` 数据进行表单编码。该库可以无缝处理这些任务，使代码更简洁、更易读。
+
+下面简要介绍如何通过身份验证发出一个 `GET` 请求：
 
 ```python Basic GET Request icon=logos:python
->>> import requests
->>> r = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
+import requests
 
->>> r.status_code
-200
+r = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
 
->>> r.headers['content-type']
-'application/json; charset=utf8'
+# 检查状态码
+print(r.status_code)
+# >>> 200
 
->>> r.encoding
-'utf-8'
+# 访问响应头
+print(r.headers['content-type'])
+# >>> 'application/json; charset=utf8'
 
->>> r.text
-'{"authenticated": true, ...}'
+# 以文本形式访问响应体
+print(r.text)
+# >>> '{"authenticated": true, ...}'
 
->>> r.json()
-{'authenticated': True, ...}
+# 或者，将其解码为 JSON
+print(r.json())
+# >>> {'authenticated': True, ...}
 ```
 
-使用 Requests，你无需手动向 URL 添加查询字符串或对 `POST` 数据进行表单编码。只需使用直观的方法，让库来处理繁重的工作。
+## 核心功能
 
-### 功能与最佳实践
-
-Requests 的构建考虑了现代 Web 开发的需求，开箱即用，提供了一套强大的功能。
+Requests 包含了丰富的功能，可以满足现代、稳健和可靠的 HTTP 应用程序的需求。
 
 | Feature                       | Description                                                                 |
 | ----------------------------- | --------------------------------------------------------------------------- |
-| Keep-Alive & Connection Pooling | 重用底层 TCP 连接，显著提升性能。 |
-| International Domains and URLs  | 原生支持非 ASCII 域名和 URL。 |
-| Sessions with Cookie Persistence| 在通过 Session 对象发出的所有请求之间持久化 Cookie。 |
-| Browser-style TLS/SSL Verification | 像 Web 浏览器一样自动验证服务器证书。 |
-| Basic & Digest Authentication   | 内置易用的身份验证辅助工具。 |
-| Familiar `dict`–like Cookies    | 使用简单的字典接口管理 Cookie。 |
-| Automatic Content Decompression | 自动解压 gzip、deflate 和 brotli 编码的响应。 |
-| Multi-part File Uploads         | 用于上传文件的简单接口。 |
-| SOCKS Proxy Support           | 通过额外的依赖项将你的请求路由到 SOCKS 代理。 |
-| Connection Timeouts           | 通过设置超时防止请求无限期挂起。 |
-| Streaming Downloads           | 通过迭代响应内容高效下载大文件。 |
-| Automatic honoring of `.netrc`  | 如果可用，则使用你 `.netrc` 文件中的身份验证信息。 |
+| 保持连接与连接池 | 重用底层 TCP 连接，显著提升性能。   |
+| 国际化域名与 URL  | 原生支持国际化域名，适用于全球应用程序。   |
+| 带 Cookie 持久化的会话| 通过会话对象在多个请求之间保持参数和 Cookie。 |
+| 浏览器风格的 TLS/SSL 验证 | 默认情况下，像浏览器一样验证 HTTPS 请求的 SSL 证书。 |
+| 基本与摘要式身份验证 | 内置易于使用的身份验证支持。                               |
+| 熟悉的类 `dict` Cookie  | 通过简单的类字典接口管理 Cookie。                     |
+| 自动解压       | 自动解压 `gzip`、`deflate` 和 `brotli` 编码的内容。     |
+| 多部分文件上传       | 用于上传文件的简化接口。                                  |
+| 连接超时           | 通过设置连接超时，防止请求无限期挂起。   |
+| 流式下载           | 无需一次性将全部内容加载到内存中即可下载大文件。|
+| 分块 HTTP 请求         | 支持用于流式上传的分块传输编码。                   |
 
-### 支持的版本
+## 安装
 
-Requests 官方支持 Python 3.9+。
+开始使用 Requests 非常简单，只需运行一个命令即可。该库可在 PyPI 上获取，并正式支持 **Python 3.9+**。
+
+```console
+$ python -m pip install requests
+```
+
+有关安装和发出第一个请求的更详细指南，请参阅 [入门](./getting-started.md) 部分。
 
 ---
 
-准备好开始了吗？请前往 [入门指南](./getting-started.md) 安装该库并发起你的第一个请求。
+准备好深入了解了吗？完整的 API 参考和用户指南可在 [Read the Docs](https://requests.readthedocs.io) 上找到。
 
-<x-card data-title="完整的 API 参考和用户指南" data-image="../../../ext/ss.png" data-href="https://requests.readthedocs.io" data-cta="阅读文档" >
-要获取每个模块、类和函数的全面指南，请浏览我们在 Read the Docs 上托管的完整文档。
-</x-card>
+[![Read the Docs](https://raw.githubusercontent.com/psf/requests/main/ext/ss.png)](https://requests.readthedocs.io)

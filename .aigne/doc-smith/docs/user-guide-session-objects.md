@@ -1,6 +1,6 @@
 # Session Objects
 
-The Session object is one of the most powerful features of Requests. It allows you to persist certain parameters across requests. It also persists cookies over all requests made from the Session instance, and will use `urllib3`'s connection pooling. This means that if you're making several requests to the same host, the underlying TCP connection will be reused, which can result in a significant performance increase.
+The Session object allows you to persist certain parameters across requests. It also persists cookies across all requests made from the Session instance and will use `urllib3`'s connection pooling. So if you're making several requests to the same host, the underlying TCP connection will be reused, which can result in a significant performance increase.
 
 A Session object has all the methods of the main Requests API.
 
@@ -11,15 +11,13 @@ import requests
 
 s = requests.Session()
 
-# The first request to set a cookie
 s.get('https://httpbin.org/cookies/set/sessioncookie/123456789')
-
-# A second request to the same domain will automatically include the cookie
 r = s.get('https://httpbin.org/cookies')
 
 print(r.text)
+# Expected output:
 # {
-#   "cookies": { 
+#   "cookies": {
 #     "sessioncookie": "123456789"
 #   }
 # }
@@ -27,59 +25,57 @@ print(r.text)
 
 ## Persisting Parameters
 
-Sessions can also be used to provide default data to the request methods. This is done by providing data to the properties on a Session object:
+Sessions can also be used to provide default data to the request methods. This is done by providing data to the properties on a Session object. Any dictionaries that you pass to a request method will be merged with the session-level values that are set.
 
-```python Persisting Session-Level Headers icon=logos:python
+For example, headers set at the session level will be combined with any headers you pass to a specific request. However, the headers in the method call will take precedence.
+
+```python Merging Session and Request Headers icon=logos:python
 import requests
 
 s = requests.Session()
-s.headers.update({'x-test': 'true'})
+s.headers.update({'x-test-header': 'session-value'})
 
-# Both 'x-test' and 'x-test2' are sent
-r_with_both = s.get('https://httpbin.org/headers', headers={'x-test2': 'true'})
-print(r_with_both.json()['headers'])
+# The session header is sent along with the request-specific header
+r = s.get('https://httpbin.org/headers', headers={'x-test-header-2': 'request-value'})
+print(r.json()["headers"])
 
-# The session-level header is still present in a subsequent request
-r_with_session_header = s.get('https://httpbin.org/headers')
-print(r_with_session_header.json()['headers'])
+# A header set in a request method call overrides the session-level header
+r_override = s.get('https://httpbin.org/headers', headers={'x-test-header': 'request-override-value'})
+print(r_override.json()["headers"])
 ```
 
-Any dictionaries that you pass to a request method will be merged with the session-level values that are set. The method-level parameters override session parameters.
+Any object that is passed as a parameter to a request method (e.g., `auth`, `cert`) can also be set at the session level.
 
-Let's see what happens when a `None` value is passed. This is useful for removing a header from the session for a specific request:
-
-```python Overriding Session Parameters icon=logos:python
+```python Session-level Authentication icon=logos:python
 import requests
 
 s = requests.Session()
-s.headers.update({'x-test': 'true'})
+s.auth = ('user', 'pass')
 
-# This request will not have the 'x-test' header
-r = s.get('https://httpbin.org/headers', headers={'x-test': None})
+# The auth information is automatically used for this request
+r = s.get('https://httpbin.org/basic-auth/user/pass')
 
-print(r.json()['headers'])
-# {
-#   "Accept": "*/*", 
-#   "Accept-Encoding": "gzip, deflate", 
-#   "Host": "httpbin.org", 
-#   "User-Agent": "python-requests/2.28.1", 
-#   "X-Amzn-Trace-Id": "..."
-# }
+print(f"Status Code: {r.status_code}")
+print(r.json())
+# Expected output:
+# Status Code: 200
+# {'authenticated': True, 'user': 'user'}
 ```
 
-## Using a Session as a Context Manager
+Note that method-level parameters are not persisted across requests. If you want to set a parameter for all future requests, you must set it on the session object. To remove a persistent parameter, you can set it to `None` on the session.
 
-All sessions can also be used as a context manager. This will ensure the session is closed automatically, even if an exception is raised. This is the recommended way to use a Session.
+## Session as a Context Manager
 
-```python Session as a Context Manager icon=logos:python
-import requests
+All Sessions can be used as a context manager. This will ensure the session is closed automatically when the `with` block is exited, even if exceptions are raised. This is useful for cleaning up connections in the pool.
 
+```python Session with Context Manager icon=logos:python
 with requests.Session() as s:
-    s.get('https://httpbin.org/cookies/set/sessioncookie/123456789')
-    r = s.get('https://httpbin.org/cookies')
-    print(r.json())
+    response = s.get('https://httpbin.org/get')
+    print(f"Request successful with status code: {response.status_code}")
+
+# The session is now closed, and connections are cleaned up.
 ```
 
-Using a session is essential for making efficient and stateful HTTP requests. Now that you understand how to persist data across multiple requests, you can explore how to handle different types of authentication.
+Using Session objects is a powerful way to manage state, handle authentication, and improve the performance of your application when interacting with web services. For securing your requests, the next step is to dive deeper into different authentication methods.
 
-Next, let's dive into [Authentication](./user-guide-authentication.md).
+Now that you've seen how to manage state across requests, let's explore how to handle [Authentication](./user-guide-authentication.md).

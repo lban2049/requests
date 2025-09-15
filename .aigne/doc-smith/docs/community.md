@@ -1,68 +1,77 @@
 # Community
 
-Requests is one of the most downloaded Python packages today, pulling in around **30 million downloads per week**. According to GitHub, it is currently depended upon by over **1,000,000 repositories**. This incredible success is a testament to its simple, elegant design and the vibrant community that supports it.
+Requests is a vibrant, community-driven project, lovingly created by Kenneth Reitz and now maintained under the umbrella of the Python Software Foundation. Its success and robustness are a testament to the contributions of hundreds of developers from around the world.
 
-The project was lovingly created by Kenneth Reitz and is now maintained by a dedicated team of "Keepers of the Crystals," ensuring its stability and continued development.
+<div style="display: flex; gap: 1rem; align-items: center;">
+  <img src="../../../ext/kr.png" alt="Kenneth Reitz" width="150"/>
+  <img src="../../../ext/psf.png" alt="Python Software Foundation" width="150"/>
+</div>
+
+The project thrives on collaboration and is always welcoming new contributors. Whether you're fixing a bug, improving documentation, or suggesting a new feature, your input is valuable. Below you can find more information about the project's history and the people behind it.
 
 <x-cards>
-  <x-card data-title="Changelog" data-icon="lucide:list-ordered" data-href="/community/changelog" >
-    Explore the complete history of changes, including new features, bug fixes, and deprecations for every version of Requests.
+  <x-card data-title="Changelog" data-href="/community/changelog" data-icon="lucide:history">
+    Explore the project's evolution through a detailed log of all changes, improvements, and bug fixes for each version of the library.
   </x-card>
-  <x-card data-title="Contributors" data-icon="lucide:users" data-href="/community/contributors" >
-    See the full list of individuals who have contributed their time and expertise to making Requests the powerful tool it is today.
+  <x-card data-title="Contributors" data-href="/community/contributors" data-icon="lucide:users">
+    See the full list of individuals who have generously dedicated their time and expertise to making Requests what it is today.
   </x-card>
 </x-cards>
 
 ## How to Contribute
 
-We welcome and appreciate contributions of all kinds, from bug reports and documentation improvements to new feature suggestions. Here’s how you can get started.
-
-### Setting Up Your Environment
-
-First, you'll need to clone the repository. Due to a historical commit, you may need to add a special configuration flag to avoid an error:
-
-```shell Cloning the Repository icon=lucide:git-branch
-# Clone with the necessary config flag
-git clone -c fetch.fsck.badTimezone=ignore https://github.com/psf/requests.git
-
-# Or, apply the setting to your global Git config
-git config --global fetch.fsck.badTimezone ignore
-```
-
-Once you have the code, you can install the development dependencies and run the test suite to ensure everything is working correctly.
-
-```shell Running Tests icon=lucide:beaker
-# Navigate into the cloned directory
-cd requests
-
-# Install development dependencies
-python -m pip install -r requirements-dev.txt
-
-# Run the test suite
-python -m pytest tests
-```
+One of the most effective ways to contribute to Requests is by reporting bugs. A well-documented bug report helps maintainers identify and fix issues quickly. To streamline this process, Requests includes a built-in helper tool to gather relevant system information.
 
 ### Reporting Bugs
 
-A great bug report is a huge help to the maintainers. To ensure we have all the necessary information about your environment, Requests includes a built-in helper module.
+Before opening an issue, please run the following command in your terminal. It collects essential details about your environment, such as your Python version, operating system, and the versions of critical dependencies like `urllib3` and `idna`.
 
-Before creating an issue, please run the following command and include its output in your report:
-
-```shell Generating a Bug Report icon=lucide:bug
+```bash
 python -m requests.help
 ```
 
-This command will print a JSON object containing details about your Python version, system, and the versions of key dependencies like `urllib3`, `idna`, and `OpenSSL`, which is invaluable for debugging.
+This command will output a JSON object containing the necessary diagnostic information. Please include this output in your bug report.
 
-## Next Steps
+**Example Output:**
 
-After exploring our community resources, you might want to dive deeper into the library's features.
+```json
+{
+  "chardet": {
+    "version": "5.2.0"
+  },
+  "charset_normalizer": {
+    "version": null
+  },
+  "cryptography": {
+    "version": "42.0.5"
+  },
+  "idna": {
+    "version": "3.7"
+  },
+  "implementation": {
+    "name": "CPython",
+    "version": "3.12.3"
+  },
+  "platform": {
+    "release": "23.5.0",
+    "system": "Darwin"
+  },
+  "pyOpenSSL": {
+    "openssl_version": "1111014f",
+    "version": "24.1.0"
+  },
+  "requests": {
+    "version": "2.32.3"
+  },
+  "system_ssl": {
+    "version": "1111014f"
+  },
+  "urllib3": {
+    "version": "2.2.1"
+  },
+  "using_pyopenssl": true,
+  "using_charset_normalizer": true
+}
+```
 
-<x-cards>
-  <x-card data-title="User Guide" data-icon="lucide:book-open" data-href="/user-guide" >
-    Learn the core functionalities of Requests through practical, code-first examples.
-  </x-card>
-  <x-card data-title="Advanced Usage" data-icon="lucide:rocket" data-href="/advanced-usage" >
-    Explore advanced features like custom adapters, SSL verification, and proxies.
-  </x-card>
-</x-cards>
+By providing this data, you help us spend less time asking for basic information and more time fixing the problem. We appreciate your help in keeping Requests reliable and robust for everyone.

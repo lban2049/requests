@@ -1,188 +1,230 @@
 # Handling Responses
 
-After you make a request, Requests returns a `Response` object, which contains the server's response. This object holds all the information you need, from the content of the page to metadata like status codes and headers.
+After you've made a request using Requests, the server's response is available in a `Response` object. This object contains a wealth of information, from the response body to headers, cookies, and status codes. This guide will walk you through how to access and work with this data.
 
-```python Make a simple request icon=logos:python
-import requests
+If you haven't made a request yet, you might want to review the [Making a Request](./user-guide-making-a-request.md) guide first.
 
-r = requests.get('https://api.github.com/events')
-```
+## Reading Response Content
 
-Now that we have the `r` object, let's explore how to inspect its contents.
-
-## Response Content
-
-Requests provides several ways to access the body of the response, depending on the content type.
+Requests can handle various types of content returned by the server. Let's explore the most common ones.
 
 ### Text Content
 
-For text-based responses, such as HTML or plain text, you can use the `text` attribute. Requests automatically decodes the content from the server's response.
+For text-based responses, such as HTML or plain text, you can use the `.text` attribute. Requests will automatically decode the response content into a Unicode string.
 
-```python View text response icon=logos:python
+```python example.py icon=logos:python
+import requests
+
 r = requests.get('https://api.github.com/events')
 print(r.text)
-# '[{"id":"34343116709","type":"PushEvent","actor":{"id":...'
 ```
 
-Requests makes an educated guess about the encoding based on the HTTP headers. If you need to override this, you can set the `encoding` attribute manually before accessing `.text`:
+Requests makes an educated guess about the response encoding based on the HTTP headers. If you find that the encoding is incorrect, you can manually set it before accessing `.text`.
 
-```python Manually set encoding icon=logos:python
-r.encoding = 'utf-8'
+```python set_encoding.py icon=logos:python
+import requests
+
+r = requests.get('https://api.github.com/events')
+r.encoding = 'utf-8' # Manually set the encoding
 print(r.text)
 ```
 
-### Binary Response Content
+### Binary Content
 
-For non-text content, like images or PDF files, you can access the raw bytes of the response using the `content` attribute. This is the best approach for downloading files, as it avoids any decoding issues.
+For non-text content like images, PDFs, or other files, you should use the `.content` attribute. This provides the raw bytes of the response body.
 
-```python Getting an image icon=logos:python
-r = requests.get('https://httpbin.org/image/png')
-print(r.content)
-# b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR...'
+Here's an example of how you can download an image and save it to a file:
 
-# You could save this to a file
-with open('image.png', 'wb') as f:
+```python download_image.py icon=logos:python
+import requests
+
+r = requests.get('https://raw.githubusercontent.com/psf/requests/main/ext/requests-logo.png')
+
+with open('requests-logo.png', 'wb') as f:
     f.write(r.content)
 ```
+This code will save a file named `requests-logo.png` in your current working directory.
+
+![requests-logo.png](../../../ext/requests-logo.png)
 
 ### JSON Response Content
 
-If you're working with an API that returns JSON, Requests has a built-in JSON decoder. Simply call the `json()` method to parse the response content into a Python dictionary or list.
+Many modern APIs return data in JSON format. Requests has a built-in JSON decoder, `r.json()`, which will parse the response content and return a Python dictionary or list.
 
-```python Decoding JSON icon=logos:python
-r = requests.get('https://api.github.com/events')
-data = r.json()
+```python json_response.py icon=logos:python
+import requests
 
-# Access data like a normal Python object
-first_event_type = data[0]['type']
-print(first_event_type)
-# 'PushEvent'
+r = requests.get('https://httpbin.org/json')
+json_data = r.json()
+
+print(json_data['slideshow']['title'])
 ```
 
-If the response does not contain valid JSON, calling `.json()` will raise a `requests.exceptions.JSONDecodeError`.
+**Example Response**
+```json
+{
+  "slideshow": {
+    "author": "Yours Truly", 
+    "date": "date of publication", 
+    "slides": [
+      {
+        "title": "Wake up to WonderWidgets!", 
+        "type": "all"
+      }, 
+      {
+        "items": [
+          "Why <em>WonderWidgets</em> are great", 
+          "Who <em>buys</em> WonderWidgets"
+        ], 
+        "title": "Overview", 
+        "type": "all"
+      }
+    ], 
+    "title": "Sample Slide Show"
+  }
+}
+```
 
-### Streaming Content
+If the response does not contain valid JSON, calling `r.json()` will raise a `requests.exceptions.JSONDecodeError`. It's good practice to check the response status or headers before attempting to parse it as JSON.
 
-For very large responses, you can avoid loading the entire content into memory at once. By setting `stream=True` in your request, you can iterate over the response data as it arrives.
+### Streaming Large Responses
 
-Use the `iter_content()` method to control the chunk size. This is ideal for downloading large files.
+For large downloads, it's inefficient to load the entire response into memory at once. You can handle this by setting `stream=True` in your request. This allows you to iterate over the content in chunks.
 
-```python Saving a large file icon=logos:python
-# Download a 100KB file in chunks of 8KB
-with requests.get('https://httpbin.org/stream-bytes/102400', stream=True) as r:
+`iter_content()` allows you to iterate over the response data. You can specify a `chunk_size` in bytes.
+
+```python stream_download.py icon=logos:python
+import requests
+
+# A large file example URL
+url = 'https://speed.hetzner.de/100MB.bin'
+
+with requests.get(url, stream=True) as r:
     r.raise_for_status() # Ensure the request was successful
     with open('large_file.bin', 'wb') as f:
         for chunk in r.iter_content(chunk_size=8192):
+            # The chunk_size is the number of bytes it should read into memory.
+            # This is not necessarily the length of each item returned as decoding can take place.
             f.write(chunk)
 ```
 
-You can also iterate over the response line-by-line using `iter_lines()`.
+You can also iterate over the response line by line using `iter_lines()`.
 
-## Response Status Codes
+```python stream_lines.py icon=logos:python
+import requests
 
-It's crucial to check the status code of a response to verify if the request was successful.
+url = 'https://httpbin.org/stream/20' # An endpoint that streams lines
 
-<x-field data-name="status_code" data-type="integer" data-desc="The HTTP status code of the response (e.g., 200, 404)."></x-field>
-<x-field data-name="reason" data-type="string" data-desc="The textual reason for the status (e.g., 'OK', 'Not Found')."></x-field>
-<x-field data-name="ok" data-type="boolean" data-desc="Returns True if the status code is less than 400, False otherwise. A simple way to check for success."></x-field>
+with requests.get(url, stream=True) as r:
+    for line in r.iter_lines():
+        if line:
+            # filter out keep-alive new lines
+            decoded_line = line.decode('utf-8')
+            print(decoded_line)
+```
 
-```python Status Code Example icon=logos:python
+## Response Status and Headers
+
+Beyond the body, the status code and headers provide crucial information about the response.
+
+### Status Code
+
+You can check the HTTP status code of the response using the `status_code` attribute.
+
+<x-field data-name="status_code" data-type="number" data-desc="The integer representation of the HTTP status code (e.g., 200, 404)."></x-field>
+
+Requests also provides a convenient lookup object, `requests.codes`, to access status codes by name.
+
+```python status_check.py icon=logos:python
+import requests
+
 r = requests.get('https://httpbin.org/status/404')
-print(r.status_code)
-# 404
 
-print(r.reason)
-# 'NOT FOUND'
-
-if not r.ok:
-    print("Request failed!")
+if r.status_code == 200:
+    print('Success!')
+elif r.status_code == requests.codes.not_found: # Same as 404
+    print('Resource not found.')
+else:
+    print(f'Request failed with status code: {r.status_code}')
 ```
 
-Requests also provides a convenient lookup object, `requests.codes`, for comparing status codes with human-readable names.
+### Checking for Errors
 
-| Code | `requests.codes` Attribute |
-|---|---|
-| 200 | `ok`, `okay`, `all_ok` |
-| 301 | `moved_permanently`, `moved` |
-| 302 | `found` |
-| 400 | `bad_request`, `bad` |
-| 401 | `unauthorized` |
-| 403 | `forbidden` |
-| 404 | `not_found` |
-| 500 | `internal_server_error` |
+Instead of checking the status code manually, you can use the `raise_for_status()` method. It will raise an `HTTPError` if the request returned an unsuccessful status code (4xx client error or 5xx server error).
 
-### Raising an Exception for Bad Responses
+```python raise_for_status.py icon=logos:python
+import requests
+from requests.exceptions import HTTPError
 
-Instead of checking `r.ok` manually, you can use the `raise_for_status()` method. It will raise an `HTTPError` if the request returned an unsuccessful status code (4xx client error or 5xx server error).
+urls = ['https://httpbin.org/get', 'https://httpbin.org/status/500']
 
-```python Using raise_for_status icon=logos:python
-try:
-    r = requests.get('https://httpbin.org/status/404')
-    r.raise_for_status()
-except requests.exceptions.HTTPError as err:
-    print(f"HTTP error occurred: {err}")
-
-# A successful request will not raise an exception
-r = requests.get('https://httpbin.org/status/200')
-r.raise_for_status()
-print("Request was successful!")
+for url in urls:
+    try:
+        r = requests.get(url)
+        r.raise_for_status() # Raises an exception for bad status codes
+        print(f'{url}: Success!')
+    except HTTPError as http_err:
+        print(f'HTTP error occurred: {http_err}')
+    except Exception as err:
+        print(f'Other error occurred: {err}')
 ```
 
-## Response Headers
+### Response Headers
 
-The response headers are available as a dictionary-like object at `r.headers`. The header dictionary is special: it's case-insensitive.
+The `headers` attribute provides a dictionary-like object containing the response headers. The keys are case-insensitive.
 
-```python Accessing Headers icon=logos:python
+<x-field data-name="headers" data-type="CaseInsensitiveDict" data-desc="A case-insensitive dictionary of response headers."></x-field>
+
+```python get_headers.py icon=logos:python
+import requests
+
 r = requests.get('https://httpbin.org/get')
 
-# Accessing is case-insensitive
-content_type_1 = r.headers['Content-Type']
-content_type_2 = r.headers.get('content-type')
-
-print(content_type_1)
-# 'application/json'
-print(content_type_2)
-# 'application/json'
+print(r.headers)
+# Access a specific header
+print(f"Content-Type: {r.headers['Content-Type']}")
+# Case-insensitive access
+print(f"content-type: {r.headers['content-type']}")
 ```
 
 ## Cookies
 
-If the server sends any cookies, you can access them through the `r.cookies` attribute, which is a `CookieJar` object that acts like a dictionary.
+If the response contains any cookies, you can access them through the `cookies` attribute, which returns a `RequestsCookieJar` object.
 
-```python Working with Cookies icon=logos:python
-r = requests.get('https://httpbin.org/cookies/set/flavor/chocolatechip')
-cookie_value = r.cookies['flavor']
+```python get_cookies.py icon=logos:python
+import requests
 
-print(cookie_value)
-# 'chocolatechip'
+# This endpoint sets a cookie
+r = requests.get('https://httpbin.org/cookies/set/sessioncookie/123456789')
+
+# Access the cookie
+cookie_value = r.cookies['sessioncookie']
+print(f'Session Cookie Value: {cookie_value}')
 ```
 
 ## Redirection and History
 
-Requests automatically handles HTTP redirects. The `history` attribute of the `Response` object contains a list of the older `Response` objects that were part of the redirection chain. The list is sorted from the oldest to the most recent response.
+By default, Requests automatically performs redirection for status codes like 301 and 302. The `history` attribute of the `Response` object stores a list of the older `Response` objects that were part of the redirection chain. The list is sorted from the oldest to the most recent response.
 
-```python Redirection History icon=logos:python
+<x-field data-name="history" data-type="list[Response]" data-desc="A list of Response objects from the history of the request, in case of redirects."></x-field>
+<x-field data-name="url" data-type="string" data-desc="The final URL location of the Response."></x-field>
+
+```python check_history.py icon=logos:python
+import requests
+
 r = requests.get('https://github.com')
 
-print(f"Final URL: {r.url}")
-# Final URL: https://github.com/
+print(f'Final URL: {r.url}')
+print(f'Status Code: {r.status_code}')
 
-print(f"Status Code: {r.status_code}")
-# Status Code: 200
-
-# Let's try a URL that redirects
-r_redirect = requests.get('http://github.com') # Note: http, not https
-
-print(f"Final URL after redirect: {r_redirect.url}")
-# Final URL after redirect: https://github.com/
-
-print("Redirect History:")
-for resp in r_redirect.history:
-    print(f"- {resp.status_code}: {resp.url}")
-# Redirect History:
-# - 301: http://github.com/
+if r.history:
+    print('Request was redirected.')
+    for resp in r.history:
+        print(f'  - Redirect from {resp.url} (Status: {resp.status_code})')
+else:
+    print('Request was not redirected.')
 ```
 
----
+## Next Steps
 
-Now that you can confidently handle responses, let's explore how to manage state and improve performance across multiple requests using [Session Objects](./user-guide-session-objects.md).
+You now have a solid understanding of how to inspect and handle the data returned from a server. To learn how to persist information like cookies and headers across multiple requests, proceed to the next section on [Session Objects](./user-guide-session-objects.md).

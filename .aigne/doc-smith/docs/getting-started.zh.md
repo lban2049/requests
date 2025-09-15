@@ -1,64 +1,48 @@
 # 快速入门
 
-本指南提供了一条简单的途径，用于安装 Requests 库并发出你的第一个 HTTP 请求。只需几分钟，你就可以从网络上获取数据。
+本指南提供了让 Requests 库启动并运行的基本步骤。你将学习如何安装它以及如何发出你的第一个简单的 HTTP 请求。
 
 ## 安装
 
 在开始之前，请确保你已安装受支持的 Python 版本。Requests 官方支持 Python 3.9 及更高版本。
 
-要安装 Requests，请打开你的终端或命令提示符，并使用 Python 包安装程序 `pip`：
+Requests 可在 Python Package Index (PyPI) 上找到，并可以使用 `pip` 轻松安装。
 
-```console Installing Requests icon=logos:python
+```console 安装 Requests icon=logos:python
 $ python -m pip install requests
 ```
 
-该命令将下载并安装最新版本的 Requests 及其基本依赖项，如 `urllib3`、`idna`、`charset_normalizer` 和 `certifi`，以便你拥有开始所需的一切。
+命令完成后，Requests 就安装在你的环境中，可以随时使用。
 
 ## 发出你的第一个请求
 
-安装 Requests 后，发出 Web 请求变得非常简单。让我们从一个基本的 `GET` 请求开始，从一个测试服务中检索一些数据。
+安装 Requests 后，发出 HTTP 请求就变得非常简单。让我们从一个基本的 `GET` 请求开始，从一个测试端点检索一些数据。
 
-以下示例演示了如何发出请求、检查响应并访问其内容。
-
-```python Your First Request icon=logos:python
+```python 发出一个 GET 请求 icon=logos:python
 import requests
 
-# 向一个简单的测试端点发出 GET 请求
-r = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
+# 向 httpbin.org 测试端点发送 GET 请求
+r = requests.get('https://httpbin.org/get')
 
-# 1. 检查 HTTP 状态码
-# 状态码 200 OK 表示请求成功
+# 检查 HTTP 状态码是否为成功请求 (200 OK)
 print(f"Status Code: {r.status_code}")
 
-# 2. 访问响应头
-# 响应头以一个类字典对象的形式返回
-print(f"Content-Type: {r.headers['content-type']}")
-
-# 3. 以文本形式访问响应体
-# .text 属性包含原始字符串内容
-print(f"Response Text: {r.text}")
-
-# 4. 以 JSON 格式访问响应体
-# .json() 方法将 JSON 响应解码为 Python 字典
-json_data = r.json()
-print(f"JSON Data: {json_data}")
+# 响应内容可以解码为 JSON
+print("Response JSON:")
+print(r.json())
 ```
 
-我们来分解一下这里发生了什么：
+我们来分解一下这段代码中发生了什么：
 
-1.  **`import requests`**：我们首先导入该库。
-2.  **`requests.get(...)`**：这是该库的核心。它会构建并向指定 URL 发送一个 HTTP `GET` 请求。在本例中，我们还传递了一个 `auth` 元组来轻松处理基本身份验证。
-3.  **`r.status_code`**：`r` 对象是 `Response` 类的一个实例，包含了服务器的响应。`status_code` 属性可以让你检查请求是否成功。值为 `200` 表示成功。
-4.  **`r.headers`**：这个类字典对象让你能够访问所有的 HTTP 响应头。
-5.  **`r.text`**：此属性以纯字符串形式提供响应的有效负载。
-6.  **`r.json()`**：当你使用返回 JSON 的 API 时，这个内置方法非常有用。它会自动将响应文本解码为 Python 字典或列表，使数据立即可用。
+1.  **`import requests`**：首先，我们导入 `requests` 库。
+2.  **`r = requests.get(...)`**：我们调用 `get()` 函数向指定 URL 发送 HTTP GET 请求。该函数返回一个包含服务器响应的 `Response` 对象。
+3.  **`r.status_code`**：此属性为你提供 HTTP 状态码。值为 `200` 表示请求成功。
+4.  **`r.json()`**：如果响应内容是 JSON 格式，你可以使用这个方便的方法将其直接解析为 Python 字典。
 
-## 接下来做什么？
+## 后续步骤
 
-恭喜！你已经成功安装了 Requests 并从 Web 获取了数据。现在你已经了解了发出请求和处理响应的基础知识。
-
-要深入了解该库的功能，用户指南是完美的下一步。学习如何发送数据、自定义请求头、管理会话等。
+你已成功安装 Requests 并进行了你的第一次 API 调用。要了解如何发送数据、处理不同的 HTTP 方法以及管理标头，请继续阅读用户指南。
 
 <x-card data-title="用户指南：发出请求" data-icon="lucide:arrow-right-circle" data-href="/user-guide/making-a-request">
-探索不同的 HTTP 方法，如 POST 和 PUT，传递 URL 参数，并处理各种类型的请求体。
+  学习如何使用 GET、POST、PUT 等各种 HTTP 方法，以及如何传递 URL 参数、标头和请求正文。
 </x-card>
