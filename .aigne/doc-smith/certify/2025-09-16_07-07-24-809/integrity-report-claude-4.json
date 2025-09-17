@@ -1,0 +1,741 @@
+{
+  "timestamp": "2025-09-16T07:07:24.809Z",
+  "metadata": {
+    "version": "1.0.0",
+    "generatedBy": "doc-smith",
+    "documentCount": 16
+  },
+  "structureEvaluation": {
+    "type": "document-structure",
+    "results": {
+      "purposeCoverage": {
+        "score": 4,
+        "covered": [
+          "完成特定任务的工作流引导",
+          "常见用例的实践指导"
+        ],
+        "missing": [
+          "部分高级工作流场景"
+        ],
+        "reason": "结构覆盖了主要的任务导向内容（请求制作、响应处理、认证、错误处理），提供了实用的分步指导。但对于复杂工作流（如批量请求处理、并发场景）覆盖不足，整体影响有限。"
+      },
+      "audienceCoverage": {
+        "score": 4,
+        "covered": [
+          "产品/API集成开发者"
+        ],
+        "missing": [
+          "特定框架集成示例"
+        ],
+        "reason": "内容明显面向集成开发者设计，包含API参考、代码示例等技术内容。但缺少与主流框架（如Django、Flask）的集成示例，对部分开发者的即用性略有影响。"
+      },
+      "coverageDepthAlignment": {
+        "score": 5,
+        "reason": "深度完全符合'平衡覆盖'的预期：既有基础使用指南，也有高级特性介绍；既有实用示例，又有API参考。没有过度深入源码细节，也没有停留在表面，整体把控得当。"
+      }
+    }
+  },
+  "documentEvaluations": {
+    "type": "document-content",
+    "individual": [
+      {
+        "documentInfo": {
+          "path": "/overview",
+          "title": "Overview"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 4,
+            "reason": "整体语言流畅自然，但存在少量问题：表格中英文混杂（Feature/Description），'为人类设计的'翻译略生硬"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "逻辑清晰，从概述到特性再到安装，层次分明，各部分衔接自然"
+          },
+          "contentQuality": {
+            "score": 2,
+            "reason": "严重偏离用户目标：文档是入门介绍，但用户需要工作流指南和实用场景；缺少步骤说明、集成示例、配置片段等核心内容"
+          },
+          "translationQuality": {
+            "score": 4,
+            "reason": "翻译基本准确，但表格标题未翻译，'为人类设计的'不如'人性化的'自然"
+          },
+          "consistency": {
+            "score": 4,
+            "reason": "术语基本一致，但表格中保留英文标题与其他中文内容不一致"
+          },
+          "purposeAlignment": {
+            "score": 1,
+            "reason": "完全不符合目标：用户需要工作流指南和使用场景，文档却是库的基础介绍，没有任何步骤说明或实际场景"
+          },
+          "audienceAlignment": {
+            "score": 2,
+            "reason": "目标受众需要可复制的代码和集成示例，文档仅提供一个基础GET请求示例，缺少SDK集成、配置等开发者所需内容"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 2,
+            "reason": "用户已熟悉类似工具，但文档从零开始介绍基础概念，缺少与其他HTTP库的对比、迁移指南、独特优势等内容"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/getting-started",
+          "title": "Getting Started"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 4,
+            "reason": "中文翻译整体流畅，但存在个别表述生硬：'可以随时使用'不如'随时可用'自然；'后续步骤'标题略显生硬"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "逻辑结构清晰：安装→第一个请求→代码解析→后续步骤，层层递进，无跳跃或矛盾"
+          },
+          "contentQuality": {
+            "score": 2,
+            "reason": "严重偏离内容规划：规划要求'跳过getting started基础'，但文档恰恰是基础入门内容；缺少实际工作流程和具体任务场景"
+          },
+          "translationQuality": {
+            "score": 4,
+            "reason": "翻译准确，术语统一，但'快速入门'与英文'Getting Started'语义略有差异；部分表述可更地道"
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "术语使用一致（GET请求、状态码等），代码格式统一，中英文标记格式保持一致"
+          },
+          "purposeAlignment": {
+            "score": 1,
+            "reason": "完全不符合目标：用户选择'完成特定任务'和'常见工作流程'，但文档仅提供基础安装和Hello World示例"
+          },
+          "audienceAlignment": {
+            "score": 3,
+            "reason": "部分符合：代码示例可复制使用，但缺少实际集成场景、配置示例、错误处理等开发者真正需要的内容"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 1,
+            "reason": "严重不符：目标读者已使用过类似工具，但文档从零开始讲解基础安装和第一个请求，缺少对比、迁移指南、独特功能介绍"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/user-guide",
+          "title": "User Guide"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "语言清晰流畅，无语法错误，技术术语使用准确，代码示例格式规范"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "内容结构清晰，从简单到复杂递进，各章节衔接自然，无逻辑跳跃"
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "完整覆盖HTTP请求核心功能，每个主题都有实用代码示例，可直接复制使用"
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "翻译准确自然，技术术语统一规范，符合中文技术文档习惯"
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "术语使用一致，代码风格统一，格式规范，章节结构保持一致"
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "完美符合'完成特定任务'目标，提供了清晰的工作流和实际使用场景"
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "完全符合API集成开发者需求，代码优先，可复制粘贴，技术准确"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 5,
+            "reason": "适合有类似工具经验的开发者，突出独特功能，跳过基础概念，效率优先"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/user-guide/making-a-request",
+          "title": "Making a Request"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "语言清晰流畅，语法正确，代码示例完整且格式规范，注释恰当"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "从简单GET到复杂文件上传逐步深入，各节衔接自然，逻辑递进清晰"
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "完整覆盖GET/POST/PUT等HTTP方法、URL参数、请求体、文件上传等所有规划点，代码示例可直接使用"
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "中文翻译准确自然，术语统一（如Requests库、HTTP方法），符合中文技术文档习惯"
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "术语使用一致，代码格式统一，标题层级规范，示例风格一致"
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "完美契合'完成特定任务'目标，提供step-by-step指导和实际工作流程"
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "完全符合开发者需求：代码优先，可直接复制使用，技术准确，涵盖API调用和配置"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 4,
+            "reason": "适合有经验的开发者，但缺少与其他HTTP库（如urllib、httpx）的对比，未充分突出Requests的独特优势"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/user-guide/handling-responses",
+          "title": "Handling Responses"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "语言清晰流畅，无语法错误，专业术语翻译准确统一"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "逻辑结构清晰，从基础到进阶层层递进，各节内容衔接自然"
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "完整覆盖响应处理的各个方面，代码示例丰富实用，可直接复制使用"
+          },
+          "translationQuality": {
+            "score": 4,
+            "reason": "整体翻译准确自然，但保留了部分英文注释未翻译（如代码中的注释）"
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "术语使用一致，代码格式统一，中英文标点符号使用规范"
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "完美符合'完成特定任务'目标，提供了处理响应的完整工作流程和实用场景"
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "完全符合开发者需求，代码示例即拷即用，技术细节准确到位"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 5,
+            "reason": "深度适中，既介绍了基础用法，也涵盖了流式传输等进阶特性，符合有经验用户需求"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/user-guide/session-objects",
+          "title": "Session Objects"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 4,
+            "reason": "中文译文整体流畅自然，但存在少量表达不够地道的地方，如'预期输出'应为'期望输出'，'持久化'在某些场景下可改为'保持'"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "文档逻辑清晰，从Session基本概念到具体使用方法循序渐进，各部分衔接自然，代码示例与说明文字紧密配合"
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "完整实现了内容规划目标，详细展示了Session对象在持久化参数、cookies和headers方面的用法，所有代码示例都可直接复制使用"
+          },
+          "translationQuality": {
+            "score": 4,
+            "reason": "翻译基本准确，保留了技术术语的英文形式便于开发者理解，但'Status Code'等输出内容未统一处理，保持英文或翻译应一致"
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "术语使用一致，代码格式统一，中英文混排规范，标题层级清晰，代码注释风格统一"
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "完美符合'完成特定任务'的文档目标，提供了Session使用的完整工作流程和实际场景，每个功能都有对应的代码示例"
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "完全符合开发者集成需求，所有代码示例都可以直接复制使用，技术准确性高，涵盖了Session的核心API用法"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 5,
+            "reason": "非常适合有类似工具使用经验的读者，重点突出了requests Session的独特功能（如连接池重用、参数持久化），避免了基础HTTP概念的重复讲解"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/user-guide/authentication",
+          "title": "Authentication"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 4,
+            "reason": "整体语言清晰流畅，但存在个别不够自然的表达，如'即用型认证方法'应为'开箱即用的认证方法'，'你可能还需要参考'可以更简洁"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "内容逻辑清晰，从基本认证到高级认证循序渐进，各节之间衔接自然，最后引导到错误处理章节，形成完整的学习路径"
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "完整实现了内容规划中的各种认证方案，提供了可直接复制使用的代码示例，包含实际的API端点测试，细节丰富实用"
+          },
+          "translationQuality": {
+            "score": 4,
+            "reason": "翻译基本准确忠实原文，但存在少量不够地道的表达：'即用型'、'挑战-响应'等术语可以更符合中文技术文档习惯"
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "术语使用一致（认证、参数、请求等），代码示例格式统一，各节结构保持一致性"
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "完美符合'引导用户完成特定任务'的目标，提供了清晰的步骤说明和实际工作流程，每种认证方式都有具体的使用场景"
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "完全符合开发者需求：代码优先，所有示例可直接复制运行，包含import语句，注释详细，技术准确性高"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 5,
+            "reason": "适合有相似工具经验的读者：跳过了HTTP认证基础概念，直接展示Requests库的独特实现方式，对比了不同认证类型的差异和使用场景"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/user-guide/error-handling",
+          "title": "Error Handling"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 4,
+            "reason": "文档整体流畅，但存在少量问题：1) 英文输出混杂（如print语句）；2) 表格中的英文描述未翻译；3) 部分术语翻译不一致（Exception vs 异常）"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "逻辑结构清晰，从基础异常处理到具体错误类型再到异常层次结构，层层递进，过渡自然"
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "完全实现规划目标，提供了详细的错误处理指南，包含所有常见错误类型，代码示例可直接复制使用"
+          },
+          "translationQuality": {
+            "score": 3,
+            "reason": "翻译问题较多：1) print语句输出未翻译；2) 表格内容完全未翻译；3) 代码注释部分翻译部分未翻译，不一致"
+          },
+          "consistency": {
+            "score": 3,
+            "reason": "一致性问题明显：1) 代码注释翻译不一致；2) 错误信息输出有的翻译有的未翻译；3) 表格内容格式与其他部分不一致"
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "完美符合'完成特定任务'目标，提供了处理各种错误的具体工作流程和实用场景"
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "完全符合开发者需求，代码优先，示例可直接复制使用，技术准确性高"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 5,
+            "reason": "深度恰当，跳过基础概念，重点介绍Requests库特有的异常体系和处理方式，符合有经验开发者需求"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/advanced-usage",
+          "title": "Advanced Usage"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "中文翻译语言自然流畅，无语法错误，专业术语使用准确，代码示例格式规范"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "内容结构清晰，从概述到三个具体高级主题逻辑递进，示例代码与说明相互呼应"
+          },
+          "contentQuality": {
+            "score": 4,
+            "reason": "覆盖了高级功能的主要方面，提供了实用的代码示例，但缺少更多复杂场景的深入示例"
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "翻译准确自然，技术术语翻译恰当（如SSL证书验证、传输适配器），保持了原文的技术准确性"
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "术语使用一致（Session、Adapter、Hook等），代码格式统一，文档结构保持一致"
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "完美符合'完成特定任务'目标，提供了step-by-step的操作指南和可直接使用的代码示例"
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "完全面向API集成开发者，提供copy-paste ready的代码片段，技术准确性高"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 4,
+            "reason": "适合有经验的开发者，突出了与基础用法的差异，但部分高级概念（如Retry对象）可以有更多对比说明"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/advanced-usage/timeouts-retries-proxies",
+          "title": "Timeouts, Retries, and Proxies"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "中文翻译流畅自然，术语准确，代码注释清晰，无语法错误"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "结构清晰，从超时到重试再到代理层层递进，段落衔接自然，无逻辑跳跃"
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "完整覆盖超时、重试和代理配置，提供丰富的代码示例，包含边缘案例如SOCKS代理和环境变量"
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "翻译准确传达原文含义，专业术语统一，代码注释本地化恰当"
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "术语使用一致，代码格式统一，标题层级规范，风格保持一致"
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "完美符合'完成特定任务'目标，提供步骤清晰的工作流程指导和实际使用场景"
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "为开发者设计，代码可直接复制使用，技术准确，包含实际API调用和配置示例"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 5,
+            "reason": "适合有经验的开发者，重点介绍Requests特有功能，对比说明如元组超时的独特性"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/advanced-usage/ssl-cert-verification",
+          "title": "SSL Certificate Verification"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "语言清晰流畅，无语法错误，技术术语使用准确，句子结构简洁明了"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "逻辑结构清晰，从默认行为到自定义配置循序渐进，各节之间衔接自然"
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "完全实现规划目标，涵盖了自定义CA包、客户端证书和禁用验证等核心场景，代码示例可直接使用"
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "翻译准确自然，术语统一（如SSL/TLS、CA、mTLS），符合中文技术文档习惯"
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "术语使用一致，代码格式统一，警告框样式规范，整体风格协调"
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "完美符合'完成特定任务'目标，提供了SSL验证的完整工作流程和实用场景"
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "完全符合开发者需求，代码示例可直接复制使用，技术准确性高，配置说明清晰"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 5,
+            "reason": "深度适中，跳过了SSL基础概念，重点讲解Requests特有功能和与其他工具的差异，符合有经验开发者需求"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/advanced-usage/adapters-and-hooks",
+          "title": "Custom Adapters and Hooks"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "语言清晰流畅，无语法拼写错误，技术术语准确，中英文版本表述自然"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "逻辑结构清晰，从概念介绍到具体实现循序渐进，段落衔接自然，无矛盾或跳跃"
+          },
+          "contentQuality": {
+            "score": 4,
+            "reason": "覆盖了扩展Requests功能的主要方法，代码示例实用，但缺少更复杂的自定义适配器实现示例"
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "中文翻译准确自然，术语翻译统一（如Transport Adapter译为传输适配器），符合中文技术文档习惯"
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "术语使用一致，代码示例格式统一，表格和字段描述风格一致"
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "完全符合'指导常见工作流'目标，提供了配置重试、创建自定义适配器、使用钩子的具体步骤和示例"
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "面向开发者，提供了可直接复制使用的代码示例，技术准确性高，配置说明详细"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 4,
+            "reason": "适合有经验的开发者，突出了Requests的独特扩展机制，但对urllib3等依赖的对比说明略少"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/api-reference",
+          "title": "API Reference"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "语言清晰准确，语法拼写无误，技术术语使用规范，代码示例格式工整，95%以上内容一读即懂"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "逻辑结构清晰，从顶级API到Session、Response、认证、异常处理，层次分明，各部分衔接自然，无矛盾跳跃"
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "完整覆盖Requests库所有公开API，参数说明详细准确，提供了丰富的代码示例，可直接复制使用"
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "中文翻译准确自然，技术术语统一（如Request/请求、Response/响应），符合中文技术文档习惯"
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "术语使用一致，格式统一（参数描述、代码示例、表格样式），风格保持专业技术文档标准"
+          },
+          "purposeAlignment": {
+            "score": 2,
+            "reason": "文档是API参考手册，不符合'完成特定任务'的目标，缺少工作流程引导和实际使用场景的步骤说明"
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "完全符合开发者需求，代码优先，所有示例可直接复制粘贴，技术准确性高，适合集成到项目中"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 3,
+            "reason": "作为参考手册过于基础，缺少与其他HTTP库的对比、迁移指南、Requests独特功能的深入说明"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/community",
+          "title": "Community"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 4,
+            "reason": "中文翻译整体流畅自然，但存在2处小问题：1) '取消了对其的支持'应为'取消了对其支持'；2) 英文原文保留了HTML标签和组件，未完全本地化"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "逻辑结构清晰：社区介绍→贡献方式→具体操作步骤，各部分衔接自然，无逻辑跳跃或矛盾"
+          },
+          "contentQuality": {
+            "score": 2,
+            "reason": "严重偏离内容规划：规划要求介绍项目历史和贡献者信息，但实际内容主要是更新日志的版本记录（占70%+），真正的社区介绍和贡献指南内容极少"
+          },
+          "translationQuality": {
+            "score": 4,
+            "reason": "翻译准确度高，术语统一（如CVE、HTTPAdapter等保持原文），但'Keepers of the Crystals'等创意表达未做本地化处理"
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "术语使用一致（如'贡献者'、'维护者'），版本号格式统一，中英文混排规范一致"
+          },
+          "purposeAlignment": {
+            "score": 1,
+            "reason": "完全不符合'完成特定任务'的文档目标：没有任何步骤说明、工作流程或实际操作指导，仅提供了版本历史记录"
+          },
+          "audienceAlignment": {
+            "score": 2,
+            "reason": "不符合开发者集成需求：缺少代码示例、API调用、配置片段等开发者需要的实用内容，仅有一个报告bug的命令示例"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 2,
+            "reason": "不符合'使用过类似工具'的读者水平：没有对比、迁移指南或独特功能说明，仅罗列版本变更，无法帮助有经验用户快速上手"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/community/changelog",
+          "title": "Changelog"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 2,
+            "reason": "文档虽为英文原文，但对于中文开发者而言，英文版本可读性较低；中文翻译版本基本准确但存在部分生硬表述，如'弃用'应为'废弃'，'临时支持'应为'初步支持'"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "changelog格式标准，版本按时间倒序排列，每个版本内部按类型（安全、改进、错误修复等）分组，逻辑清晰无跳跃"
+          },
+          "contentQuality": {
+            "score": 2,
+            "reason": "作为changelog，内容准确完整，但与用户选择的'完成具体任务'和'开发者集成'目标严重不符，缺少步骤说明、代码示例、迁移指南等实用内容"
+          },
+          "translationQuality": {
+            "score": 4,
+            "reason": "中文翻译基本准确，术语统一，但存在个别不当之处：'弃用'应为'废弃'（deprecation），'临时支持'应为'初步支持'（provisional support）"
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "格式完全一致，每个版本使用相同的结构，术语使用统一，日期格式一致"
+          },
+          "purposeAlignment": {
+            "score": 1,
+            "reason": "用户需要'引导用户完成工作流程和用例'的文档，但changelog仅记录版本变更，完全不符合任务导向的需求，缺少步骤说明和实践场景"
+          },
+          "audienceAlignment": {
+            "score": 2,
+            "reason": "目标受众需要代码示例、API调用、配置片段，但changelog仅提供变更记录，缺少开发者集成所需的实际代码和使用示例"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 3,
+            "reason": "文档假设读者了解版本管理和技术术语，符合'使用过类似工具'的水平，但缺少与其他HTTP库的对比和迁移指南，未充分利用读者经验"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/community/contributors",
+          "title": "Contributors"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "文档结构清晰，中文翻译流畅自然，无语法错误，标题和段落层次分明"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "内容逻辑清晰，从创建者到维护者再到贡献者的顺序符合认知习惯，各部分衔接自然"
+          },
+          "contentQuality": {
+            "score": 1,
+            "reason": "严重偏离内容规划目标：规划要求提供贡献者列表，但文档完全不符合用户选择的'Guide users through common workflows'目的，仅是静态贡献者名单，无任何工作流程或使用案例指导"
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "翻译准确自然，保留了原有的GitHub用户名和格式，术语翻译统一（如Contributors翻译为贡献者）"
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "格式完全一致，所有GitHub用户名格式统一，表格布局整齐，中英文混排规范"
+          },
+          "purposeAlignment": {
+            "score": 1,
+            "reason": "完全不符合'Guide users through common workflows and use cases'的目标，文档仅是贡献者名单，无任何步骤说明、工作流程或实际使用场景"
+          },
+          "audienceAlignment": {
+            "score": 1,
+            "reason": "不符合'Developers integrating your product/API'的受众需求，缺少代码示例、API调用、配置片段等开发者需要的技术内容"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 1,
+            "reason": "不符合'Has used similar tools before'的知识水平要求，文档未提供任何技术内容、差异比较或独特功能介绍，仅是名单列表"
+          }
+        }
+      }
+    ],
+    "aggregated": {
+      "readability": {
+        "score": 4.4,
+        "reason": "Average from 16 documents: 整体语言流畅自然，但存在少量问题：表格中英文混杂（Feature/Description），'为人类设计的'翻译略生硬; 中文翻译整体流畅，但存在个别表述生硬：'可以随时使用'不如'随时可用'自然；'后续步骤'标题略显生硬; 语言清晰流畅，无语法错误，技术术语使用准确，代码示例格式规范"
+      },
+      "coherence": {
+        "score": 5,
+        "reason": "Average from 16 documents: 逻辑清晰，从概述到特性再到安装，层次分明，各部分衔接自然; 逻辑结构清晰：安装→第一个请求→代码解析→后续步骤，层层递进，无跳跃或矛盾; 内容结构清晰，从简单到复杂递进，各章节衔接自然，无逻辑跳跃"
+      },
+      "contentQuality": {
+        "score": 3.9,
+        "reason": "Average from 16 documents: 严重偏离用户目标：文档是入门介绍，但用户需要工作流指南和实用场景；缺少步骤说明、集成示例、配置片段等核心内容; 严重偏离内容规划：规划要求'跳过getting started基础'，但文档恰恰是基础入门内容；缺少实际工作流程和具体任务场景; 完整覆盖HTTP请求核心功能，每个主题都有实用代码示例，可直接复制使用"
+      },
+      "translationQuality": {
+        "score": 4.4,
+        "reason": "Average from 16 documents: 翻译基本准确，但表格标题未翻译，'为人类设计的'不如'人性化的'自然; 翻译准确，术语统一，但'快速入门'与英文'Getting Started'语义略有差异；部分表述可更地道; 翻译准确自然，技术术语统一规范，符合中文技术文档习惯"
+      },
+      "consistency": {
+        "score": 4.8,
+        "reason": "Average from 16 documents: 术语基本一致，但表格中保留英文标题与其他中文内容不一致; 术语使用一致（GET请求、状态码等），代码格式统一，中英文标记格式保持一致; 术语使用一致，代码风格统一，格式规范，章节结构保持一致"
+      },
+      "purposeAlignment": {
+        "score": 3.6,
+        "reason": "Average from 16 documents: 完全不符合目标：用户需要工作流指南和使用场景，文档却是库的基础介绍，没有任何步骤说明或实际场景; 完全不符合目标：用户选择'完成特定任务'和'常见工作流程'，但文档仅提供基础安装和Hello World示例; 完美符合'完成特定任务'目标，提供了清晰的工作流和实际使用场景"
+      },
+      "audienceAlignment": {
+        "score": 4.1,
+        "reason": "Average from 16 documents: 目标受众需要可复制的代码和集成示例，文档仅提供一个基础GET请求示例，缺少SDK集成、配置等开发者所需内容; 部分符合：代码示例可复制使用，但缺少实际集成场景、配置示例、错误处理等开发者真正需要的内容; 完全符合API集成开发者需求，代码优先，可复制粘贴，技术准确"
+      },
+      "knowledgeLevelAlignment": {
+        "score": 3.7,
+        "reason": "Average from 16 documents: 用户已熟悉类似工具，但文档从零开始介绍基础概念，缺少与其他HTTP库的对比、迁移指南、独特优势等内容; 严重不符：目标读者已使用过类似工具，但文档从零开始讲解基础安装和第一个请求，缺少对比、迁移指南、独特功能介绍; 适合有类似工具经验的开发者，突出独特功能，跳过基础概念，效率优先"
+      }
+    }
+  },
+  "summary": {
+    "structureScores": {
+      "purposeCoverage": 4,
+      "audienceCoverage": 4,
+      "coverageDepthAlignment": 5,
+      "average": 4.3
+    },
+    "documentScores": {
+      "readability": 4.4,
+      "coherence": 5,
+      "contentQuality": 3.9,
+      "translationQuality": 4.4,
+      "consistency": 4.8,
+      "purposeAlignment": 3.6,
+      "audienceAlignment": 4.1,
+      "knowledgeLevelAlignment": 3.7,
+      "average": 4.2
+    },
+    "overallScore": 4.3,
+    "issues": [
+      "Missing purposes: 部分高级工作流场景",
+      "Missing audiences: 特定框架集成示例"
+    ]
+  }
+}

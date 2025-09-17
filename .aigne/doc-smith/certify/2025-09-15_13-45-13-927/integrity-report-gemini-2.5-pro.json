@@ -1,0 +1,729 @@
+{
+  "timestamp": "2025-09-15T13:45:13.927Z",
+  "metadata": {
+    "version": "1.0.0",
+    "generatedBy": "doc-smith",
+    "documentCount": 16
+  },
+  "structureEvaluation": {
+    "type": "document-structure",
+    "results": {
+      "purposeCoverage": {
+        "score": 5,
+        "reason": "文档结构通过专门设置'用户指南'和'高级用法'等主要章节来支持基于任务的目标，符合实际工作流程和场景。完全覆盖了主要目标。",
+        "covered": ["Guide users through common workflows and use cases"],
+        "missing": []
+      },
+      "audienceCoverage": {
+        "score": 5,
+        "reason": "该计划完美地为集成开发人员量身定制，提供从'入门'到'用户指南'和'高级用法'的逻辑递进，并配以重要的'API参考'以确保技术准确性。",
+        "covered": ["Developers integrating your product/API"],
+        "missing": []
+      },
+      "coverageDepthAlignment": {
+        "score": 5,
+        "reason": "该结构通过将核心功能（'用户指南'）与复杂边缘情况（'高级用法'）分离，完美匹配'平衡覆盖'要求，确保在不令人困惑的情况下通过实际示例提供良好的深度。"
+      }
+    }
+  },
+  "documentEvaluations": {
+    "type": "document-content",
+    "individual": [
+      {
+        "documentInfo": {
+          "path": "/overview",
+          "title": "Overview"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "语言清晰、专业且语法正确。带有标题、代码块和表格的结构增强了可读性。"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "文档具有清晰的逻辑流程，从高层概述开始，然后是说明、实际示例、功能和安装步骤。"
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "内容完美地执行了提供的高层介绍计划。准确无误，代码示例正确且对其介绍目的有用。"
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "翻译准确、自然，使用中文标准技术术语，忠实传达原文含义。"
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "术语（如'Requests'、'GET'）和格式（标题、代码块）在整个文档中使用一致。"
+          },
+          "purposeAlignment": {
+            "score": 1,
+            "reason": "该文档是'入门'指南，但指定的目的是'引导用户完成常见工作流程'并明确'跳过入门基础知识'。这是完全不匹配的。"
+          },
+          "audienceAlignment": {
+            "score": 3,
+            "reason": "内容面向开发人员，这与受众一致。但是，对于处于集成阶段的开发人员来说过于入门，只提供了最基本的示例，而不是多样化的、可复制粘贴的用例。"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 1,
+            "reason": "该文档是为绝对初学者编写的，但目标读者'以前使用过类似工具'，需要专注于独特功能和差异的内容，同时跳过基础知识。内容恰恰相反。"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/getting-started",
+          "title": "Getting Started"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "语言清晰、简洁且无错误。带有标题、代码块和列表的结构使信息易于浏览和理解。"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "文档遵循从安装到第一个实际示例的逻辑递进，具有清晰的章节分隔和自然流程。"
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "内容完美地执行了既定计划，为初学者的第一步提供准确、功能性的代码示例和清晰的解释。"
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "翻译准确，保持原文语调，为目标语言使用适当的技术术语，无生硬措辞。"
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "文档保持一致的术语（如'Requests'、'pip'）、代码和命令格式，以及统一的指导语调。"
+          },
+          "purposeAlignment": {
+            "score": 1,
+            "reason": "该文档是'入门'指南，这直接与跳过'入门基础知识'专注于常见工作流程的选定目的相矛盾。"
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "内容通过直接的代码示例和技术说明，完美地为需要集成库的目标开发人员受众量身定制。"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 2,
+            "reason": "内容完全专注于基础知识（安装、简单的GET请求），对于已使用过类似工具且需要专注于独特功能或差异的指定读者来说过于浅显。"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/user-guide",
+          "title": "User Guide"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 4,
+            "reason": "语言总体清晰且专业。因为在不同页面中正式称呼'您'和非正式称呼'你'的不一致使用会让读者感到略有突兀，故扣除一分。"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "The document set is logically structured. Each page builds on the previous one, and the 'Next Steps' links provide a clear, coherent path for the user to follow."
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "The content perfectly fulfills the plan, providing practical, code-first examples for all core functionalities. The code is accurate, runnable, and directly useful for the target audience."
+          },
+          "translationQuality": {
+            "score": 4,
+            "reason": "The translation is highly accurate and idiomatic. However, a point is deducted because some code comments were left untranslated in English, while others were translated, creating an inconsistent experience."
+          },
+          "consistency": {
+            "score": 3,
+            "reason": "There are several inconsistencies. The formal/informal address ('您'/'你') varies between pages, and code comments are inconsistently translated. While formatting is consistent, these stylistic and content inconsistencies detract from the overall quality."
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "The content is perfectly aligned with the purpose of guiding users through common workflows. Each page is a self-contained guide for a specific task, filled with practical examples."
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "The document is perfectly tailored for developers. The code-first, copy-paste-ready approach, and focus on technical accuracy directly meet the needs of this audience."
+          },
+          "knowledgeLevelAlignment": {
+            "score": 5,
+            "reason": "The content correctly assumes the reader has prior experience with similar tools. It avoids basic concepts and focuses directly on the library's API and usage patterns, which is efficient for the target knowledge level."
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/user-guide/making-a-request",
+          "title": "Making a Request"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "The language is clear, concise, and grammatically correct. The structure with headings and code blocks enhances readability."
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "The document flows logically from simple GET requests to more complex operations like sending data and custom headers, creating a smooth learning path."
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "It fully covers the planned topics with accurate, runnable, and practical code examples for all common HTTP request scenarios."
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "The translation is accurate, natural, and maintains the technical correctness and tone of the original document."
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "Terminology, code style, and document formatting are consistent throughout, providing a professional and easy-to-follow experience."
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "The content directly serves the purpose of guiding users through common workflows by providing clear, step-by-step instructions and use cases for making requests."
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "The code-first, copy-paste-ready examples are perfectly suited for the target audience of developers looking to integrate the library."
+          },
+          "knowledgeLevelAlignment": {
+            "score": 5,
+            "reason": "The document appropriately skips basic HTTP concepts and focuses on the specific, convenient implementation details of the Requests library, which is ideal for users familiar with the problem space."
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/user-guide/handling-responses",
+          "title": "Handling Responses"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "The document is well-structured with clear headings, concise explanations, and correct grammar, making it very easy to read and follow."
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "The content flows logically from basic response content types to more complex topics like streaming, status codes, and redirection, creating a cohesive and easy-to-understand guide."
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "The document comprehensively covers its stated plan, providing accurate information and practical, copy-paste ready code examples for all key aspects of handling responses."
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "The translation is accurate, natural, and maintains consistent technical terminology, faithfully conveying the original content for the target language audience."
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "The document maintains excellent consistency in its use of technical terms (e.g., Response object, attributes, methods), formatting of code blocks, and overall writing style."
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "The document perfectly aligns with its purpose of guiding users through common workflows by providing clear, step-by-step instructions and practical scenarios for handling server responses."
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "The content is code-first, technically precise, and filled with practical examples, directly addressing the needs of the target developer audience."
+          },
+          "knowledgeLevelAlignment": {
+            "score": 5,
+            "reason": "The document effectively targets readers with prior experience by skipping fundamental concepts and focusing directly on the specific implementation and convenient features of the Requests library."
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/user-guide/session-objects",
+          "title": "Session Objects"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "The language is clear, concise, and grammatically correct. The technical explanations are easy to follow without rereading."
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "The document has a clear logical flow, starting with the basic concept of a Session, then progressively introducing features like persisting cookies, parameters, and finally its use as a context manager."
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "The content perfectly executes the plan by providing accurate, complete, and directly usable code examples for persisting parameters, cookies, and headers with Session objects."
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "The translation is accurate, natural, and uses consistent technical terminology, faithfully preserving the meaning and tone of the original document."
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "The document maintains excellent consistency in terminology (e.g., 'Session object'), code formatting, and overall instructional style."
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "The document perfectly aligns with the goal of guiding users through a common workflow, providing clear step-by-step instructions and practical examples for using Session objects."
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "The content is perfectly tailored for developers, featuring a code-first approach with copy-paste ready snippets and technically accurate explanations."
+          },
+          "knowledgeLevelAlignment": {
+            "score": 5,
+            "reason": "The document correctly assumes prior knowledge of the problem space (HTTP requests) and focuses directly on the specific solution (Session objects), which is ideal for the target knowledge level."
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/user-guide/authentication",
+          "title": "Authentication"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "The language is clear, concise, and grammatically correct. The technical explanations are easy to follow without ambiguity."
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "The document has a logical structure, progressing from the most common authentication type (Basic) to more advanced and custom schemes, with smooth transitions between sections."
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "The content fully realizes the plan by providing accurate, practical, and runnable code examples for each authentication method. The inclusion of custom auth adds significant value."
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "The translation is accurate, natural, and maintains terminological consistency. It effectively conveys the original technical concepts to a Chinese-speaking audience."
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "The document maintains consistency in terminology (e.g., 'auth parameter'), formatting (code blocks, headings), and overall instructional tone."
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "The content perfectly aligns with the purpose of guiding users through a specific task by providing clear, step-by-step instructions and code for implementing authentication."
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "The document is highly effective for its target developer audience, offering a code-first approach with copy-paste ready snippets and concise technical explanations."
+          },
+          "knowledgeLevelAlignment": {
+            "score": 5,
+            "reason": "The content is well-suited for a reader who understands authentication concepts but is new to the library, as it focuses directly on implementation specifics without explaining basic principles."
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/user-guide/error-handling",
+          "title": "Error Handling"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "The language is clear, professional, and free of grammatical errors, making the technical concepts easy to understand for the target audience."
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "The document follows a logical progression from a general overview to specific error types and concludes with a helpful summary table, ensuring a clear and coherent structure."
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "The document fully achieves the content plan's goal, providing accurate, practical code examples and a detailed exception hierarchy table which is highly valuable for the user."
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "The translation is accurate, fluent, and uses technical terminology appropriately for the target language, preserving the original meaning and tone."
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "Terminology, formatting (code blocks, headings, table), and writing style are consistent throughout the document."
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "The document is perfectly aligned with its purpose of guiding users through common error handling workflows by providing step-by-step code examples for specific tasks."
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "The content is code-first, technically accurate, and provides practical, ready-to-use examples, perfectly meeting the needs of the target developer audience."
+          },
+          "knowledgeLevelAlignment": {
+            "score": 5,
+            "reason": "The document correctly assumes prior knowledge of network request concepts and focuses efficiently on the specific error handling implementation of the Requests library, which is ideal for the specified knowledge level."
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/advanced-usage",
+          "title": "Advanced Usage"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "The language is clear, professional, and uses standard technical terminology. The sentences are fluent and easy for a technical audience to understand without re-reading."
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "The content is logically structured, with a clear overview page that links to detailed, self-contained guides. Each guide follows a logical progression from concept to example."
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "The content accurately and thoroughly covers the planned advanced topics. The code examples are practical, correct, and directly useful for solving common, complex problems."
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "The translation is highly accurate, preserving the technical nuances and professional tone of the original English text. Key technical terms are translated correctly and consistently."
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "Terminology (e.g., Session, HTTPAdapter), code styling, and document formatting (headings, custom components) are consistent across all related documents, creating a unified user experience."
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "The document perfectly aligns with the purpose of guiding users through specific tasks. Each section is a practical, workflow-oriented guide with actionable steps and code."
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "The content is perfectly tailored for developers. It is code-first, technically precise, and provides copy-paste-ready examples for direct integration into their projects."
+          },
+          "knowledgeLevelAlignment": {
+            "score": 5,
+            "reason": "The document correctly assumes prior knowledge by skipping basic concepts and focusing directly on advanced features, which is ideal for a user who has experience with similar tools."
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/advanced-usage/timeouts-retries-proxies",
+          "title": "Timeouts, Retries, and Proxies"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "The language is clear, professional, and grammatically correct. The structure with headings and code blocks enhances readability."
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "The document is logically structured, progressing from timeouts to retries to proxies. Each section builds from basic to more advanced usage, ensuring a coherent flow."
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "The content perfectly covers the planned topics (timeouts, retries, proxies) with accurate, complete, and practical code examples that are ready to use."
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "The translation is accurate, fluent, and maintains the technical tone of the original. Key technical terms are appropriately kept in English, following common practice."
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "Terminology (e.g., 'Session', 'HTTPAdapter'), code formatting, and writing style are consistent throughout the entire document."
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "The document perfectly aligns with the goal of guiding users through specific tasks by providing clear, step-by-step instructions and practical scenarios for network configuration."
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "The content is ideally suited for developers, featuring a code-first approach with copy-paste ready snippets and precise technical explanations."
+          },
+          "knowledgeLevelAlignment": {
+            "score": 5,
+            "reason": "The document correctly assumes the reader understands the concepts of timeouts and proxies, focusing directly on the specific implementation within the 'requests' library, which matches the target knowledge level."
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/advanced-usage/ssl-cert-verification",
+          "title": "SSL Certificate Verification"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "The text is clear, grammatically correct, and well-structured. The use of headings, code blocks, and a warning card enhances comprehension."
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "The document follows a logical progression, starting from default behavior and moving to more specific and advanced use cases like custom CAs and client certificates."
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "The content perfectly matches the plan, covering all specified scenarios with accurate explanations and practical, ready-to-use code examples."
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "The translation is accurate, fluent, and uses correct technical terminology consistently, making it feel natural for the target language audience."
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "Terminology (e.g., 'SSL certificate', 'CA bundle'), formatting (code blocks, headings), and writing style are consistent throughout the entire document."
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "The document is an excellent task-oriented guide, providing clear, step-by-step instructions for common SSL verification workflows, perfectly aligning with its purpose."
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "The content is highly aligned with a developer audience by providing code-first, copy-paste-ready examples and technically precise explanations."
+          },
+          "knowledgeLevelAlignment": {
+            "score": 5,
+            "reason": "The document correctly skips fundamental SSL concepts and focuses on the specific implementation within the library, which is ideal for a reader who understands the problem space but is new to this tool."
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/advanced-usage/adapters-and-hooks",
+          "title": "Custom Adapters and Hooks"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "The language is clear, professional, and grammatically correct. The text is well-structured, making it easy to follow without re-reading."
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "The document has a clear logical flow, starting with an introduction, then detailing Transport Adapters, and finally explaining Event Hooks. The sections are well-connected and build upon each other logically."
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "The content perfectly achieves the plan of explaining custom adapters and hooks. It provides accurate, detailed explanations and practical, runnable code examples that are highly valuable to the user."
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "The Chinese translation is accurate, natural, and uses consistent technical terminology. It faithfully conveys the meaning of the original source text."
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "The document maintains excellent consistency in terminology (e.g., 'Session', 'HTTPAdapter'), formatting (headings, code blocks), and overall technical writing style."
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "The document perfectly aligns with its purpose to guide users through common workflows. It provides clear, step-by-step instructions and practical examples for configuring retries and logging responses, which are common use cases."
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "The content is perfectly tailored for the target developer audience. It is code-first, technically accurate, and provides copy-paste ready examples, meeting the exact needs of an engineer."
+          },
+          "knowledgeLevelAlignment": {
+            "score": 5,
+            "reason": "The document correctly targets users who have experience with similar tools. It skips basic concepts and focuses directly on the advanced, specific features of Requests (adapters and hooks), which is ideal for this knowledge level."
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/api-reference",
+          "title": "API Reference"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "The language is clear, professional, and free of grammatical or spelling errors, making it easy for a technical audience to understand."
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "The document is logically structured, progressing from top-level functions to more specific objects like Session and Response, with no contradictions or logical gaps."
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "The content accurately and comprehensively covers the key components of the Requests library as per the plan, providing detailed parameter descriptions and useful code snippets."
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "The translation is accurate, maintains technical terminology correctly (e.g., 'Request', 'Session'), and reads fluently in the target language."
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "Terminology (e.g., 'API', 'Session'), formatting (headings, code blocks), and style are applied consistently throughout the document."
+          },
+          "purposeAlignment": {
+            "score": 2,
+            "reason": "The document is an API reference, designed for looking up specific functions and parameters, which mismatches the selected user purpose of a task-oriented guide for common workflows. The document itself directs users to a separate 'User Guide' for that purpose."
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "The content is perfectly tailored for developers, providing code-first examples, detailed parameter descriptions, and technical specifications needed for integration."
+          },
+          "knowledgeLevelAlignment": {
+            "score": 5,
+            "reason": "The document assumes foundational knowledge of HTTP and programming, focusing directly on the library's specific API, which perfectly aligns with a reader who is familiar with the problem space but new to this particular tool."
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/community",
+          "title": "Community"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "The language is clear, professional, and grammatically correct. The translation is fluent and natural, accurately conveying the original text's meaning and tone."
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "The document follows a logical structure, moving from a general introduction about the community to specific, actionable steps on how to contribute."
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "The content perfectly fulfills the plan by providing a high-value, actionable guide on how to contribute, complete with a practical command-line example and its expected output."
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "The translation is accurate, uses appropriate technical terminology correctly (e.g., 'issue', 'JSON 对象'), and maintains the professional and welcoming tone of the original."
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "Terminology (e.g., 'Requests', 'bug report'), formatting (headings, code blocks), and tone are consistent throughout the entire document."
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "The document directly supports the goal of 'completing a specific task' by providing a clear, step-by-step guide for the common workflow of reporting bugs."
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "The content is perfectly tailored for developers, using command-line examples, JSON output, and assuming relevant technical context like using a terminal and understanding dependencies."
+          },
+          "knowledgeLevelAlignment": {
+            "score": 5,
+            "reason": "The document appropriately skips basic concepts (e.g., what a bug is) and focuses on the unique bug reporting tool provided by the library, which is ideal for an experienced developer new to this specific process."
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/community/changelog",
+          "title": "Changelog"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "The translation is clear, natural, and uses appropriate technical terminology without grammatical errors."
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "The document is well-structured chronologically by version, with clear, logical categories for changes within each version."
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "The content perfectly fulfills the plan of a detailed changelog, providing specific and useful information like CVE numbers and issue trackers."
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "The translation is accurate, idiomatic, and correctly handles technical terms, remaining faithful to the source text."
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "Formatting, terminology (e.g., '弃用', '改进'), and technical style are applied uniformly throughout the entire document."
+          },
+          "purposeAlignment": {
+            "score": 1,
+            "reason": "The document is a changelog detailing historical changes, which does not align with the specified purpose of guiding users through common workflows or use cases."
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "The technical content, including code-level details and security advisories, is perfectly tailored for the target audience of developers."
+          },
+          "knowledgeLevelAlignment": {
+            "score": 5,
+            "reason": "The content focuses on version-specific differences and deprecations, which is appropriate for users who understand the domain and are assessing this particular library."
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/community/contributors",
+          "title": "Contributors"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "The language is clear, professional, and free of grammatical or spelling errors, making it very easy to read and understand."
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "The document has a clear and logical structure, starting with a general introduction and then breaking down contributors into specific, well-defined categories."
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "The document perfectly executes its content plan, which is to provide a comprehensive list of all individuals who have contributed to the project."
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "The translation is accurate, fluent, and maintains the tone and formatting of the original source text, including idiomatic phrases like 'Keepers of the Crystals'."
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "The document uses consistent formatting for headings, lists, and links. The style of presenting contributor names and handles is uniform throughout."
+          },
+          "purposeAlignment": {
+            "score": 1,
+            "reason": "The document is a list of contributors and provides no guidance on workflows or specific tasks, which completely misaligns with the selected purpose."
+          },
+          "audienceAlignment": {
+            "score": 1,
+            "reason": "The content is a list of names. It does not provide the code-first, copy-paste ready examples and technical details that the target audience (developers) requires for integration."
+          },
+          "knowledgeLevelAlignment": {
+            "score": 1,
+            "reason": "The document is non-technical and does not contain any information about unique features, comparisons, or migration paths that would be relevant to a user who has experience with similar tools."
+          }
+        }
+      }
+    ],
+    "aggregated": {
+      "readability": {
+        "score": 4.9,
+        "reason": "16个文档的平均值：语言清晰、专业且语法正确。带有标题、代码块和表格的结构增强了可读性。；语言清晰、简洁且无错误。带有标题、代码块和列表的结构使信息易于浏览和理解。；语言总体清晰且专业。因为在不同页面中正式称呼'您'和非正式称呼'你'的不一致使用会让读者感到略有突兀，故扣除一分。"
+      },
+      "coherence": {
+        "score": 5,
+        "reason": "16个文档的平均值：文档具有清晰的逻辑流程，从高层概述开始，然后是说明、实际示例、功能和安装步骤。；文档遵循从安装到第一个实际示例的逻辑递进，具有清晰的章节分隔和自然流程。；文档集逻辑结构合理。每页都在前一页的基础上构建，'下一步'链接为用户提供了清晰、连贯的路径。"
+      },
+      "contentQuality": {
+        "score": 5,
+        "reason": "16个文档的平均值：内容完美地执行了提供的高层介绍计划。准确无误，代码示例正确且对其介绍目的有用。；内容完美地执行了既定计划，为初学者的第一步提供准确、功能性的代码示例和清晰的解释。；内容完美地实现了计划，为所有核心功能提供实用的、代码优先的示例。代码准确、可运行且对目标受众直接有用。"
+      },
+      "translationQuality": {
+        "score": 4.9,
+        "reason": "16个文档的平均值：翻译准确、自然，使用中文标准技术术语，忠实传达原文含义。；翻译准确，保持原文语调，为目标语言使用适当的技术术语，无生硬措辞。；翻译高度准确且地道。但是，因为一些代码注释保持英文未翻译，而其他注释被翻译，造成体验不一致，故扣除一分。"
+      },
+      "consistency": {
+        "score": 4.9,
+        "reason": "16个文档的平均值：术语（如'Requests'、'GET'）和格式（标题、代码块）在整个文档中使用一致。；文档保持一致的术语（如'Requests'、'pip'）、代码和命令格式，以及统一的指导语调。；存在若干不一致之处。正式称呼（'您'）和非正式称呼（'你'）在页面间变化，代码注释翻译不一致。虽然格式一致，但这些风格和内容的不一致性降低了整体质量。"
+      },
+      "purposeAlignment": {
+        "score": 3.8,
+        "reason": "16个文档的平均值：该文档是'入门'指南，但指定的目的是'引导用户完成常见工作流程'并明确'跳过入门基础知识'。这是完全不匹配的。；该文档是'入门'指南，这直接与跳过'入门基础知识'专注于常见工作流程的选定目的相矛盾。；内容与引导用户完成常见工作流程的目的完美契合。每页都是特定任务的独立指南，充满实际示例。"
+      },
+      "audienceAlignment": {
+        "score": 4.6,
+        "reason": "16个文档的平均值：内容面向开发人员，这与受众一致。但是，对于处于集成阶段的开发人员来说过于入门，只提供了最基本的示例，而不是多样化的、可复制粘贴的用例。；内容通过直接的代码示例和技术说明，完美地为需要集成库的目标开发人员受众量身定制。；文档完美地为开发人员量身定制。代码优先、可复制粘贴的方法，以及对技术准确性的关注直接满足了这一受众的需求。"
+      },
+      "knowledgeLevelAlignment": {
+        "score": 4.3,
+        "reason": "16个文档的平均值：该文档是为绝对初学者编写的，但目标读者'以前使用过类似工具'，需要专注于独特功能和差异的内容，同时跳过基础知识。内容恰恰相反。；内容完全专注于基础知识（安装、简单的GET请求），对于已使用过类似工具且需要专注于独特功能或差异的指定读者来说过于浅显。；内容正确地假设读者具有使用类似工具的先验经验。它避免了基本概念，直接专注于库的API和使用模式，这对目标知识水平是高效的。"
+      }
+    }
+  },
+  "summary": {
+    "structureScores": {
+      "purposeCoverage": 5,
+      "audienceCoverage": 5,
+      "coverageDepthAlignment": 5,
+      "average": 5
+    },
+    "documentScores": {
+      "readability": 4.9,
+      "coherence": 5,
+      "contentQuality": 5,
+      "translationQuality": 4.9,
+      "consistency": 4.9,
+      "purposeAlignment": 3.8,
+      "audienceAlignment": 4.6,
+      "knowledgeLevelAlignment": 4.3,
+      "average": 4.7
+    },
+    "overallScore": 4.9,
+    "issues": []
+  }
+}
