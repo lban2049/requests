@@ -1,0 +1,13 @@
+rules:
+  - id: pref_d19165ca4c196700
+    active: true
+    scope: structure
+    rule: 不要生成'license'文档。
+    feedback: 删除license 文档
+    createdAt: 2025-09-18T04:49:30.018Z
+  - id: pref_e71576ae9b65cb28
+    active: true
+    scope: structure
+    rule: 在 'Community' 目录下必须包含一份 'license' 文档。
+    feedback: 在Community下新增license文档
+    createdAt: 2025-09-18T03:06:49.779Z

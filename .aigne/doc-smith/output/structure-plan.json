@@ -1,186 +1,224 @@
 [
   {
     "title": "Overview",
-    "description": "A high-level introduction to the Requests library, its purpose, key features, and a simple usage example to get started.",
+    "description": "Provides a high-level introduction to the Requests library, its purpose, main features, and a quick-start code example.",
     "path": "/overview",
-    "parentId": null,
     "sourceIds": [
       "README.md",
-      "setup.py",
       "src/requests/__init__.py",
       "src/requests/__version__.py"
-    ]
+    ],
+    "parentId": ""
   },
   {
-    "title": "Getting Started",
-    "description": "Provides simple, step-by-step instructions for installing the library and making your first HTTP request.",
-    "path": "/getting-started",
-    "parentId": null,
+    "title": "Installation",
+    "description": "Guides users on how to install the library, detailing supported Python versions and dependencies.",
+    "path": "/installation",
     "sourceIds": [
       "README.md",
-      "setup.py",
-      "src/requests/api.py"
-    ]
+      "setup.py"
+    ],
+    "parentId": ""
   },
   {
-    "title": "User Guide",
-    "description": "Explore the core functionalities of Requests through practical, code-first examples covering common use cases.",
-    "path": "/user-guide",
-    "parentId": null,
+    "title": "Core Usage",
+    "description": "Covers the fundamental patterns for making HTTP requests and handling responses using the simple functional API.",
+    "path": "/core-usage",
     "sourceIds": [
+      "README.md",
       "src/requests/api.py",
-      "src/requests/sessions.py",
-      "src/requests/models.py",
-      "src/requests/auth.py",
-      "src/requests/exceptions.py"
-    ]
+      "src/requests/models.py"
+    ],
+    "parentId": ""
   },
   {
     "title": "Making a Request",
-    "description": "Learn how to use various HTTP methods like GET, POST, PUT, and how to pass URL parameters, headers, and request bodies.",
-    "path": "/user-guide/making-a-request",
-    "parentId": "/user-guide",
+    "description": "Demonstrates how to perform various HTTP methods like GET, POST, PUT, etc., and explains the basic request-response cycle.",
+    "path": "/core-usage/making-a-request",
+    "sourceIds": [
+      "README.md",
+      "src/requests/api.py"
+    ],
+    "parentId": "/core-usage"
+  },
+  {
+    "title": "Passing URL Parameters",
+    "description": "Explains how to send data in the URL's query string using the `params` argument for GET requests.",
+    "path": "/core-usage/passing-url-parameters",
     "sourceIds": [
       "src/requests/api.py",
-      "src/requests/models.py",
-      "src/requests/sessions.py"
-    ]
-  },
-  {
-    "title": "Handling Responses",
-    "description": "Understand how to access response content (text, JSON, binary), check status codes, and read response headers.",
-    "path": "/user-guide/handling-responses",
-    "parentId": "/user-guide",
-    "sourceIds": [
-      "src/requests/models.py",
-      "src/requests/status_codes.py",
-      "src/requests/utils.py"
-    ]
-  },
-  {
-    "title": "Session Objects",
-    "description": "Utilize Session objects to persist parameters, cookies, and headers across multiple requests for improved performance and state management.",
-    "path": "/user-guide/session-objects",
-    "parentId": "/user-guide",
-    "sourceIds": [
-      "src/requests/sessions.py",
-      "src/requests/cookies.py",
-      "src/requests/adapters.py"
-    ]
-  },
-  {
-    "title": "Authentication",
-    "description": "Implement various authentication schemes, including Basic and Digest Auth, to secure your requests.",
-    "path": "/user-guide/authentication",
-    "parentId": "/user-guide",
-    "sourceIds": [
-      "src/requests/auth.py",
       "src/requests/models.py"
-    ]
+    ],
+    "parentId": "/core-usage"
   },
   {
-    "title": "Error Handling",
-    "description": "Learn to anticipate and handle potential request errors, such as connection issues, timeouts, and bad HTTP statuses.",
-    "path": "/user-guide/error-handling",
-    "parentId": "/user-guide",
+    "title": "Handling Response Content",
+    "description": "Details how to access the response body as bytes (.content), text (.text), and deserialized JSON (.json()).",
+    "path": "/core-usage/handling-response-content",
     "sourceIds": [
-      "src/requests/exceptions.py",
       "src/requests/models.py"
-    ]
+    ],
+    "parentId": "/core-usage"
+  },
+  {
+    "title": "POSTing Data",
+    "description": "Covers various methods for sending data in the request body, including form-encoded data, multipart file uploads, and raw JSON payloads.",
+    "path": "/core-usage/posting-data",
+    "sourceIds": [
+      "src/requests/api.py",
+      "src/requests/models.py"
+    ],
+    "parentId": "/core-usage"
   },
   {
     "title": "Advanced Usage",
-    "description": "Dive deeper into advanced features for handling complex scenarios like custom timeouts, proxies, SSL verification, and more.",
+    "description": "Explores more complex features for building robust and reliable HTTP applications, such as session management, authentication, and error handling.",
     "path": "/advanced-usage",
-    "parentId": null,
     "sourceIds": [
+      "src/requests/sessions.py",
       "src/requests/adapters.py",
-      "src/requests/cookies.py",
-      "src/requests/hooks.py",
-      "src/requests/utils.py",
-      "src/requests/certs.py"
-    ]
+      "src/requests/auth.py",
+      "src/requests/exceptions.py"
+    ],
+    "parentId": ""
   },
   {
-    "title": "Timeouts, Retries, and Proxies",
-    "description": "Configure network behavior by setting request timeouts, automatic retries for failed connections, and routing requests through proxies.",
-    "path": "/advanced-usage/timeouts-retries-proxies",
-    "parentId": "/advanced-usage",
+    "title": "Session Objects",
+    "description": "Explains how to use Session objects for cookie persistence, connection pooling, and default request configuration.",
+    "path": "/advanced-usage/session-objects",
+    "sourceIds": [
+      "src/requests/sessions.py",
+      "src/requests/cookies.py"
+    ],
+    "parentId": "/advanced-usage"
+  },
+  {
+    "title": "Authentication",
+    "description": "Details the various authentication schemes supported, including Basic and Digest authentication, and how to implement custom auth.",
+    "path": "/advanced-usage/authentication",
+    "sourceIds": [
+      "src/requests/auth.py"
+    ],
+    "parentId": "/advanced-usage"
+  },
+  {
+    "title": "Proxies",
+    "description": "Provides instructions on how to route requests through a proxy server for both HTTP and HTTPS.",
+    "path": "/advanced-usage/proxies",
     "sourceIds": [
       "src/requests/adapters.py",
-      "src/requests/utils.py",
-      "src/requests/sessions.py"
-    ]
+      "src/requests/utils.py"
+    ],
+    "parentId": "/advanced-usage"
   },
   {
     "title": "SSL Certificate Verification",
-    "description": "Manage SSL/TLS verification by using custom CA bundles, client-side certificates, or disabling verification for specific cases.",
-    "path": "/advanced-usage/ssl-cert-verification",
-    "parentId": "/advanced-usage",
+    "description": "Covers how Requests handles SSL certificate verification and how to use custom or client-side certificates.",
+    "path": "/advanced-usage/ssl-verification",
     "sourceIds": [
       "src/requests/adapters.py",
-      "src/requests/certs.py",
-      "src/requests/sessions.py"
-    ]
+      "src/requests/certs.py"
+    ],
+    "parentId": "/advanced-usage"
   },
   {
-    "title": "Custom Adapters and Hooks",
-    "description": "Extend the functionality of Requests by creating custom Transport Adapters and using the event hook system.",
-    "path": "/advanced-usage/adapters-and-hooks",
-    "parentId": "/advanced-usage",
+    "title": "Timeouts",
+    "description": "Explains how to set connect and read timeouts to prevent requests from hanging indefinitely.",
+    "path": "/advanced-usage/timeouts",
     "sourceIds": [
-      "src/requests/adapters.py",
-      "src/requests/hooks.py",
-      "src/requests/sessions.py"
-    ]
+      "src/requests/adapters.py"
+    ],
+    "parentId": "/advanced-usage"
+  },
+  {
+    "title": "Error Handling",
+    "description": "A guide to the exception hierarchy in Requests, explaining how to catch and handle various network and protocol errors.",
+    "path": "/advanced-usage/error-handling",
+    "sourceIds": [
+      "src/requests/exceptions.py",
+      "src/requests/models.py"
+    ],
+    "parentId": "/advanced-usage"
   },
   {
     "title": "API Reference",
-    "description": "A detailed and comprehensive reference for all public classes, methods, and functions in the Requests library.",
+    "description": "Provides a detailed, comprehensive reference for all public classes, methods, and functions in the Requests library.",
     "path": "/api-reference",
-    "parentId": null,
     "sourceIds": [
       "src/requests/api.py",
       "src/requests/sessions.py",
       "src/requests/models.py",
-      "src/requests/exceptions.py",
-      "src/requests/status_codes.py",
-      "src/requests/auth.py",
-      "src/requests/adapters.py",
-      "src/requests/cookies.py",
-      "src/requests/hooks.py",
-      "src/requests/structures.py"
-    ]
+      "src/requests/exceptions.py"
+    ],
+    "parentId": ""
+  },
+  {
+    "title": "Request and Response Objects",
+    "description": "A detailed reference for the `Request`, `PreparedRequest`, and `Response` objects, including all their methods and attributes.",
+    "path": "/api-reference/request-response-objects",
+    "sourceIds": [
+      "src/requests/models.py",
+      "src/requests/status_codes.py"
+    ],
+    "parentId": "/api-reference"
+  },
+  {
+    "title": "Session Object",
+    "description": "Comprehensive API documentation for the `Session` object, detailing its methods for making requests and managing state.",
+    "path": "/api-reference/session-object",
+    "sourceIds": [
+      "src/requests/sessions.py"
+    ],
+    "parentId": "/api-reference"
+  },
+  {
+    "title": "Exceptions",
+    "description": "A complete listing of all public exceptions raised by the library, explaining their inheritance and when they occur.",
+    "path": "/api-reference/exceptions",
+    "sourceIds": [
+      "src/requests/exceptions.py"
+    ],
+    "parentId": "/api-reference"
   },
   {
     "title": "Community",
-    "description": "Information on the project's history, contributors, and how to get involved with the Requests community.",
+    "description": "Information for developers who want to contribute to the project, view the license, or see the project's history.",
     "path": "/community",
-    "parentId": null,
     "sourceIds": [
-      "HISTORY.md",
-      "AUTHORS.rst",
       "README.md",
       "Makefile",
-      "src/requests/help.py"
-    ]
+      "HISTORY.md",
+      "AUTHORS.rst"
+    ],
+    "parentId": ""
   },
   {
-    "title": "Changelog",
-    "description": "A detailed log of all changes, improvements, and bug fixes for each version of the Requests library.",
-    "path": "/community/changelog",
-    "parentId": "/community",
+    "title": "Contributing",
+    "description": "Provides guidelines for contributing to the Requests library, including how to set up the development environment and run tests.",
+    "path": "/community/contributing",
+    "sourceIds": [
+      "README.md",
+      "Makefile",
+      "setup.py"
+    ],
+    "parentId": "/community"
+  },
+  {
+    "title": "Release History",
+    "description": "A detailed changelog documenting all improvements, bug fixes, and security updates for every version of Requests.",
+    "path": "/community/release-history",
     "sourceIds": [
       "HISTORY.md"
-    ]
+    ],
+    "parentId": "/community"
   },
   {
-    "title": "Contributors",
-    "description": "A list of all the individuals who have contributed to the development of the Requests library.",
-    "path": "/community/contributors",
-    "parentId": "/community",
+    "title": "License",
+    "description": "Displays the Apache 2.0 license under which the Requests library is distributed.",
+    "path": "/community/license",
     "sourceIds": [
-      "AUTHORS.rst"
-    ]
+      "setup.py"
+    ],
+    "parentId": "/community"
   }
 ]

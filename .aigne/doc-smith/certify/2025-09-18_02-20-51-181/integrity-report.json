@@ -1,0 +1,771 @@
+{
+  "timestamp": "2025-09-18T02:20:51.181Z",
+  "metadata": {
+    "version": "1.0.0",
+    "generatedBy": "doc-smith",
+    "documentCount": 15
+  },
+  "structureEvaluation": {
+    "type": "document-structure",
+    "results": {
+      "purposeCoverage": {
+        "score": 4,
+        "reason": "总体以任务完成为导向的内容较充分（User Guide/Advanced Usage 代码示例为主），但缺少面向具体场景的“How-to/Recipes”型模块，常见工作流未被集中、步骤化呈现，影响用户按任务快速落地。",
+        "covered": [
+          "User Guide（/user-guide 及其子页：Making a Request、Handling Responses、Session Objects、Authentication、Error Handling）—覆盖常见操作路径与示例",
+          "Advanced Usage（/advanced-usage 及其子页：Timeouts/Retries/Proxies、SSL、Adapters/Hooks）—覆盖复杂场景的配置与进阶用法",
+          "API Reference—为任务执行提供精确接口查找与参数细节支持"
+        ],
+        "missing": [
+          "面向任务的“How-to/Recipes”专区（按任务组织的分步指南）",
+          "具体工作流：文件上传/下载、multipart 表单、流式上传/下载、分页处理、重定向与 Cookie 策略、速率限制与退避重试、OAuth2/Bearer Token、环境化配置、请求签名/鉴权模式选择、故障排查与常见问题（Troubleshooting/FAQ）、测试与模拟（如 responses/pytest 使用）"
+        ]
+      },
+      "audienceCoverage": {
+        "score": 4,
+        "reason": "面向集成型开发者的代码优先内容和可复制示例基本具备（User Guide/Advanced Usage/API Reference），但缺少可直接复制的“配方式”片段与配置模板，降低了集成效率。",
+        "covered": [
+          "工程师/开发者：代码示例主导的 User Guide",
+          "高级配置与网络参数：Advanced Usage",
+          "精确接口细节：API Reference"
+        ],
+        "missing": [
+          "可复制的任务配方（模板化请求片段、标准配置清单）",
+          "针对常见集成情境的示例集合（如认证模式对比与选型、企业代理/证书环境的最佳实践）"
+        ]
+      },
+      "coverageDepthAlignment": {
+        "score": 4,
+        "reason": "整体深度接近“均衡覆盖”的预期，但存在两处偏差：1) 包含 Getting Started/Overview（用户偏好跳过）略超范围；2) 缺少针对常见边缘情境的任务化示例（如分页、文件流、OAuth2），导致“多示例、适度边界”的要求略有不足。"
+      }
+    }
+  },
+  "documentEvaluations": {
+    "type": "document-content",
+    "individual": [
+      {
+        "documentInfo": {
+          "path": "/overview",
+          "title": "Overview"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "语言自然流畅、术语准确、句式简洁；代码示例清晰可读。改进建议：去除代码围栏中的“icon=logos:python”类元数据以免读者误解为可运行代码部分。"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "结构完整且递进自然：概述→动机→示例→特性→安装→进一步阅读，无矛盾与跳跃。可微调：在“核心功能”处为相关示例/章节做前后呼应链接。"
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "与内容规划高度一致：提供高层概述、核心特性清单、安装方式与可直接复制的基本示例，信息准确可用。"
+          },
+          "translationQuality": {
+            "score": 4,
+            "reason": "整体忠实且流畅，术语基本统一。小问题：人称“你/您”混用；“类 `dict` Cookie”不够地道（建议“类字典的 Cookie”）；少量英文表头未本地化。"
+          },
+          "consistency": {
+            "score": 4,
+            "reason": "整体风格与术语基本一致。轻微不一致：人称“你/您”混用；表格表头仍为英文“Feature/Description”；代码围栏包含额外标记。建议统一人称为“你”，本地化表头，并规范代码块标记。"
+          },
+          "purposeAlignment": {
+            "score": 2,
+            "reason": "与用户所选“常见工作流/用例的任务型指引”不符，当前为概览/入门。建议新增任务导向章节：会话与 Cookie 持久化、超时与重试（urllib3 Retry）、代理与证书、文件上传/大文件下载、JSON API 交互、鉴权（Basic/Digest/Bearer）、流式与分块上传等的分步示例。"
+          },
+          "audienceAlignment": {
+            "score": 3,
+            "reason": "面向开发者的语气与一个可复制的示例基本到位，但缺少可直接集成到项目的配置与模式范式（如会话复用、重试、代理、超时、错误处理的最佳实践）。建议补充“可复制片段+说明”的常用配方。"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 2,
+            "reason": "对“已用过类似工具”的读者偏浅，缺少与 urllib/urllib3/httpx 等差异、迁移提示与取舍说明。建议新增“从 X 迁移”对比表、Requests 的独特优势与局限、何时使用 Session、常见坑与优化点。"
+          },
+          "navigability": {
+            "score": 5,
+            "reason": "“Getting Started”与“Read the Docs”链接与标题匹配、目标明确。改进建议：为“核心功能”各项添加至相应文档的链接锚点，提升跳转效率。"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/getting-started",
+          "title": "Getting Started"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "语言简洁明了、无语法或拼写问题；步骤与代码注释清晰，示例可直接复制运行，阅读流畅无需回读。"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "结构按安装→首个请求→后续步骤递进，段落衔接自然，无跳跃或矛盾。"
+          },
+          "contentQuality": {
+            "score": 4,
+            "reason": "完整覆盖内容规划（安装与首个 GET 示例），细节到位（状态码与 JSON 解析）。小幅扣分：1）Python 支持版本“3.9+”可能需复核，建议链接或列出版本支持矩阵；2）可补充最佳实践提示（如使用虚拟环境、pip 升级、基本错误处理）以提升可用性。"
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "中译忠实原文、自然流畅，术语统一（如“标头”对应 headers）；无明显歧义。可优化点：大陆读者更常用“请求头”，可在首次出现处括注以兼顾习惯。"
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "术语与格式统一（Requests、HTTP、代码块说明一致），中英文结构对应良好；代码与文字说明一一匹配。"
+          },
+          "purposeAlignment": {
+            "score": 2,
+            "reason": "所选文档目标偏向“工作流/用例指导，跳过入门”，而本文是“快速入门”，聚焦安装与首个请求，偏离目标。建议在末尾追加常见工作流链接（认证、会话、超时、重试、代理、文件上传等）。"
+          },
+          "audienceAlignment": {
+            "score": 4,
+            "reason": "面向开发者的代码优先风格到位，示例可复制；但缺少工程集成关切（差异点、迁移提示、依赖声明与错误处理），对“将其加入项目”的需求支持不够深入。"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 2,
+            "reason": "读者被设定为已使用过类似工具，期望差异点与独有特性；本文内容过于基础。建议增加：会话复用、超时/重试、SSL 校验控制、代理与认证、请求体与编码、错误与异常处理等速览示例，并附“从X迁移”对照。"
+          },
+          "navigability": {
+            "score": 5,
+            "reason": "“User Guide: Making a Request”卡片标题与链接路径匹配，导航清晰无冲突。可选优化：在安装段落增加至“版本兼容性/支持矩阵”的直达链接以便查阅。"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/user-guide",
+          "title": "User Guide"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "中英文本整体行文清晰流畅，代码示例可直接复制运行，术语和句式自然，几乎无语法与拼写问题。"
+          },
+          "coherence": {
+            "score": 4,
+            "reason": "结构由“发起请求→处理响应→会话→认证→错误处理”循序渐进，前后呼应良好；但“重定向次数过多”部分存在内部矛盾：前文称默认30次，示例却提示11次会失败，易造成混淆。建议修正示例与说明的一致性，并明确默认重定向上限与示例阈值的关系。"
+          },
+          "contentQuality": {
+            "score": 4,
+            "reason": "覆盖核心功能（请求、响应、会话、认证、错误处理）并提供充足代码示例，基本实现内容规划目标；但有少量准确性问题与细节缺失：1) 重定向默认上限与示例不一致；2) 异常层次表中 `RequestException` 的父类标注为 `IOError` 存疑（应检查并与实际版本对齐）；3) 缺少对常见工作流（如分页、重试策略、超时策略调优、文件大对象下载的断点续传/校验）的链接或简要指引。建议更正错误并补充指向高级用法的明确跳转。"
+          },
+          "translationQuality": {
+            "score": 4,
+            "reason": "整体忠实原文且流畅，技术术语基本准确；但中文术语存在不统一：如“身份验证/认证”混用，“Session 对象/会话对象”混用；个别表述略显英文化。建议统一关键术语与标题翻译，保持页面内外一致。"
+          },
+          "consistency": {
+            "score": 3,
+            "reason": "存在多处不一致：1) 链接路径风格混用（/user-guide/... 与 ./user-guide-...md）；2) 中文术语与标题命名不统一（“身份验证/认证”、“会话对象/Session 对象”、“发出请求/发起请求”）。建议统一路由与术语规范。"
+          },
+          "purposeAlignment": {
+            "score": 4,
+            "reason": "整体以代码优先、围绕常见工作流展开，基本契合“通过实用示例指导常见用法”的目标；但缺少面向任务的分步场景（如文件上传到鉴权到错误恢复的一体化流程）与问题导向的小节。建议增加典型任务脚本化流程与故障排查清单。"
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "面向开发者的代码示例丰富、参数与返回值使用清晰、可直接集成；语言简洁直接，符合工程实践需求。"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 3,
+            "reason": "对已使用过类似工具的读者而言，内容偏基础，缺少与其他库的差异点、迁移提示与高级特性对比；建议新增“从X迁移”与“与curl/HTTPX对比”的章节，并强化高级配置（认证细粒度控制、连接池/重试/代理/SSL）示例。"
+          },
+          "navigability": {
+            "score": 1,
+            "reason": "多处链接/标题不匹配或可能导致导航错误：1) 英文首页“Next Steps”指向 ./user-guide-making-a-request.md，与卡片 /user-guide/making-a-request 不一致；2) 中文首页“后续步骤”同样指向 ./user-guide-making-a-request.md 与卡片不一致；3) “处理响应”页指向 ./user-guide-making-a-request.md 与卡片不一致；4) “Session 对象”页底部链接 ./user-guide-authentication.md 与卡片 /user-guide/authentication 不一致；5) “认证”页末尾链接 ./user-guide-error-handling.md 与卡片 /user-guide/error-handling 不一致。建议统一使用站点路由或统一的文档文件命名，并进行全站链接校验。"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/user-guide/making-a-request",
+          "title": "Making a Request"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 4,
+            "reason": "语言清晰自然、示例直观；但代码块围栏包含“icon=logos:python”及中文/英文标题混入 info string，可能影响渲染与阅读。建议将说明移至代码块上方，使用标准 ```python。"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "从 GET→URL 参数→请求体（表单/JSON/文件）→其他方法→自定义标头→下一步的结构顺畅，无矛盾与跳跃。"
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "覆盖计划中的 GET/POST/PUT 等方法、URL 参数、请求体、文件上传与自定义头，示例可复制运行。可进一步补充 timeout、auth、错误处理等常用实践以增强实用性。"
+          },
+          "translationQuality": {
+            "score": 4,
+            "reason": "整体忠实流畅，术语基本准确（如“JSON 编码”“多部分”）；少量表述略生硬且“标头”不够口语化，且在代码围栏内加入中文标题可能破坏工具链。建议统一为“请求头/HTTP 头”，并将说明移出代码围栏。"
+          },
+          "consistency": {
+            "score": 4,
+            "reason": "术语与结构基本统一；存在细微不一致：header 键使用小写 'user-agent'，而示例中展示 'Content-Type' 为首字母大写；中英文版本均在代码围栏中混入说明。建议统一 Header 大小写展示并规范代码块格式。"
+          },
+          "purposeAlignment": {
+            "score": 4,
+            "reason": "面向常见请求工作流且代码导向强，基本满足“实操/步骤化”目标；但缺少更贴近场景的用例（如分页查询、带元数据的上传）。"
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "面向开发者的代码优先呈现，参数与返回示例清晰，可直接复制集成，符合工程师需求。"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 3,
+            "reason": "深度偏基础，未体现与其他工具/框架的差异、迁移路径与最佳实践。对“用过类似工具”的读者略浅。建议增设“从 X 迁移”“与 curl/HTTPX 对比”“超时/重试/会话复用”等内容。"
+          },
+          "navigability": {
+            "score": 5,
+            "reason": "层级清晰，唯一的“Handling Responses/处理响应”链接与目标内容匹配且路径正确。"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/user-guide/handling-responses",
+          "title": "Handling Responses"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "语言清晰流畅，结构明晰，示例简洁可复制，无明显语法或拼写问题；95%以上句子无需回读。"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "由内容读取→流式处理→状态/错误→标头/Cookie→重定向→后续步骤，层次递进、前后呼应，无逻辑跳跃。"
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "完整覆盖规划点（文本/二进制/JSON/状态码/标头），并扩展到流式下载、行迭代、错误处理、Cookie、重定向；示例可直接运行，细节到位。可进一步补充：timeout 用法、JSON 解析健壮性（校验 Content-Type）、编码诊断（apparent_encoding）。"
+          },
+          "translationQuality": {
+            "score": 4,
+            "reason": "译文总体忠实自然，术语基本统一；但多处代码注释仍为英文（如 set_encoding、stream_download、iter_lines 中的注释），且小节标题“Cookie”与正文多处用“Cookies”不一致。建议：统一术语并将代码注释本地化。"
+          },
+          "consistency": {
+            "score": 4,
+            "reason": "整体术语与格式基本一致；轻微不一致：中文小节标题“Cookie” vs 文内“Cookies”，代码注释中英混用。建议统一为“响应标头/Headers”或固定“标头”，并统一“Cookie(s)”写法与代码注释语言。"
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "紧扣“引导常见工作流与用例”的目标，实例驱动、步骤清晰，无多余背景或低相关内容。"
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "面向开发者的代码优先呈现，示例可复制粘贴，避免过度入门细节，符合工程实践需求。"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 3,
+            "reason": "对已使用过类似工具的读者而言深度略浅，缺少“从 X 迁移/差异点”与最佳实践对比。建议新增：与 httpx/urllib3 的差异、错误模型对比、性能与流式细节、常见陷阱与迁移清单。"
+          },
+          "navigability": {
+            "score": 5,
+            "reason": "内链与标题语义匹配（发出请求、会话对象），示例链接合理且易于理解；未发现失效或误导链接。可选改进：为每一属性添加跳转至 API 参考锚点。"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/user-guide/session-objects",
+          "title": "Session Objects"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "语言清晰、示例直观，段落结构合理，代码可直接复制运行，几乎无语病。"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "从会话概念→Cookie 持久化→参数与头合并→会话级认证→参数持久化注意点→上下文管理器→后续阅读，层次分明且无矛盾。"
+          },
+          "contentQuality": {
+            "score": 4,
+            "reason": "核心规划点（持久化参数、Cookie、头、会话池复用、上下文管理器）均覆盖且有可运行示例；但存在两点改进：1）“将持久化参数设为 None 可移除”不完全准确（如 headers/cookies 应说明删除键或 CookieJar 操作），需分别给出正确做法；2）缺少常见工作流场景（全局超时/重试、全局 params、代理、清理/关闭最佳实践、线程安全说明）与注意事项。"
+          },
+          "translationQuality": {
+            "score": 4,
+            "reason": "整体忠实自然，术语基本准确；少量不地道与细微不统一，如“主 Requests API”表述生硬，建议改为“Requests 的核心 API/顶层 API”；中英混用“Session/会话”与“cookie/cookies”偶有不一致。"
+          },
+          "consistency": {
+            "score": 4,
+            "reason": "格式与示例风格统一；但术语偶有混用（Session/会话、cookie/cookies），代码块标题中英文切换略不一致。"
+          },
+          "purposeAlignment": {
+            "score": 4,
+            "reason": "基本契合“工作流与用例指导”目标，提供了实用示例；但缺少更贴近实战的分步场景（如为所有请求设置默认 params/timeout、统一认证与代理、如何撤销持久化设置）。"
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "面向开发者，代码优先、示例可直接复制，技术细节准确，满足集成诉求。"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 4,
+            "reason": "对有经验读者深度适中；但缺少与类似工具/原生用法的对比、迁移提示与差异点解读，可进一步提升。"
+          },
+          "navigability": {
+            "score": 5,
+            "reason": "结构清晰，唯一外链指向 Authentication，标题与目标一致，导航准确无误。"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/user-guide/authentication",
+          "title": "Authentication"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "语言清晰流畅、术语准确，示例代码可直接复制运行；少量装饰性标记（如“icon=logos:python”）不影响理解。"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "结构由概览→各认证方案→后续阅读递进合理；段落衔接自然，无自相矛盾。"
+          },
+          "contentQuality": {
+            "score": 4,
+            "reason": "覆盖 Basic/Digest/Proxy/自定义认证，示例清晰可运行；缺少常见场景与最佳实践：Session 级别 auth、Bearer Token 示例、OAuth1/2 引用的最小用法、与重试/错误处理联动、凭据安全（环境变量/密管）与常见坑提示。"
+          },
+          "translationQuality": {
+            "score": 4,
+            "reason": "整体忠实自然、术语统一；小问题：代码块标题英中混用（如“Basic Auth with a Tuple”未本地化）、“标头”属地区性表达（与常见“请求头/报文头”略异）。"
+          },
+          "consistency": {
+            "score": 4,
+            "reason": "术语与格式基本统一；轻微不一致：代码块标题中英文混用；“auth 用于代理而非目标服务器”的表述与开头“auth 传给请求方法”的概括易引起理解歧义（建议补充说明 auth 与 HTTPProxyAuth 的区别与作用范围）。"
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "以工作流与实操为导向，提供直接可用的代码示例与最常见方案，紧贴“指导常见用例”的目标。"
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "面向开发者，代码优先、示例可复制、依赖最少，符合集成场景需要。"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 4,
+            "reason": "难度适中，适合对领域熟悉但新接触该库的读者；可进一步补充与其他工具/迁移差异点与优势对比以更贴合该层级预期。"
+          },
+          "navigability": {
+            "score": 5,
+            "reason": "链接与标题匹配（Advanced Usage、Timeouts/Retries/Proxies、Error Handling），导航路径清晰，无明显错误。"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/user-guide/error-handling",
+          "title": "Error Handling"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 4,
+            "reason": "语言清晰流畅、结构明了，但代码块围栏包含“Handling … icon=logos:python”等元数据混入到 ```python 标记内，影响阅读与复制粘贴体验。"
+          },
+          "coherence": {
+            "score": 4,
+            "reason": "整体从总述→分类用法→层级表的结构清晰，但重定向部分出现前后矛盾：前文称默认 30 次才报错，示例却用 11 次并声称会失败。"
+          },
+          "contentQuality": {
+            "score": 4,
+            "reason": "覆盖 HTTP 错误、连接错误、超时、重定向与异常层级，并配有可用示例，基本实现内容规划。但存在事实性问题与示例不可复现：1）异常表中将 RequestException 父类标为 IOError（应为 Exception）；2）表中列出 requests.exceptions.JSONDecodeError（实际 Response.json 常抛 json.JSONDecodeError/ValueError，requests 未统一包装）；3）重定向示例用 11 次无法触发 TooManyRedirects（默认 30）。改进：修正父类与 JSONDecodeError 归属；将示例改为 /absolute-redirect/31 或使用 Session.max_redirects 演示；在超时部分补充 timeout=(connect, read) 的分别设置示例。"
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "中译忠实自然，术语（如“连接错误”“超时”“重定向”）统一，语序与表达符合中文习惯，无明显漏译或误译。"
+          },
+          "consistency": {
+            "score": 3,
+            "reason": "术语基本统一，但存在 3 处不一致/不规范：1）重定向默认次数的表述与示例不一致；2）代码块围栏含元数据，格式不统一；3）异常层级表与实际库实现不一致。应统一代码块格式，仅使用 ```python；校对异常层级与父类。"
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "紧扣“引导常见工作流/用例”的目标，通过分场景（HTTP 错误、连接、超时、重定向）给出处理方式和示例，实用性强。"
+          },
+          "audienceAlignment": {
+            "score": 4,
+            "reason": "面向开发者提供可复制代码与异常分类，基本满足工程落地需求。但代码块元数据影响复制；缺少与其他库的差异/迁移提示。建议去除元数据，附带从 urllib/htx 等迁移的要点对比。"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 4,
+            "reason": "深度适中，适合对网络请求有经验但新用 Requests 的读者；已涵盖常见异常与处理。可再补充进阶实践（如重试/退避、会话级 max_redirects、SSL 校验细节）以更贴合进阶用户。"
+          },
+          "navigability": {
+            "score": 5,
+            "reason": "结构与标题匹配清晰；“高级用法”链接与描述一致、导向合理（相对路径命名清晰）。未发现导航性问题。"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/advanced-usage",
+          "title": "Advanced Usage"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "语言自然流畅，结构清晰，代码示例易读，无明显语法/拼写问题；说明与示例配合良好，95%以上句子无需回读。"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "整体从概览—导航卡片—示例—后续步骤层层推进；子文档均按概念—配置—示例展开，无前后矛盾或跳跃。"
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "覆盖超时、重试、代理、SSL 验证、适配器与钩子等高级主题，示例可复制运行，参数与环境变量说明完整准确。可进一步补充如 Retry 的 backoff_factor 与退避策略示例以更完善。"
+          },
+          "translationQuality": {
+            "score": 4,
+            "reason": "大体忠实自然，术语（会话/适配器/重试/证书等）统一；但部分代码块标题未本地化或格式不统一（如“Attaching a Response Hook”“Configuring and Mounting an HTTPAdapter”保留英文），且个别链接路径与英文不同，存在细小偏差。"
+          },
+          "consistency": {
+            "score": 3,
+            "reason": "术语基本一致，但存在3处以上不一致：1) 代码围栏元数据有的使用 title=，有的直接写文本；2) 代码块标题中英文混用；3) 链接路径风格混用（/advanced-usage/... 与 ./advanced-usage-ssl-cert-verification.md）。"
+          },
+          "purposeAlignment": {
+            "score": 3,
+            "reason": "用户目标偏重“按场景的分步工作流与实操”。当前文档以概览+参考为主，虽有示例但缺少场景化、步骤化指引与决策流程。"
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "面向开发者的代码优先写作风格明确，提供可直接复制的片段、配置示例与异常类型，满足集成需求。"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 5,
+            "reason": "面向已有 HTTP/Requests 经验的读者，深度与难度合适，跳过入门细节，强调可配置与安全要点。"
+          },
+          "navigability": {
+            "score": 4,
+            "reason": "大部分链接与标题匹配，卡片导航清晰；但“超时、重试和代理”文末的下一节指向 ./advanced-usage-ssl-cert-verification.md 与卡片使用的 /advanced-usage/ssl-cert-verification 路径不一致，可能造成导航混淆。"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/advanced-usage/timeouts-retries-proxies",
+          "title": "Timeouts, Retries, and Proxies"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "语言清晰流畅，术语准确，段落组织良好；示例前后说明到位，无明显语法或拼写问题。"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "结构自洽，按超时→重试→代理→环境变量逐层展开，概念先总后分且相互呼应，无明显矛盾或跳跃。"
+          },
+          "contentQuality": {
+            "score": 4,
+            "reason": "覆盖规划点（超时、重试、代理）≥90%，示例可直接复制使用；但缺少 Retry 高级用法示例（状态码重试、退避/backoff、Retry-After），对“HTTPAdapter.max_retries 仅适用于连接级失败”的表述略笼统，代理示例中 https 使用 1080 端口易与 SOCKS 混淆。建议：补充 urllib3 Retry 配置示例并澄清整数 max_retries 的默认行为，调整或说明代理端口与协议匹配。"
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "中译忠实自然，术语统一（超时、重试、代理、会话等），无意义偏差；仅代码块 fence 内含中文标题属呈现细节，不影响含义。"
+          },
+          "consistency": {
+            "score": 4,
+            "reason": "术语与风格基本一致，但代码块标记混用“icon=logos:python/中文标题”，与常规 ```python 不一致，可能影响跨平台渲染/复制。建议统一代码块 fence。"
+          },
+          "purposeAlignment": {
+            "score": 4,
+            "reason": "总体符合“实用指南/常见工作流”，提供清晰示例；但缺少更显式的步骤化场景（如慢接口、防止挂起、公司代理配置）与最佳实践/常见陷阱小结。"
+          },
+          "audienceAlignment": {
+            "score": 4,
+            "reason": "面向开发者的代码优先呈现良好，API 使用直观；但未覆盖“来自其他工具/库的迁移或差异点”，与受众偏好略有差距。"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 4,
+            "reason": "深度适中，适合有经验读者；可进一步补充幂等性与重试安全性、指数退避策略、状态码重试、环境变量大小写与平台差异等，以匹配更高阶需求。"
+          },
+          "navigability": {
+            "score": 5,
+            "reason": "标题层级清晰，唯一外链指向“SSL 证书验证”章节且与标题一致，路径正确，无导航错误。"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/advanced-usage/ssl-cert-verification",
+          "title": "SSL Certificate Verification"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "语言简洁清晰，无明显语法/拼写错误；段落与代码示例排布合理，阅读流畅。"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "结构按“默认→禁用→自定义 CA→客户端证书→延伸阅读”递进，前后呼应，无矛盾与跳跃。"
+          },
+          "contentQuality": {
+            "score": 4,
+            "reason": "覆盖计划点并提供可复制示例，能直接落地；但存在使用 requests.packages.urllib3 禁用警告（私有 API）的做法，建议改为 urllib3.disable_warnings；可强化“不在生产使用 verify=False”的提示，并补充 Windows 环境变量设置示例。"
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "中译忠实自然，术语（CA 证书包、mTLS 等）统一，无明显误译或生硬表达。"
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "术语、风格、代码参数名（verify、cert 等）一致；链接与标题风格统一。"
+          },
+          "purposeAlignment": {
+            "score": 5,
+            "reason": "紧扣“指导常见工作流与用例”，示例针对自签名、内网 CA、mTLS 等高频场景，操作性强。"
+          },
+          "audienceAlignment": {
+            "score": 5,
+            "reason": "面向开发者的代码优先呈现，示例可复制运行，省略不必要的原理铺垫，符合工程实践。"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 4,
+            "reason": "深度基本匹配有经验读者；但缺少与其他工具/旧实践的差异与迁移提示（如与 curl 的对应项、与 urllib3 的差别）。"
+          },
+          "navigability": {
+            "score": 5,
+            "reason": "唯一的“Session Objects”链接与标题匹配，导航正确；无失效或歧义链接。"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/advanced-usage/adapters-and-hooks",
+          "title": "Custom Adapters and Hooks"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "语言清晰自然，术语准确，段落结构合理，几乎无语法/拼写问题；示例与说明衔接顺畅，95%以上句子无需回读。"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "结构由概念→HTTPAdapter→自定义适配器→Hooks 层层递进，前后呼应无矛盾；整体逻辑清晰。"
+          },
+          "contentQuality": {
+            "score": 4,
+            "reason": "覆盖了核心概念、HTTPAdapter 参数、挂载与重试、response 钩子，并提供可运行示例；但缺少自定义适配器的完整代码示例、按请求粒度 hooks 示例，以及 Retry 的高级配置（backoff、status_forcelist、allowed_methods）与域前缀挂载示例。改进：补充 subclass HTTPAdapter 的最小实现与 send/build_response 覆写示例；展示 per-request hooks；给出 Retry 细粒度配置与连接池/代理/证书校验的实践片段。"
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "中译忠实自然，术语（传输适配器、会话、钩子）统一；英文代码注释与字符串保留原文符合开发者习惯，无歧义。"
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "术语与风格统一（HTTPAdapter/Session/Hook/Retry 一致）；代码块标注与参数表 x-field 格式一致，无混用。"
+          },
+          "purposeAlignment": {
+            "score": 4,
+            "reason": "总体聚焦于常见工作流（重试、响应钩子）并给出步骤与示例，但场景化任务与操作步骤仍稍少。改进：按任务组织小节，如“为单域配置重试”“自定义证书校验”“实现非 HTTP 协议适配器”，并给出逐步指引。"
+          },
+          "audienceAlignment": {
+            "score": 4,
+            "reason": "面向工程师的代码优先呈现良好，示例可复制；但缺少更进阶、可直接粘贴的配置片段（如 Retry 细粒度、pool 参数调优、代理与 SSL 实战）。改进：增加常见配置模板与最佳实践/坑点提示。"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 3,
+            "reason": "对“用过类似工具”的读者，文档未提供与 urllib3/httpx 的差异、迁移策略或 Requests 特有机制的对比；深度略浅。改进：新增“来自 httpx/urllib3 的差异”“何时用 Hook vs Adapter”的决策与迁移指南。"
+          },
+          "navigability": {
+            "score": 5,
+            "reason": "标题与内容匹配清晰，API Reference 链接指向明确；结构分层合理。建议可补充相关主题/返回顶部链接以提升跨节跳转效率。"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/api-reference",
+          "title": "API Reference"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "英文原文语言自然流畅、结构清晰、术语准确，几乎无语法或拼写问题；代码示例简洁明了，阅读负担低。"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "从顶级 API 到 Session、Response、认证、异常、状态码查询的层级合理，前后呼应，无明显跳跃或矛盾。"
+          },
+          "contentQuality": {
+            "score": 4,
+            "reason": "核心公共接口的参数与行为覆盖较全（顶级方法、Session、Response、认证、异常、codes），参数描述到位；但与“全面参考”规划相比仍缺少若干重要条目或细节（如 Request/PreparedRequest 更完整说明、重试/适配器用法概要、文件上传与多部分示例、代理/超时/SSL 的更丰富示例、流式下载最佳实践）。示例偏少，多为最小示例。"
+          },
+          "translationQuality": {
+            "score": 4,
+            "reason": "整体忠实流畅，术语大体统一；少量细微问题：如 cookies 参数在译文中表述偏泛（应明确为“字典或 CookieJar”），个别类型名如 CaseInsensitiveDict 未本地化说明，可补一句注解。"
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "命名与风格统一（Session/Response/Request、参数表结构一致），英中术语在各自文本中基本自洽；代码与说明相互对应。"
+          },
+          "purposeAlignment": {
+            "score": 2,
+            "reason": "当前文档是“API 参考”，而用户目标偏向“任务/用例驱动的分步指引”；内容以参数与接口说明为主，缺少工作流与场景化步骤。建议增设常见任务小节（如文件上传、会话保持、超时与重试、代理与证书）并配套可复制示例。"
+          },
+          "audienceAlignment": {
+            "score": 4,
+            "reason": "面向开发者的技术表达与代码示例到位，易于查参数与行为；但对“集成工程师”的“复制即用”场景仍显不足，建议补充完整示例（含错误处理、超时、重试、代理配置）与配置片段。"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 4,
+            "reason": "深度偏参考级，适合有类似工具经验的读者；可进一步加入“从 X 迁移/差异点”与注意事项以更贴合“已用过类似工具”的读者预期。"
+          },
+          "navigability": {
+            "score": 5,
+            "reason": "章节标题清晰、层级分明；指向用户指南与高级用法的链接与标题匹配，能引导到更深入内容；各对象与方法在文内定位明确。"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/community",
+          "title": "Community"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "中英文字句通顺、无语法错误；术语与专有名词使用规范；命令与 JSON 示例清晰可读。"
+          },
+          "coherence": {
+            "score": 4,
+            "reason": "结构从“社区概述→贡献方式→报 Bug 命令示例”较顺畅；但“如何贡献”仅覆盖报 Bug，未与前述“更多信息（历史、贡献者）”形成闭环说明，轻微内容跳跃。"
+          },
+          "contentQuality": {
+            "score": 3,
+            "reason": "覆盖了社区概述、进入“更新日志/贡献者”入口、报 Bug 的可执行步骤与示例输出；但缺少项目历史细节、完整贡献指南（提交流程、分支策略、运行测试、代码规范、PR 模板、行为准则、沟通渠道），可操作性与完整性不足。"
+          },
+          "translationQuality": {
+            "score": 3,
+            "reason": "存在两段中文内容：一段是“贡献者”页面（与英文原文不对应），另一段才是“社区”页面的对应翻译，导致对齐不一致；其余术语与句式基本准确自然。建议仅保留与英文原文对应的中文，并统一 PSF 名称与栏目翻译。"
+          },
+          "consistency": {
+            "score": 3,
+            "reason": "术语与卡片标题中英基本一致；但中文部分混入“贡献者”页面的独立内容，造成页面范围与结构不一致；少量命名（如 PSF/“Python 软件基金会”）并存。"
+          },
+          "purposeAlignment": {
+            "score": 2,
+            "reason": "用户目标为“引导常见工作流与用例（代码优先）”，本页聚焦社区与报 Bug，未提供 Requests 使用场景或集成流程，仅有一条命令行操作，偏离预期目的。"
+          },
+          "audienceAlignment": {
+            "score": 2,
+            "reason": "受众为集成该库的工程师，期望代码示例与配置片段；文档主要提供社区信息与 Bug 上报流程，缺少 API/SDK 使用示例与实践场景，不符合代码优先诉求。"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 2,
+            "reason": "读者期望“与类似工具的差异、迁移与特性亮点”，本页未涉及，深度偏浅；内容面向一般贡献者说明而非熟手开发者的技术细节。"
+          },
+          "navigability": {
+            "score": 5,
+            "reason": "卡片链接与标题匹配（/community/changelog、/community/contributors），结构清晰；示例命令指向明确，未发现导航错误。"
+          }
+        }
+      },
+      {
+        "documentInfo": {
+          "path": "/community/contributors",
+          "title": "Contributors"
+        },
+        "evaluation": {
+          "readability": {
+            "score": 5,
+            "reason": "语言简洁自然、无语法错误，结构清晰，人名与专有名词处理妥当，阅读无障碍。改进：可在表格上方补充“按字母顺序/更新时间说明”，提升信息透明度。"
+          },
+          "coherence": {
+            "score": 5,
+            "reason": "从总述→创建者→现任维护者→前维护者→贡献者名单的层级合理，前后呼应，无逻辑跳跃。可在“补丁与建议”处注明名单可能不完整，以防读者误解为全量清单。"
+          },
+          "contentQuality": {
+            "score": 5,
+            "reason": "充分实现“贡献者名单”的规划目标：包含创建者、现任/前任维护者和大量贡献者，信息准确完整。改进：补充“最后更新日期”和“名单生成来源（如 Git 历史或手工维护）”。"
+          },
+          "translationQuality": {
+            "score": 5,
+            "reason": "译文忠实原文且自然流畅，术语统一（维护者/前维护者），人名及特殊字符保留正确；“Keepers of the Crystals”保留英文不影响理解。可选改进：括注中文说明以解释该短语语境。"
+          },
+          "consistency": {
+            "score": 5,
+            "reason": "标题、段落与表格风格统一，链接与用户名格式一致。可选改进：统一括号样式（中/英文半角）以微调版式一致性。"
+          },
+          "purposeAlignment": {
+            "score": 1,
+            "reason": "与所选“工作流/用例指导”目的不符；本页为致谢与名单，无任何步骤、示例或操作指引。改进：若需满足该目的，应新增独立的“常见工作流/用例”文档，并从本页提供清晰跳转链接。"
+          },
+          "audienceAlignment": {
+            "score": 1,
+            "reason": "目标受众为集成产品的开发者，期望代码示例与 API 用法；本页不含技术内容或可复制示例。改进：在显著位置提供到“快速开始/API 示例/配置”页面的链接。"
+          },
+          "knowledgeLevelAlignment": {
+            "score": 1,
+            "reason": "面向有经验开发者应强调差异点、迁移与特性；本页为纯名单，深度与期望不匹配。改进：增加“从 X 迁移到 Requests”“与同类库差异”等入口链接。"
+          },
+          "navigability": {
+            "score": 5,
+            "reason": "标题与内容匹配，外链（如 GitHub 用户页）语义明确；无错误导航。改进：顶部可添加返回“文档首页/目录”的导航或面包屑以便跳转。"
+          }
+        }
+      }
+    ],
+    "aggregated": {
+      "readability": {
+        "score": 4.9,
+        "reason": "Average from 15 documents: 语言自然流畅、术语准确、句式简洁；代码示例清晰可读。改进建议：去除代码围栏中的“icon=logos:python”类元数据以免读者误解为可运行代码部分。; 语言简洁明了、无语法或拼写问题；步骤与代码注释清晰，示例可直接复制运行，阅读流畅无需回读。; 中英文本整体行文清晰流畅，代码示例可直接复制运行，术语和句式自然，几乎无语法与拼写问题。"
+      },
+      "coherence": {
+        "score": 4.8,
+        "reason": "Average from 15 documents: 结构完整且递进自然：概述→动机→示例→特性→安装→进一步阅读，无矛盾与跳跃。可微调：在“核心功能”处为相关示例/章节做前后呼应链接。; 结构按安装→首个请求→后续步骤递进，段落衔接自然，无跳跃或矛盾。; 结构由“发起请求→处理响应→会话→认证→错误处理”循序渐进，前后呼应良好；但“重定向次数过多”部分存在内部矛盾：前文称默认30次，示例却提示11次会失败，易造成混淆。建议修正示例与说明的一致性，并明确默认重定向上限与示例阈值的关系。"
+      },
+      "contentQuality": {
+        "score": 4.3,
+        "reason": "Average from 15 documents: 与内容规划高度一致：提供高层概述、核心特性清单、安装方式与可直接复制的基本示例，信息准确可用。; 完整覆盖内容规划（安装与首个 GET 示例），细节到位（状态码与 JSON 解析）。小幅扣分：1）Python 支持版本“3.9+”可能需复核，建议链接或列出版本支持矩阵；2）可补充最佳实践提示（如使用虚拟环境、pip 升级、基本错误处理）以提升可用性。; 覆盖核心功能（请求、响应、会话、认证、错误处理）并提供充足代码示例，基本实现内容规划目标；但有少量准确性问题与细节缺失：1) 重定向默认上限与示例不一致；2) 异常层次表中 `RequestException` 的父类标注为 `IOError` 存疑（应检查并与实际版本对齐）；3) 缺少对常见工作流（如分页、重试策略、超时策略调优、文件大对象下载的断点续传/校验）的链接或简要指引。建议更正错误并补充指向高级用法的明确跳转。"
+      },
+      "translationQuality": {
+        "score": 4.3,
+        "reason": "Average from 15 documents: 整体忠实且流畅，术语基本统一。小问题：人称“你/您”混用；“类 `dict` Cookie”不够地道（建议“类字典的 Cookie”）；少量英文表头未本地化。; 中译忠实原文、自然流畅，术语统一（如“标头”对应 headers）；无明显歧义。可优化点：大陆读者更常用“请求头”，可在首次出现处括注以兼顾习惯。; 整体忠实原文且流畅，技术术语基本准确；但中文术语存在不统一：如“身份验证/认证”混用，“Session 对象/会话对象”混用；个别表述略显英文化。建议统一关键术语与标题翻译，保持页面内外一致。"
+      },
+      "consistency": {
+        "score": 4.1,
+        "reason": "Average from 15 documents: 整体风格与术语基本一致。轻微不一致：人称“你/您”混用；表格表头仍为英文“Feature/Description”；代码围栏包含额外标记。建议统一人称为“你”，本地化表头，并规范代码块标记。; 术语与格式统一（Requests、HTTP、代码块说明一致），中英文结构对应良好；代码与文字说明一一匹配。; 存在多处不一致：1) 链接路径风格混用（/user-guide/... 与 ./user-guide-...md）；2) 中文术语与标题命名不统一（“身份验证/认证”、“会话对象/Session 对象”、“发出请求/发起请求”）。建议统一路由与术语规范。"
+      },
+      "purposeAlignment": {
+        "score": 3.5,
+        "reason": "Average from 15 documents: 与用户所选“常见工作流/用例的任务型指引”不符，当前为概览/入门。建议新增任务导向章节：会话与 Cookie 持久化、超时与重试（urllib3 Retry）、代理与证书、文件上传/大文件下载、JSON API 交互、鉴权（Basic/Digest/Bearer）、流式与分块上传等的分步示例。; 所选文档目标偏向“工作流/用例指导，跳过入门”，而本文是“快速入门”，聚焦安装与首个请求，偏离目标。建议在末尾追加常见工作流链接（认证、会话、超时、重试、代理、文件上传等）。; 整体以代码优先、围绕常见工作流展开，基本契合“通过实用示例指导常见用法”的目标；但缺少面向任务的分步场景（如文件上传到鉴权到错误恢复的一体化流程）与问题导向的小节。建议增加典型任务脚本化流程与故障排查清单。"
+      },
+      "audienceAlignment": {
+        "score": 4.1,
+        "reason": "Average from 15 documents: 面向开发者的语气与一个可复制的示例基本到位，但缺少可直接集成到项目的配置与模式范式（如会话复用、重试、代理、超时、错误处理的最佳实践）。建议补充“可复制片段+说明”的常用配方。; 面向开发者的代码优先风格到位，示例可复制；但缺少工程集成关切（差异点、迁移提示、依赖声明与错误处理），对“将其加入项目”的需求支持不够深入。; 面向开发者的代码示例丰富、参数与返回值使用清晰、可直接集成；语言简洁直接，符合工程实践需求。"
+      },
+      "knowledgeLevelAlignment": {
+        "score": 3.2,
+        "reason": "Average from 15 documents: 对“已用过类似工具”的读者偏浅，缺少与 urllib/urllib3/httpx 等差异、迁移提示与取舍说明。建议新增“从 X 迁移”对比表、Requests 的独特优势与局限、何时使用 Session、常见坑与优化点。; 读者被设定为已使用过类似工具，期望差异点与独有特性；本文内容过于基础。建议增加：会话复用、超时/重试、SSL 校验控制、代理与认证、请求体与编码、错误与异常处理等速览示例，并附“从X迁移”对照。; 对已使用过类似工具的读者而言，内容偏基础，缺少与其他库的差异点、迁移提示与高级特性对比；建议新增“从X迁移”与“与curl/HTTPX对比”的章节，并强化高级配置（认证细粒度控制、连接池/重试/代理/SSL）示例。"
+      },
+      "navigability": {
+        "score": 4.7,
+        "reason": "Average from 15 documents: “Getting Started”与“Read the Docs”链接与标题匹配、目标明确。改进建议：为“核心功能”各项添加至相应文档的链接锚点，提升跳转效率。; “User Guide: Making a Request”卡片标题与链接路径匹配，导航清晰无冲突。可选优化：在安装段落增加至“版本兼容性/支持矩阵”的直达链接以便查阅。; 多处链接/标题不匹配或可能导致导航错误：1) 英文首页“Next Steps”指向 ./user-guide-making-a-request.md，与卡片 /user-guide/making-a-request 不一致；2) 中文首页“后续步骤”同样指向 ./user-guide-making-a-request.md 与卡片不一致；3) “处理响应”页指向 ./user-guide-making-a-request.md 与卡片不一致；4) “Session 对象”页底部链接 ./user-guide-authentication.md 与卡片 /user-guide/authentication 不一致；5) “认证”页末尾链接 ./user-guide-error-handling.md 与卡片 /user-guide/error-handling 不一致。建议统一使用站点路由或统一的文档文件命名，并进行全站链接校验。"
+      }
+    }
+  },
+  "summary": {
+    "structureScores": {
+      "purposeCoverage": 4,
+      "audienceCoverage": 4,
+      "coverageDepthAlignment": 4,
+      "average": 4
+    },
+    "documentScores": {
+      "readability": 4.9,
+      "coherence": 4.8,
+      "contentQuality": 4.3,
+      "translationQuality": 4.3,
+      "consistency": 4.1,
+      "purposeAlignment": 3.5,
+      "audienceAlignment": 4.1,
+      "knowledgeLevelAlignment": 3.2,
+      "navigability": 4.7,
+      "average": 4.2
+    },
+    "overallScore": 4.1,
+    "issues": [
+      "Missing purposes: 面向任务的“How-to/Recipes”专区（按任务组织的分步指南）, 具体工作流：文件上传/下载、multipart 表单、流式上传/下载、分页处理、重定向与 Cookie 策略、速率限制与退避重试、OAuth2/Bearer Token、环境化配置、请求签名/鉴权模式选择、故障排查与常见问题（Troubleshooting/FAQ）、测试与模拟（如 responses/pytest 使用）",
+      "Missing audiences: 可复制的任务配方（模板化请求片段、标准配置清单）, 针对常见集成情境的示例集合（如认证模式对比与选型、企业代理/证书环境的最佳实践）"
+    ]
+  }
+}

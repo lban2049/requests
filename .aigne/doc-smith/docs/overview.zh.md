@@ -1,16 +1,12 @@
 # 概述
 
-**Requests** 是一个简洁而优雅的 Python HTTP 库，旨在使 HTTP 请求变得人性化和简单。它通过一个美观、简洁的 API 抽象了发出请求的复杂性，因此你可以专注于与服务交互和在应用程序中消费数据。
+**Requests** 是一个为人类设计的、优雅而简洁的 Python HTTP 库。它让你能极其轻松地发送 HTTP/1.1 请求，将手动处理查询字符串、表单编码和连接管理的复杂性抽象出来。
 
-> 为人类设计的 Python HTTP 库。
+作为下载量最大的 Python 包之一，Requests 每周的下载量约为 `3000 万次`，并且是 GitHub 上超过 `1,000,000` 个公共仓库的依赖项。这段代码值得你信赖。
 
-Requests 是世界上下载量最大的 Python 包之一，每周下载量超过 `3000 万次`。它受到 GitHub 上超过 `1,000,000` 个代码仓库的信赖，是您项目的可靠且稳健的选择。
+### 快速入门
 
-## 为什么使用 Requests？
-
-使用 Requests 发送 HTTP/1.1 请求非常简单。你不再需要手动向 URL 添加查询字符串或对 `POST` 数据进行表单编码。该库可以无缝处理这些任务，使代码更简洁、更易读。
-
-下面简要介绍如何通过身份验证发出一个 `GET` 请求：
+以下是一个使用 Requests 执行带基本身份验证的 GET 请求并检查响应的快速示例：
 
 ```python Basic GET Request icon=logos:python
 import requests
@@ -21,7 +17,7 @@ r = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass
 print(r.status_code)
 # >>> 200
 
-# 访问响应头
+# 检查响应头
 print(r.headers['content-type'])
 # >>> 'application/json; charset=utf8'
 
@@ -29,41 +25,52 @@ print(r.headers['content-type'])
 print(r.text)
 # >>> '{"authenticated": true, ...}'
 
-# 或者，将其解码为 JSON
+# 或者将其自动解码为 JSON
 print(r.json())
 # >>> {'authenticated': True, ...}
 ```
 
-## 核心功能
+### 核心功能
 
-Requests 包含了丰富的功能，可以满足现代、稳健和可靠的 HTTP 应用程序的需求。
+Requests 能够满足构建稳健可靠的 HTTP 通信应用程序的需求。它开箱即用，功能丰富。
 
-| Feature                       | Description                                                                 |
-| ----------------------------- | --------------------------------------------------------------------------- |
-| 保持连接与连接池 | 重用底层 TCP 连接，显著提升性能。   |
-| 国际化域名与 URL  | 原生支持国际化域名，适用于全球应用程序。   |
-| 带 Cookie 持久化的会话| 通过会话对象在多个请求之间保持参数和 Cookie。 |
-| 浏览器风格的 TLS/SSL 验证 | 默认情况下，像浏览器一样验证 HTTPS 请求的 SSL 证书。 |
-| 基本与摘要式身份验证 | 内置易于使用的身份验证支持。                               |
-| 熟悉的类 `dict` Cookie  | 通过简单的类字典接口管理 Cookie。                     |
-| 自动解压       | 自动解压 `gzip`、`deflate` 和 `brotli` 编码的内容。     |
-| 多部分文件上传       | 用于上传文件的简化接口。                                  |
-| 连接超时           | 通过设置连接超时，防止请求无限期挂起。   |
-| 流式下载           | 无需一次性将全部内容加载到内存中即可下载大文件。|
-| 分块 HTTP 请求         | 支持用于流式上传的分块传输编码。                   |
+<x-cards data-columns="2">
+  <x-card data-title="Keep-Alive 与连接池" data-icon="lucide:network">
+    复用底层 TCP 连接以提升性能。
+  </x-card>
+  <x-card data-title="国际化域名和 URL" data-icon="lucide:globe">
+    原生支持国际化域名，适用于全球应用程序。
+  </x-card>
+  <x-card data-title="带 Cookie 持久化的会话" data-icon="lucide:cookie">
+    会话对象可在所有请求之间持久化参数和 Cookie。
+  </x-card>
+  <x-card data-title="浏览器风格的 SSL 验证" data-icon="lucide:shield-check">
+    像网络浏览器一样，自动验证主机的 SSL 证书。
+  </x-card>
+  <x-card data-title="内置身份验证" data-icon="lucide:key-round">
+    为基本和摘要式身份验证提供优雅的内置支持。
+  </x-card>
+  <x-card data-title="自动解压" data-icon="lucide:folder-up">
+    自动解压并解码响应内容（例如 gzip）。
+  </x-card>
+  <x-card data-title="文件上传" data-icon="lucide:upload">
+    使用 multipart 编码轻松上传文件。
+  </x-card>
+  <x-card data-title="连接超时" data-icon="lucide:timer-off">
+    设置超时以防止请求无限期挂起。
+  </x-card>
+</x-cards>
 
-## 安装
+### 完整文档
 
-开始使用 Requests 非常简单，只需运行一个命令即可。该库可在 PyPI 上获取，并正式支持 **Python 3.9+**。
+完整的 API 参考和用户指南可在 [Read the Docs](https://requests.readthedocs.io) 上获取，其中对所有功能都提供了深入的解释。
 
-```console
-$ python -m pip install requests
-```
+![Requests 在 Read the Docs 上的文档](../../../ext/ss.png)
 
-有关安装和发出第一个请求的更详细指南，请参阅 [入门](./getting-started.md) 部分。
+### 后续步骤
 
----
+准备好将 Requests 集成到你的项目中了吗？让我们开始安装吧。
 
-准备好深入了解了吗？完整的 API 参考和用户指南可在 [Read the Docs](https://requests.readthedocs.io) 上找到。
-
-[![Read the Docs](https://raw.githubusercontent.com/psf/requests/main/ext/ss.png)](https://requests.readthedocs.io)
+<x-card data-title="安装" data-icon="lucide:package-plus" data-href="/installation" data-cta="安装 Requests">
+  指导你如何安装该库，并详细说明其支持的 Python 版本。
+</x-card>

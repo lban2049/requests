@@ -1,54 +1,28 @@
 # Advanced Usage
 
-While Requests is renowned for its 'HTTP for Humans' simplicity, it also provides a robust set of advanced features for handling complex and demanding scenarios. Once you've mastered the basics covered in the [User Guide](./user-guide.md), you can dive deeper to gain fine-grained control over network behavior, security, and extensibility.
+While the simple functional API of Requests is perfect for basic HTTP tasks, real-world applications often demand more control, performance, and robustness. The advanced features of Requests provide the tools you need to build sophisticated HTTP clients that can handle persistent connections, complex authentication schemes, and network failures gracefully.
 
-This section provides a high-level overview and links to detailed guides on these advanced topics. You'll learn how to build more resilient, secure, and customized HTTP clients.
+This section explores these powerful capabilities. By mastering them, you can optimize your application's network performance, maintain state across multiple requests, and write resilient code that anticipates and handles potential issues.
 
-<x-cards data-columns="3">
-  <x-card data-title="Timeouts, Retries, and Proxies" data-icon="lucide:timer" data-href="/advanced-usage/timeouts-retries-proxies">
-    Protect your application from unreliable network conditions by setting request timeouts, configuring automatic retries, and routing requests through proxy servers.
+<x-cards data-columns="2">
+  <x-card data-title="Session Objects" data-icon="lucide:book-copy" data-href="/advanced-usage/session-objects">
+    Learn how to persist cookies and settings across multiple requests, and benefit from connection pooling for significant performance gains using Session objects.
   </x-card>
-  <x-card data-title="SSL Certificate Verification" data-icon="lucide:shield-check" data-href="/advanced-usage/ssl-cert-verification">
-    Take full control of your application's security by managing SSL/TLS verification, using custom CA bundles, and providing client-side certificates.
+  <x-card data-title="Authentication" data-icon="lucide:key-round" data-href="/advanced-usage/authentication">
+    Dive into various authentication mechanisms, including built-in support for Basic and Digest Auth, and learn how to implement your own custom authentication schemes.
   </x-card>
-  <x-card data-title="Custom Adapters and Hooks" data-icon="lucide:puzzle" data-href="/advanced-usage/adapters-and-hooks">
-    Extend the core functionality of Requests by creating custom Transport Adapters for different transport protocols and using the event hook system to modify the request cycle.
+  <x-card data-title="Proxies" data-icon="lucide:server" data-href="/advanced-usage/proxies">
+    Discover how to route your HTTP and HTTPS requests through proxy servers, a common requirement for corporate environments and web scraping tasks.
+  </x-card>
+  <x-card data-title="SSL Certificate Verification" data-icon="lucide:shield-check" data-href="/advanced-usage/ssl-verification">
+    Understand how Requests handles SSL certificate verification to ensure secure connections, and how you can use custom CA bundles or client-side certificates.
+  </x-card>
+  <x-card data-title="Timeouts" data-icon="lucide:timer" data-href="/advanced-usage/timeouts">
+    Prevent your application from hanging indefinitely by setting connect and read timeouts, ensuring your network requests fail fast when a server is unresponsive.
+  </x-card>
+  <x-card data-title="Error Handling" data-icon="lucide:alert-triangle" data-href="/advanced-usage/error-handling">
+    Explore the comprehensive exception hierarchy in Requests. Learn to catch and handle specific network, protocol, and timeout errors to build resilient applications.
   </x-card>
 </x-cards>
 
-### Example: Adapter with Custom Retries
-
-A common advanced use case is to configure a `Session` to automatically retry requests that fail due to transient network issues. This is accomplished by creating an `HTTPAdapter` with a custom retry strategy.
-
-```python title="Mounting an Adapter with Retries" icon=logos:python
-import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
-
-session = requests.Session()
-
-# Define a retry strategy for specific HTTP status codes and methods
-retry_strategy = Retry(
-    total=3,
-    status_forcelist=[429, 500, 502, 503, 504],
-    allowed_methods=["HEAD", "GET", "OPTIONS"]
-)
-
-# Create an adapter with this retry strategy and mount it to the session
-adapter = HTTPAdapter(max_retries=retry_strategy)
-session.mount("https://", adapter)
-session.mount("http://", adapter)
-
-try:
-    # Any request made with this session will now use the retry strategy
-    response = session.get("https://api.example.com/data")
-    print("Request successful!")
-except requests.exceptions.RequestException as e:
-    print(f"Request failed after multiple retries: {e}")
-```
-
-This example only scratches the surface of what's possible. Explore the detailed guides to fully leverage the power of Requests.
-
-### Next Steps
-
-After exploring these topics, you may want to consult the complete [API Reference](./api-reference.md) for a comprehensive look at all available classes and methods.
+By leveraging these advanced features, you can move beyond simple scripts and build professional-grade applications that interact with web services reliably and efficiently. Once you are familiar with these concepts, you may want to consult the [API Reference](./api-reference.md) for a detailed breakdown of all available classes and methods.

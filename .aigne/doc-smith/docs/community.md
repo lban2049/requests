@@ -1,77 +1,37 @@
 # Community
 
-Requests is a vibrant, community-driven project, lovingly created by Kenneth Reitz and now maintained under the umbrella of the Python Software Foundation. Its success and robustness are a testament to the contributions of hundreds of developers from around the world.
-
-<div style="display: flex; gap: 1rem; align-items: center;">
-  <img src="../../../ext/kr.png" alt="Kenneth Reitz" width="150"/>
-  <img src="../../../ext/psf.png" alt="Python Software Foundation" width="150"/>
-</div>
-
-The project thrives on collaboration and is always welcoming new contributors. Whether you're fixing a bug, improving documentation, or suggesting a new feature, your input is valuable. Below you can find more information about the project's history and the people behind it.
+The Requests project thrives on the contributions and engagement of its vibrant community. Whether you're looking to contribute code, understand the project's evolution, or review its licensing, this is the right place to start.
 
 <x-cards>
-  <x-card data-title="Changelog" data-href="/community/changelog" data-icon="lucide:history">
-    Explore the project's evolution through a detailed log of all changes, improvements, and bug fixes for each version of the library.
+  <x-card data-title="Contributing" data-icon="lucide:git-pull-request-draft" data-href="/community/contributing">
+    Find out how you can contribute to the project. We have guidelines for setting up your development environment, running tests, and submitting your changes.
   </x-card>
-  <x-card data-title="Contributors" data-href="/community/contributors" data-icon="lucide:users">
-    See the full list of individuals who have generously dedicated their time and expertise to making Requests what it is today.
+  <x-card data-title="Release History" data-icon="lucide:history" data-href="/community/release-history">
+    Explore the detailed changelog for every version of Requests. Track new features, bug fixes, and security updates throughout the project's history.
+  </x-card>
+  <x-card data-title="License" data-icon="lucide:file-text" data-href="/community/license">
+    Requests is distributed under the Apache 2.0 License. View the full license text to understand your rights and obligations.
   </x-card>
 </x-cards>
 
-## How to Contribute
+## Our Contributors
 
-One of the most effective ways to contribute to Requests is by reporting bugs. A well-documented bug report helps maintainers identify and fix issues quickly. To streamline this process, Requests includes a built-in helper tool to gather relevant system information.
+Requests was lovingly created by Kenneth Reitz and is now maintained by the Python Software Foundation and a dedicated team of volunteers.
 
-### Reporting Bugs
+![Kenneth Reitz](../../../ext/kr.png)
+![Python Software Foundation](../../../ext/psf.png)
 
-Before opening an issue, please run the following command in your terminal. It collects essential details about your environment, such as your Python version, operating system, and the versions of critical dependencies like `urllib3` and `idna`.
+### Keepers of the Crystals
 
-```bash
-python -m requests.help
-```
+- Nate Prewitt
+- Seth M. Larson
 
-This command will output a JSON object containing the necessary diagnostic information. Please include this output in your bug report.
+### Previous Keepers
 
-**Example Output:**
+- Kenneth Reitz
+- Cory Benfield
+- Ian Cordasco
 
-```json
-{
-  "chardet": {
-    "version": "5.2.0"
-  },
-  "charset_normalizer": {
-    "version": null
-  },
-  "cryptography": {
-    "version": "42.0.5"
-  },
-  "idna": {
-    "version": "3.7"
-  },
-  "implementation": {
-    "name": "CPython",
-    "version": "3.12.3"
-  },
-  "platform": {
-    "release": "23.5.0",
-    "system": "Darwin"
-  },
-  "pyOpenSSL": {
-    "openssl_version": "1111014f",
-    "version": "24.1.0"
-  },
-  "requests": {
-    "version": "2.32.3"
-  },
-  "system_ssl": {
-    "version": "1111014f"
-  },
-  "urllib3": {
-    "version": "2.2.1"
-  },
-  "using_pyopenssl": true,
-  "using_charset_normalizer": true
-}
-```
+We are immensely grateful to the many other contributors who have provided patches and suggestions over the years. You can view the full list of contributors on [GitHub](https://github.com/psf/requests/graphs/contributors).
 
-By providing this data, you help us spend less time asking for basic information and more time fixing the problem. We appreciate your help in keeping Requests reliable and robust for everyone.
+Thank you for being a part of the Requests community. Your involvement helps make Requests a powerful and reliable tool for developers everywhere.
